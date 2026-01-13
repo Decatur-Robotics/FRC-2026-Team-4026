@@ -11,7 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Ports;
+import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 
 import static frc.robot.util.PhoenixUtil.tryUntilOk;;
@@ -19,7 +19,6 @@ import static frc.robot.util.PhoenixUtil.tryUntilOk;;
 public class TurretIOTalonFX implements TurretIO {
     private final TalonFX turretMotor;
     private TalonFXConfiguration config;
-    private TurretConstants constants = new TurretConstants();
     private StatusSignal<Angle> turretPosition;
     private StatusSignal<Voltage> turretVoltage;
     private StatusSignal<Current> turretSupplyCurrent;
@@ -28,12 +27,12 @@ public class TurretIOTalonFX implements TurretIO {
         turretMotor = new TalonFX(Ports.turretMotorID);
         config = new TalonFXConfiguration();
 
-        config.Slot0 = new Slot0Configs().withKP(constants.kP)
-        .withKI(constants.kI)
-        .withKD(constants.kD)
-        .withKS(constants.kS)
-        .withKV(constants.kV)
-        .withKA(constants.kA);
+        config.Slot0 = new Slot0Configs().withKP(TurretConstants.kP)
+        .withKI(TurretConstants.kI)
+        .withKD(TurretConstants.kD)
+        .withKS(TurretConstants.kS)
+        .withKV(TurretConstants.kV)
+        .withKA(TurretConstants.kA);
 
         turretMotor.getConfigurator().apply(config);
         turretPosition = turretMotor.getPosition();

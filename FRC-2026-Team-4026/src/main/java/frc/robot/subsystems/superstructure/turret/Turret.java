@@ -26,7 +26,7 @@ public class Turret extends SubsystemBase{
         Logger.processInputs("Turret", inputs);
         Logger.recordOutput("Turret Position", getPosition());
         Logger.recordOutput("Turret Voltage", getVoltage());
-
+        
     }
 
     public Command setPositionCommand(double position){
