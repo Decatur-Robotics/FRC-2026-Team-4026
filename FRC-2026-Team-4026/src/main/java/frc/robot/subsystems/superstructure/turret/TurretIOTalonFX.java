@@ -24,7 +24,7 @@ public class TurretIOTalonFX implements TurretIO {
     private StatusSignal<Current> turretSupplyCurrent;
     private MotionMagicVoltage positionRequest;
     public TurretIOTalonFX() {
-        turretMotor = new TalonFX(Ports.turretMotorID);
+        turretMotor = new TalonFX(Ports.TURRET_MOTOR_ID);
         config = new TalonFXConfiguration();
 
         config.Slot0 = new Slot0Configs().withKP(TurretConstants.kP)
