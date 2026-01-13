@@ -1,6 +1,8 @@
 package frc.robot.subsystems.superstructure.hood;
 
-import java.lang.System.Logger;
+import org.littletonrobotics.junction.Logger;
+
+import com.google.flatbuffers.Constants;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -18,12 +20,13 @@ public class Hood extends SubsystemBase {
 
     public Hood (HoodIO io){
         this.io = io;
-        
+        position = HoodConstants.HOOD_START_POSITION;
     }
 
+    @Override
     public void periodic(){
         io.updateInputs(inputs);
-        Logger.processInputs("Hood Inputs", inputs);
+        Logger.processInputs("Hood", inputs);
         if(isEStopped){
             io.stop();
         }
@@ -34,7 +37,7 @@ public class Hood extends SubsystemBase {
     }
 
     public double getPosition(){
-       return HoodIOInputs.hoodData.position();
+       return inputs.hoodData.position();
     }
 
     public double getVoltage(){

@@ -9,4 +9,6 @@ public class HoodConstants {
     public static final double kA = 0.0;
     public static final double kG = 0.0;
 
+
+    public static final double HOOD_START_POSITION = 0.0;
 }
