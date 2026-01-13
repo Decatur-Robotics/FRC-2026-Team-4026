@@ -14,7 +14,6 @@ public class Hood extends SubsystemBase {
     private double position;
 
     private HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
-    private boolean isEStopped = false;
     private HoodIOTalonFX motor;
     private HoodIO io;
 
@@ -27,20 +26,28 @@ public class Hood extends SubsystemBase {
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Hood", inputs);
-        if(isEStopped){
-            io.stop();
-        }
     }
 
     public Command setPositionCommand(double position){
         return Commands.runOnce(()-> io.setPosition(position));
     }
 
+    public Command setVoltageCommand(double voltage){
+        return Commands.runOnce(()-> io.setVoltage(voltage));
+    }
     public double getPosition(){
        return inputs.hoodData.position();
     }
 
     public double getVoltage(){
-        return voltage;
+        return inputs.hoodData.voltage();
+    }
+
+    public Command zerCommand(){
+        return Commands.sequence(
+            Commands.runOnce(()-> {io.setVoltage(voltage);}),
+            Commands.runOnce(()->{io.setPosition(position);})
+        );
+
     }
 }

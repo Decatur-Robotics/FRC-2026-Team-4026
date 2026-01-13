@@ -13,7 +13,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.constants.Ports;
 public class HoodIOTalonFX implements HoodIO{
     public TalonFX motor;
-    public TalonFXConfiguration config = new TalonFXConfiguration();
+    public TalonFXConfiguration config ;
 
 
     private MotionMagicVoltage positionRequest;
@@ -26,6 +26,7 @@ public class HoodIOTalonFX implements HoodIO{
     
     public HoodIOTalonFX(){
         motor = new TalonFX(Ports.HOOD_MOTOR);
+        config = new TalonFXConfiguration();
         config.Slot0 = new Slot0Configs()
         .withKP(HoodConstants.kP)
         .withKI(HoodConstants.kI)
@@ -44,6 +45,7 @@ public class HoodIOTalonFX implements HoodIO{
         positionRequest = new MotionMagicVoltage(position.getValueAsDouble());
         voltageRequest = new VoltageOut(voltage.getValueAsDouble());
     }
+    
     @Override
     public void periodic(){
         if(motor.hasResetOccurred()){
