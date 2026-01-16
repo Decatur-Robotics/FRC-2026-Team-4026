@@ -1,0 +1,28 @@
+package frc.robot.subsystems.indexer;
+
+import org.littletonrobotics.junction.AutoLog;
+
+public interface IndexerIO {
+    @AutoLog
+    public class IndexerIOInputs{
+        public IndexerIOData indexerData = new IndexerIOData(false,false,0.0,0.0);
+    }
+
+    public record IndexerIOData(
+        Boolean rightMotorConnected,
+        Boolean leftMotorConnected,
+        Double rightMotorVoltage,
+        Double leftMotorVoltage
+    ){}
+
+    default void updateInputs(IndexerIOInputs inputs){
+
+    }
+
+    default void setVoltage(double voltage){
+
+    }
+
+    default void stop(){}
+
+}        
