@@ -11,13 +11,13 @@ public class Indexer extends SubsystemBase{
     private IndexerIO io;
     private boolean isEStopped = false;
     private final String inputsName;
-    private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
+    private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
     public Indexer(IndexerIO io) {
         this.inputsName = this.getClass().getSimpleName() + "Inputs";
         this.io = io;
     }
-
+    @Override
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs(inputsName, inputs);

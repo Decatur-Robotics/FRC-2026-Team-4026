@@ -14,7 +14,7 @@ import frc.robot.Constants;
 import frc.robot.Ports;
 import frc.robot.subsystems.indexer.IndexerIO.IndexerIOInputs;
 
-public class IndexerIOTalonFX {
+public class IndexerIOTalonFX implements IndexerIO{
     private TalonFX leftMotor, rightMotor;
     
     private TalonFXConfiguration config = new TalonFXConfiguration();
@@ -35,7 +35,7 @@ public class IndexerIOTalonFX {
 
         BaseStatusSignal.setUpdateFrequencyForAll(40, voltageLeft, voltageRight);
     }
-
+    @Override
     public void periodic(){
         if(leftMotor.hasResetOccurred() || rightMotor.hasResetOccurred()){
             rightMotor.optimizeBusUtilization();
@@ -44,6 +44,7 @@ public class IndexerIOTalonFX {
         }
     }
 
+    @Override
     public void updateInputs(IndexerIOInputs inputs){
         inputs.indexerData = new IndexerIO.IndexerIOData(
             leftMotor.isConnected(),
@@ -53,12 +54,14 @@ public class IndexerIOTalonFX {
         );
     }
 
+    @Override
     public void setVoltage(double voltage){
         voltageRequest = new VoltageOut(voltage);
         leftMotor.setControl(voltageRequest);
         rightMotor.setControl(voltageRequest);
     }
 
+    @Override
     public void stop(){
         rightMotor.stopMotor(); 
         leftMotor.stopMotor();
