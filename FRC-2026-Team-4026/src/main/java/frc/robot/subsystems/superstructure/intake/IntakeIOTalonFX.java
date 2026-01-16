@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
@@ -48,8 +49,8 @@ public class IntakeIOTalonFX implements IntakeIO{
         intakeCurrent = intakeMotor.getSupplyCurrent();
 
         positionRequest = new MotionMagicVoltage(deployPosition.getValueAsDouble()).withEnableFOC(true);
-        intakeMotor = new TalonFX(0);
-        deployMotor = new TalonFX(0);
+        intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
+        deployMotor = new TalonFX(Ports.DEPLOY_MOTOR_PORT);
         
         intakeVoltage = intakeMotor.getMotorVoltage();
         deployVoltage = deployMotor.getMotorVoltage();
@@ -61,18 +62,18 @@ public class IntakeIOTalonFX implements IntakeIO{
         PhoenixUtil.registerSignals(true, intakeVoltage, deployVoltage, intakeCurrent, deployCurrent, deployPosition);
 
     }
-
+    @Override
     public void periodic(){
         if (intakeMotor.hasResetOccurred()){
-            intakeMotor.optimizeBusUtilization();
+            intakeMotor.optimizeBusUtilization(40);
         }
         if (deployMotor.hasResetOccurred()){
 
-            deployMotor.optimizeBusUtilization();
+            deployMotor.optimizeBusUtilization(40);
         }
     
     }
-
+    @Override
     public void updateInputs(IntakeIOInputs inputs){
 
         inputs.intakeData = new IntakeIO.IntakeIOData(

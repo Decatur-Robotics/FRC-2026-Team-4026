@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
     @AutoLog
     class IntakeIOInputs {
-        public IntakeIOData intakeData = new IntakeIOData(true,true,0,0,0,0,0);
+        public IntakeIOData intakeData = new IntakeIOData(false,false,0,0,0,0,0);
     
     }
     record IntakeIOData(
@@ -34,5 +34,9 @@ public interface IntakeIO {
     }
     default void stopIntake(){
 
+    }
+    default void periodic(){
+
+        
     }
 }

@@ -6,9 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Intake {
-    private IntakeIOTalonFX deployMotor, intakeMotor;
-
-
 
 
     private IntakeIO io;
@@ -29,15 +26,15 @@ public class Intake {
     }
 
     public double getDeployPosition(){
-        return deployMotor.deployMotor.getPosition().getValueAsDouble();
+        return inputs.intakeData.deployPosition();
 
     }
     public double getDeployVoltage(){
-        return deployMotor.deployMotor.getPosition().getValueAsDouble();
+        return inputs.intakeData.deployVoltage();
     }
     public double getIntakeVoltage(){
 
-        return intakeMotor.intakeMotor.getPosition().getValueAsDouble();
+        return inputs.intakeData.intakeVoltage();
     }
 
     public Command deployIntakeCommand(double position){
@@ -49,10 +46,10 @@ public class Intake {
 
         return Commands.runOnce(() -> io.setDeployPosition(position));
     }
-    public Command runIntakeCommand(){
+    public Command runIntakeCommand(double voltage){
 
 
-        return Commands.startEnd(()-> io.setIntakeVoltage(IntakeConstants.INTAKE_VOLTAGE), () -> io.stopIntake());
+        return Commands.startEnd(()-> io.setIntakeVoltage(voltage), () -> io.stopIntake());
         
         
     }
