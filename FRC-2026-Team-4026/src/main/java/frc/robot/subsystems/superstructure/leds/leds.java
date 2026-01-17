@@ -70,7 +70,7 @@ public class leds implements Subsystem {
     }
     // for pulsing moves all the leds foward one 
     public void stepAllPixels(){
-        for( int i = length; i <0;){
+        for( int i = length; i >0;){
             i--;
             if(i>0){
                 buffer.setRGB(i, buffer.getRed(i-1), buffer.getGreen(i-1), buffer.getBlue(i-1));
