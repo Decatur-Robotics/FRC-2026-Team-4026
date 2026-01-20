@@ -9,6 +9,22 @@ package frc.robot.util;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.ctre.phoenix6.sim.TalonFXSimState;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
+
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.function.Supplier;
 
 public class PhoenixUtil {
@@ -49,4 +65,36 @@ public class PhoenixUtil {
       BaseStatusSignal.refreshAll(rioSignals);
     }
   }
+
+
+public static SwerveModuleConstants regulateModuleConstantForSimulation(
+            SwerveModuleConstants<?, ?, ?> moduleConstants) {
+        // Skip regulation if running on a real robot
+        if (RobotBase.isReal()) return moduleConstants;
+
+        // Apply simulation-specific adjustments to module constants
+        return moduleConstants
+                // Disable encoder offsets
+                .withEncoderOffset(0)
+                // Disable motor inversions for drive and steer motors
+                .withDriveMotorInverted(false)
+                .withSteerMotorInverted(false)
+                // Disable CanCoder inversion
+                .withEncoderInverted(false)
+                // Adjust steer motor PID gains for simulation
+                .withSteerMotorGains(new Slot0Configs()
+                        .withKP(70)
+                        .withKI(0)
+                        .withKD(4.5)
+                        .withKS(0)
+                        .withKV(1.91)
+                        .withKA(0)
+                        .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
+                .withSteerMotorGearRatio(16.0)
+                // Adjust friction voltages
+                .withDriveFrictionVoltage(Volts.of(0.1))
+                .withSteerFrictionVoltage(Volts.of(0.05))
+                // Adjust steer inertia
+                .withSteerInertia(KilogramSquareMeters.of(0.05));
+    }
 }
