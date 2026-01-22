@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Ports;
@@ -23,12 +24,12 @@ public class IndexerIOTalonFX implements IndexerIO{
 
     private StatusSignal<Voltage> voltageRight;
     private StatusSignal<Voltage> voltageLeft;
+    private StatusSignal<Current> leftCurrent;
+    private StatusSignal<Current> rightCurrent;
 
     public IndexerIOTalonFX(){
         leftMotor = new TalonFX(Ports.INDEXER_MOTOR_LEFT);
         rightMotor = new TalonFX(Ports.INDEXER_MOTOR_RIGHT); 
-
-        leftMotor.setControl(new Follower(Ports.INDEXER_MOTOR_RIGHT, MotorAlignmentValue.Opposed));
 
         voltageLeft = leftMotor.getMotorVoltage();
         voltageRight = rightMotor.getMotorVoltage();
@@ -38,8 +39,8 @@ public class IndexerIOTalonFX implements IndexerIO{
     @Override
     public void periodic(){
         if(leftMotor.hasResetOccurred() || rightMotor.hasResetOccurred()){
-            rightMotor.optimizeBusUtilization();
-            leftMotor.optimizeBusUtilization();
+            rightMotor.optimizeBusUtilization(40);
+            leftMotor.optimizeBusUtilization(40);
             rightMotor.getPosition().setUpdateFrequency(40);
         }
     }
@@ -49,6 +50,8 @@ public class IndexerIOTalonFX implements IndexerIO{
         inputs.indexerData = new IndexerIO.IndexerIOData(
             leftMotor.isConnected(),
             rightMotor.isConnected(),
+            leftCurrent.getValueAsDouble(),
+            rightCurrent.getValueAsDouble(),
             voltageLeft.getValueAsDouble(),
             voltageRight.getValueAsDouble()
         );

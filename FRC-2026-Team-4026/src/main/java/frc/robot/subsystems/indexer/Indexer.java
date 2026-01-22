@@ -34,7 +34,19 @@ public class Indexer extends SubsystemBase{
         });
     }
 
-    public double getMotorVoltage(){
-        return voltage;
+    public double getLeftCurrent(){
+        return inputs.indexerData.leftCurrent();
+    }
+
+    public double getRightCurrent(){
+        return inputs.indexerData.rightCurrent();
+    }
+    
+    public double getLeftMotorVoltage(){
+        return inputs.indexerData.leftMotorVoltage();
+    }
+
+    public double getRightMotorVoltage(){
+        return inputs.indexerData.rightMotorVoltage();
     }
 }

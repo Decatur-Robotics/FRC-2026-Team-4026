@@ -9,6 +9,8 @@ public interface IndexerIO {
             false,
             false,
             0.0,
+            0.0,
+            0.0,
             0.0);
     }
 
@@ -16,7 +18,9 @@ public interface IndexerIO {
         Boolean rightMotorConnected,
         Boolean leftMotorConnected,
         Double rightMotorVoltage,
-        Double leftMotorVoltage
+        Double leftMotorVoltage,
+        Double leftCurrent,
+        Double rightCurrent
     ){}
 
     default void updateInputs(IndexerIOInputs inputs){
