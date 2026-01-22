@@ -33,6 +33,8 @@ public class IndexerIOTalonFX implements IndexerIO{
 
         voltageLeft = leftMotor.getMotorVoltage();
         voltageRight = rightMotor.getMotorVoltage();
+        leftCurrent = leftMotor.getSupplyCurrent();
+        rightCurrent = rightMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(40, voltageLeft, voltageRight);
     }

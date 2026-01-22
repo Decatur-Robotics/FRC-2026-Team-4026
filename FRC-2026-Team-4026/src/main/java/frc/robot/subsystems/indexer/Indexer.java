@@ -21,7 +21,8 @@ public class Indexer extends SubsystemBase{
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs(inputsName, inputs);
-
+        Logger.recordOutput("Left and Right Current:", getLeftCurrent()+", "+getRightCurrent());
+        Logger.recordOutput("Left and Right Voltage:", getLeftMotorVoltage()+", "+getRightMotorVoltage());
         if (isEStopped){
             io.stop();
         }
