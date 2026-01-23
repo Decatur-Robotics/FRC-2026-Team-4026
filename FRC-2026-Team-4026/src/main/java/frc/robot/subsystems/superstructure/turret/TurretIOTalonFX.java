@@ -14,7 +14,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 
-import static frc.robot.util.PhoenixUtil.tryUntilOk;;
+import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 public class TurretIOTalonFX implements TurretIO {
     private final TalonFX turretMotor;

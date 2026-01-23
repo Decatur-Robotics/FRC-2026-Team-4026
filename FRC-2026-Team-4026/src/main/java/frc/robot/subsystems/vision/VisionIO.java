@@ -1,16 +1,22 @@
 package frc.robot.subsystems.vision;
 
+import org.littletonrobotics.junction.AutoLog;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface VisionIO {
+    @AutoLog
     public class VisionIOInputs {
-
+VisionIOData visionData = new VisionIOData(false,
+         new TargetObservation(new Rotation2d(), new Rotation2d()), new PoseObservation[0], new int[0]);
     }
-    public record visionData(
+    public record VisionIOData(
         boolean cameraConnected,
-        TargetObservation targetObservation
+        TargetObservation targetObservation,
+        PoseObservation[] poseObservation,
+        int[] aprilTagIDs
     ) {
     }
 
