@@ -45,6 +45,7 @@ public Command setVoltageCommand(double voltage) {
     return Commands.run(() -> io.setVoltage(voltage));
 }
 
+@Override
 public void periodic () {
     io.updateInputs(inputs);
 }

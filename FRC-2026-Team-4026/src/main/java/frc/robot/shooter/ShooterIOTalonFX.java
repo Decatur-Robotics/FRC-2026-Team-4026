@@ -56,17 +56,22 @@ public void setVelocity (
     double velocity
 )
 {motorLeft.setControl(velocityRequest.withVelocity(velocity));
-motorRight.setControl(velocityRequest.withVelocity(velocity)); }
+motorRight.setControl(velocityRequest.withVelocity(velocity)); 
+}
+
 
 public void setVoltage (
-    Double voltage
+    double voltage
 )
 {motorLeft.setVoltage(voltage);
 motorRight.setVoltage(voltage);
 }
 
+
 public void periodic () {
-    if (motorLeft.hasResetOccurred()|| motorRight.hasResetOccurred()) {motorLeft.optimizeBusUtilization(); motorRight.optimizeBusUtilization();}
+    if (motorLeft.hasResetOccurred()|| motorRight.hasResetOccurred()) {
+        motorLeft.optimizeBusUtilization(); motorRight.optimizeBusUtilization();
+    }
 }
 
 public void updateInputs (
@@ -77,5 +82,3 @@ public void updateInputs (
 }
 
 }
-
-

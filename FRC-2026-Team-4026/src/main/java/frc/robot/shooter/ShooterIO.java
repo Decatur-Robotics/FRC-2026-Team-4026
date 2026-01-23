@@ -23,7 +23,8 @@ default void setVoltage (double voltage)
 {}
 default void setVelocity (double velocity)
 {}
-
 default void updateInputs (ShooterIOInputs inputs)
+{}
+default void periodic ()
 {}
 }
