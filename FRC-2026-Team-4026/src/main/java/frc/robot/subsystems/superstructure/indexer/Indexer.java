@@ -1,10 +1,11 @@
-package frc.robot.subsystems.indexer;
+package frc.robot.subsystems.superstructure.indexer;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.indexer.IndexerIOInputsAutoLogged;
 
 public class Indexer extends SubsystemBase{
     private double voltage;

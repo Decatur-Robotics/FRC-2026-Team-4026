@@ -1,4 +1,4 @@
-package frc.robot.subsystems.indexer;
+package frc.robot.subsystems.superstructure.indexer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -12,8 +12,8 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.constants.Constants;
+import frc.robot.subsystems.superstructure.indexer.IndexerIO.IndexerIOInputs;
 import frc.robot.Ports;
-import frc.robot.subsystems.indexer.IndexerIO.IndexerIOInputs;
 
 public class IndexerIOTalonFX implements IndexerIO{
     private TalonFX leftMotor, rightMotor;
