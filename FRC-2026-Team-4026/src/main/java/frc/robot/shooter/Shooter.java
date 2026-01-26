@@ -9,12 +9,9 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
-public class Shooter extends SubsystemBase{
-    private TalonFX motorLeft, motorRight;
+public class Shooter extends SubsystemBase {
 
     private double velocity;
-    private VelocityVoltage velocityRequest;
-    private VoltageOut voltageRequest;
 
     private double voltage;
 
@@ -28,7 +25,7 @@ public Shooter (
 ) {
     this.io = io;
     velocity = ShooterConstants.FUEL_REST_VELOCITY;
-    voltage = 0;
+    voltage = inputs.data.leftVoltage();
 }
 
 public double getVelocity() {
@@ -36,8 +33,7 @@ public double getVelocity() {
 }
 
 public Command setVelocityCommand(double velocity) {
-    return Commands.run(() -> io.setVelocity(velocity))
-        .finallyDo(() -> io.setVelocity(ShooterConstants.FUEL_REST_VELOCITY));
+    return Commands.run(() -> io.setVelocity(velocity));
 
 }
 

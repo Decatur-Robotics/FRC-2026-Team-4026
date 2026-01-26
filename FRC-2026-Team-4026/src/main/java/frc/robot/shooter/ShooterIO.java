@@ -15,7 +15,8 @@ public record ShooterIOData (
     double leftVelocity,
     double rightVelocity,
     double leftVoltage,
-    double rightVoltage
+    double rightVoltage,
+    double supplyCurrent
     
 )
 {}

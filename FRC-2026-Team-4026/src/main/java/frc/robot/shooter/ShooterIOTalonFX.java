@@ -42,13 +42,16 @@ public class ShooterIOTalonFX {
         velocityRequest = new MotionMagicVelocityDutyCycle(velocity.getValueAsDouble());
 
         motorLeft.getConfigurator().apply(config);
+        motorRight.getConfigurator().apply(config);
+
+         velocity = motorLeft.getVelocity();
 
         tryUntilOk(
             5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, velocity)
         );
 
-        // tryUntilOk(
-        //     5, () -> mototrLeft.optimizeBusUtilization());
+         tryUntilOk(
+             5, () -> motorLeft.optimizeBusUtilization());
 
         PhoenixUtil.registerSignals(true, velocity,voltage);    
     }
@@ -69,8 +72,8 @@ motorRight.setVoltage(voltage);
 
 
 public void periodic () {
-    if (motorLeft.hasResetOccurred()|| motorRight.hasResetOccurred()) {
-        motorLeft.optimizeBusUtilization(); motorRight.optimizeBusUtilization();
+    if (motorLeft.hasResetOccurred()||     motorRight.hasResetOccurred()) {
+        motorLeft.optimizeBusUtilization(); motorRight.optimizeBusUtilization(); motorLeft.getVelocity().setUpdateFrequency(40);
     }
 }
 
