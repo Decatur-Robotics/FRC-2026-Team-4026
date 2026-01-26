@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
     @AutoLog
 public class ShooterIOInputs { 
-    public ShooterIOData data = new ShooterIOData (false,false,0.0,0.0,0.0,0.0);
+    public ShooterIOData data = new ShooterIOData (false,false,0.0,0.0,0.0,0.0,0.0,0.0);
 }
 
 public record ShooterIOData ( 
@@ -16,7 +16,8 @@ public record ShooterIOData (
     double rightVelocity,
     double leftVoltage,
     double rightVoltage,
-    double supplyCurrent
+    double supplyCurrentLeft,
+    double supplyCurrentRight
     
 )
 {}

@@ -3,11 +3,15 @@ package frc.robot.shooter;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Ports;
@@ -25,7 +29,7 @@ public class ShooterIOTalonFX {
 
     private MotionMagicVelocityDutyCycle velocityRequest;
 
-    private StatusSignal<Velocity> velocity;
+    private StatusSignal<AngularVelocity> velocity;
 
 
 
@@ -43,6 +47,7 @@ public class ShooterIOTalonFX {
 
         motorLeft.getConfigurator().apply(config);
         motorRight.getConfigurator().apply(config);
+        motorRight.setControl(new Follower(Ports.SHOOTER_MOTOR_LEFT, MotorAlignmentValue.Opposed));
 
          velocity = motorLeft.getVelocity();
 
@@ -58,8 +63,7 @@ public class ShooterIOTalonFX {
 public void setVelocity (
     double velocity
 )
-{motorLeft.setControl(velocityRequest.withVelocity(velocity));
-motorRight.setControl(velocityRequest.withVelocity(velocity)); 
+{motorLeft.setControl(velocityRequest.withVelocity(velocity)); 
 }
 
 
@@ -67,7 +71,6 @@ public void setVoltage (
     double voltage
 )
 {motorLeft.setVoltage(voltage);
-motorRight.setVoltage(voltage);
 }
 
 
@@ -81,7 +84,7 @@ public void updateInputs (
     ShooterIOInputs inputs
 )
 {
-    inputs.data = new ShooterIOData (motorLeft.isConnected(),motorRight.isConnected(), motorLeft.getSupplyVoltage().getValueAsDouble(), motorRight.getSupplyVoltage().getValueAsDouble(), motorLeft.getVelocity().getValueAsDouble(), motorRight.getVelocity().getValueAsDouble());
+    inputs.data = new ShooterIOData (motorLeft.isConnected(),motorRight.isConnected(), motorLeft.getSupplyVoltage().getValueAsDouble(), motorRight.getSupplyVoltage().getValueAsDouble(), motorLeft.getVelocity().getValueAsDouble(), motorRight.getVelocity().getValueAsDouble(), motorLeft.getSupplyCurrent().getValueAsDouble(), motorLeft.getSupplyCurrent().getValueAsDouble(), motorRight.getSupplyCurrent().getValueAsDouble());
 }
 
 }
