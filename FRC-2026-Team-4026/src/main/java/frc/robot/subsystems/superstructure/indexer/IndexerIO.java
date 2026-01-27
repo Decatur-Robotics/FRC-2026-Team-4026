@@ -23,19 +23,11 @@ public interface IndexerIO {
         Double rightCurrent
     ){}
 
-    default void updateInputs(IndexerIOInputs inputs){
+    default void updateInputs(IndexerIOInputs inputs){}
 
-    }
+    default void setVoltage(double voltage){}
 
-    default void setVoltage(double voltage){
-
-    }
-
-    default void periodic(){
-
-    }
-
+    default void periodic(){}
 
     default void stop(){}
-
 }        

@@ -2,17 +2,12 @@ package frc.robot.subsystems.superstructure.indexer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.constants.Constants;
-import frc.robot.subsystems.superstructure.indexer.IndexerIO.IndexerIOInputs;
 import frc.robot.Ports;
 
 public class IndexerIOTalonFX implements IndexerIO{
@@ -38,6 +33,7 @@ public class IndexerIOTalonFX implements IndexerIO{
 
         BaseStatusSignal.setUpdateFrequencyForAll(40, voltageLeft, voltageRight);
     }
+
     @Override
     public void periodic(){
         if(leftMotor.hasResetOccurred() || rightMotor.hasResetOccurred()){

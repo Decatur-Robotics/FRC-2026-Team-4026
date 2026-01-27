@@ -29,12 +29,6 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Voltage> deployVoltage;
 
     public TalonFXConfiguration config = new TalonFXConfiguration();
-    
-
-    
-
-
-//do i need configs for the intake motor???
 
     public IntakeIOTalonFX(){
         config.Slot0 = new Slot0Configs()
@@ -97,10 +91,9 @@ public class IntakeIOTalonFX implements IntakeIO{
 
     @Override
     public void setDeployPosition(double position){
-
-        intakeMotor.setControl(positionRequest.withPosition(position));
-
+        deployMotor.setControl(positionRequest.withPosition(position));
     }
+
     @Override
     public void stopIntake(){
         intakeMotor.stopMotor();

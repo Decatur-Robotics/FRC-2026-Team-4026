@@ -1,28 +1,18 @@
-package frc.robot.shooter;
+package frc.robot.subsystems.superstructure.shooter;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Ports;
-
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import frc.robot.shooter.ShooterIOInputsAutoLogged;
 
 public class Shooter extends SubsystemBase {
 
     private double velocity;
-
     private double voltage;
 
     private ShooterIO io;
-
     private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
-
-public Shooter (
-    ShooterIO io
-) {
+public Shooter (ShooterIO io) {
     this.io = io;
     velocity = ShooterConstants.FUEL_REST_VELOCITY;
     voltage = inputs.data.leftVoltage();
@@ -34,7 +24,6 @@ public double getVelocity() {
 
 public Command setVelocityCommand(double velocity) {
     return Commands.run(() -> io.setVelocity(velocity));
-
 }
 
 public Command setVoltageCommand(double voltage) {
@@ -45,5 +34,4 @@ public Command setVoltageCommand(double voltage) {
 public void periodic () {
     io.updateInputs(inputs);
 }
-
 }

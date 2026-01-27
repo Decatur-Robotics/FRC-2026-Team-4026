@@ -1,4 +1,4 @@
-package frc.robot.shooter;
+package frc.robot.subsystems.superstructure.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -12,14 +12,11 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Ports;
-import frc.robot.shooter.ShooterIO.ShooterIOData;
-import frc.robot.shooter.ShooterIO.ShooterIOInputs;
 import frc.robot.util.PhoenixUtil;
 
-public class ShooterIOTalonFX {
+public class ShooterIOTalonFX implements ShooterIO {
     public TalonFX motorLeft, motorRight;
     private TalonFXConfiguration config;
 
@@ -34,8 +31,8 @@ public class ShooterIOTalonFX {
 
 
     public ShooterIOTalonFX () {
-        motorLeft = new TalonFX( Ports.SHOOTER_MOTOR_LEFT);
-        motorRight = new TalonFX ( Ports.SHOOTER_MOTOR_RIGHT);
+        motorLeft = new TalonFX(Ports.SHOOTER_MOTOR_LEFT);
+        motorRight = new TalonFX (Ports.SHOOTER_MOTOR_RIGHT);
         
         config = new TalonFXConfiguration ();
 
@@ -60,31 +57,27 @@ public class ShooterIOTalonFX {
 
         PhoenixUtil.registerSignals(true, velocity,voltage);    
     }
-public void setVelocity (
-    double velocity
-)
-{motorLeft.setControl(velocityRequest.withVelocity(velocity)); 
+
+@Override
+public void setVelocity (double velocity){
+    motorLeft.setControl(velocityRequest.withVelocity(velocity)); 
 }
 
-
-public void setVoltage (
-    double voltage
-)
-{motorLeft.setVoltage(voltage);
+@Override
+public void setVoltage (double voltage){
+    motorLeft.setVoltage(voltage);
 }
 
-
+@Override
 public void periodic () {
     if (motorLeft.hasResetOccurred()||     motorRight.hasResetOccurred()) {
         motorLeft.optimizeBusUtilization(); motorRight.optimizeBusUtilization(); motorLeft.getVelocity().setUpdateFrequency(40);
     }
 }
 
-public void updateInputs (
-    ShooterIOInputs inputs
-)
-{
-    inputs.data = new ShooterIOData (motorLeft.isConnected(),motorRight.isConnected(), motorLeft.getSupplyVoltage().getValueAsDouble(), motorRight.getSupplyVoltage().getValueAsDouble(), motorLeft.getVelocity().getValueAsDouble(), motorRight.getVelocity().getValueAsDouble(), motorLeft.getSupplyCurrent().getValueAsDouble(), motorLeft.getSupplyCurrent().getValueAsDouble(), motorRight.getSupplyCurrent().getValueAsDouble());
+@Override
+public void updateInputs (ShooterIOInputs inputs){
+    inputs.data = new ShooterIOData (motorLeft.isConnected(),motorRight.isConnected(), motorLeft.getSupplyVoltage().getValueAsDouble(), motorRight.getSupplyVoltage().getValueAsDouble(), motorLeft.getVelocity().getValueAsDouble(), motorRight.getVelocity().getValueAsDouble(), motorLeft.getSupplyCurrent().getValueAsDouble(), motorRight.getSupplyCurrent().getValueAsDouble());
 }
 
 }

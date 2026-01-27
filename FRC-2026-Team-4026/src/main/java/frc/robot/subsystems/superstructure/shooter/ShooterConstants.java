@@ -1,6 +1,4 @@
-package frc.robot.shooter;
-
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+package frc.robot.subsystems.superstructure.shooter;
 
 public class ShooterConstants {
 

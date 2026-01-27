@@ -1,13 +1,11 @@
 package frc.robot.subsystems.superstructure.indexer;
 
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase{
-    private double voltage;
     private IndexerIO io;
     private boolean isEStopped = false;
     private final String inputsName;
@@ -30,7 +28,6 @@ public class Indexer extends SubsystemBase{
     
     public Command setVoltageCommand(double voltage){
     return this.runOnce(() -> {
-            this.voltage = voltage;
             io.setVoltage(voltage);
         });
     }

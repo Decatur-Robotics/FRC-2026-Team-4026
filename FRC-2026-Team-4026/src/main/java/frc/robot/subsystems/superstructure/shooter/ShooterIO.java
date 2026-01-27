@@ -1,4 +1,4 @@
-package frc.robot.shooter;
+package frc.robot.subsystems.superstructure.shooter;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -21,12 +21,14 @@ public record ShooterIOData (
     
 )
 {}
-default void setVoltage (double voltage)
-{}
+
 default void setVelocity (double velocity)
 {}
-default void updateInputs (ShooterIOInputs inputs)
+default void setVoltage (double voltage)
 {}
 default void periodic ()
 {}
+default void updateInputs (ShooterIOInputs inputs)
+{}
+
 }

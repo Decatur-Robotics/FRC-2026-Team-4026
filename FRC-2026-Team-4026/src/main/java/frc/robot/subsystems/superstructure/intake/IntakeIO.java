@@ -6,7 +6,6 @@ public interface IntakeIO {
     @AutoLog
     class IntakeIOInputs {
         public IntakeIOData intakeData = new IntakeIOData(false,false,0,0,0,0,0);
-    
     }
     record IntakeIOData(
         boolean intakeMotorConnected,
@@ -20,23 +19,13 @@ public interface IntakeIO {
 
     ){}
 
-    default void updateInputs(IntakeIOInputs inputs){
+    default void updateInputs(IntakeIOInputs inputs){}
 
+    default void setIntakeVoltage(double voltage){}
 
-    }
-    default void setIntakeVoltage(double voltage){
+    default void setDeployPosition(double position){}
 
-    }
+    default void stopIntake(){}
 
-
-    default void setDeployPosition(double position){
-        
-    }
-    default void stopIntake(){
-
-    }
-    default void periodic(){
-
-        
-    }
+    default void periodic(){}
 }

@@ -7,7 +7,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -25,8 +24,8 @@ public class TurretIOTalonFX implements TurretIO {
     private MotionMagicVoltage positionRequest;
     public TurretIOTalonFX() {
         turretMotor = new TalonFX(Ports.TURRET_MOTOR_ID);
-        config = new TalonFXConfiguration();
 
+        config = new TalonFXConfiguration();
         config.Slot0 = new Slot0Configs().withKP(TurretConstants.kP)
         .withKI(TurretConstants.kI)
         .withKD(TurretConstants.kD)
