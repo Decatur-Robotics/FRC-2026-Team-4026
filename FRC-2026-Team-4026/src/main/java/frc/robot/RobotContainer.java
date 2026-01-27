@@ -30,9 +30,8 @@ import frc.robot.constants.FieldConstants;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  //This is a placeholder until drive exists
-  private Pose2d robotPose = new Pose2d(0,0, new Rotation2d());
-  private double turretRotation = Math.atan((robotPose.getY() - FieldConstants.HUB_POSE_BLUE.getY())/(robotPose.getX() - FieldConstants.HUB_POSE_BLUE.getX()));
+
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
