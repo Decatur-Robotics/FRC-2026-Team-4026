@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure.climber;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ClimberIO {
+
 	@AutoLog
 	public class ClimberIOInputs {
 		public ClimberIOData climberData = new ClimberIOData(

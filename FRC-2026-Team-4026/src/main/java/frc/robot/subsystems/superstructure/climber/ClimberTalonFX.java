@@ -11,11 +11,9 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Ports;
 
 public class ClimberTalonFX implements ClimberIO {
-
-    public boolean inverted;
-    private int following = -1;
 
 	private final TalonFX motor, followMotor;
 	private TalonFXConfiguration config;
@@ -26,12 +24,12 @@ public class ClimberTalonFX implements ClimberIO {
     private MotionMagicVoltage positionRequest;
 
 
-	public ClimberTalonFX(int port, int followPort) {
+	public ClimberTalonFX() {
         
-		this.motor = new TalonFX(port);
-		this.followMotor = new TalonFX(followPort);
+		this.motor = new TalonFX(Ports.CLIMBER_MOTOR_LEFT);
+		this.followMotor = new TalonFX(Ports.CLIMBER_MOTOR_RIGHT);
 
-        followMotor.setControl(new Follower(following, MotorAlignmentValue.Opposed)); // todo ask cad if this is right
+        followMotor.setControl(new Follower(Ports.CLIMBER_MOTOR_LEFT, MotorAlignmentValue.Opposed)); // todo ask cad if this is right
 
 		this.config = new TalonFXConfiguration();
 
@@ -41,7 +39,6 @@ public class ClimberTalonFX implements ClimberIO {
         position = motor.getPosition();
         voltage = motor.getSupplyVoltage();
         current = motor.getSupplyCurrent();
-
 
         positionRequest = new MotionMagicVoltage(position.getValueAsDouble()).withEnableFOC(true);
         
@@ -68,7 +65,7 @@ public class ClimberTalonFX implements ClimberIO {
 
     @Override
     public void setVoltage(double voltage){
-        motor.setVoltage(inverted ? -voltage : voltage);
+        motor.setVoltage(voltage);
     }
 
     @Override
