@@ -8,15 +8,21 @@ import edu.wpi.first.math.numbers.*;
 
 public class IndexerIOSim implements IndexerIO {
     //i know that something's probably missing here, so comment what it is if you know.
-    public final DCMotor gearbox;
+    public final DCMotor leftGearbox;
+    public final DCMotor rightGearbox;
+    double leftTorque = 0.0;
+    double rightTorque = 0.0;
+    double leftRadians = 0.0;
+    double rightRadians = 0.0;
     private boolean closedLoop = false;
     public IndexerIOSim() {
-       gearbox = DCMotor.getKrakenX44(2).withReduction(0);
+       rightGearbox = DCMotor.getKrakenX44(1).withReduction(0);
+       leftGearbox = DCMotor.getKrakenX44(1).withReduction(0);
     }
 
     @Override
     public void updateInputs(IndexerIOInputs inputs) {
-       inputs.indexerData = new IndexerIOData(true, true, 0.0, 0.0, 0.0, 0.0);
+       inputs.indexerData = new IndexerIOData(true, true, rightGearbox.getVoltage(rightTorque, rightRadians), leftGearbox.getVoltage(leftTorque, leftRadians), leftGearbox.getCurrent(leftTorque), rightGearbox.getCurrent(rightTorque));
     }
 
     public void runOpenLoop(double voltage){
