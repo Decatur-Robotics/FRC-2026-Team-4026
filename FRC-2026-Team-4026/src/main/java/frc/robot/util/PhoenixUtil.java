@@ -66,7 +66,6 @@ public class PhoenixUtil {
     }
   }
 
-
 public static SwerveModuleConstants regulateModuleConstantForSimulation(
             SwerveModuleConstants<?, ?, ?> moduleConstants) {
         // Skip regulation if running on a real robot
@@ -97,4 +96,4 @@ public static SwerveModuleConstants regulateModuleConstantForSimulation(
                 // Adjust steer inertia
                 .withSteerInertia(KilogramSquareMeters.of(0.05));
     }
-}
+
