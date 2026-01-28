@@ -2,9 +2,11 @@ package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
@@ -20,8 +22,8 @@ public class Superstructure extends SubsystemBase {
     private Shooter shooter;
     private Hood hood;
     private leds leds;
+    private RobotState robotState;
 
-//private Pose2d robotPose = new Pose2d(0,0, new Rotation2d());
   //private double turretRotation = Math.atan((robotPose.getY() - FieldConstants.HUB_POSE_BLUE.getY())/(robotPose.getX() - FieldConstants.HUB_POSE_BLUE.getX()));
 
     private SuperstructureState targetState;
@@ -33,12 +35,14 @@ public class Superstructure extends SubsystemBase {
     private boolean defenseMode = false;
     
 
-    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, leds leds) {
+    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, leds leds, RobotState robotState) {
         this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
         this.hood = hood;
         this.leds = leds;
+
+        this.robotState = robotState;
         
 
         this.shooterVelocity = 0.0;
@@ -96,10 +100,10 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command shootCommand(double shooterVelocity, double hoodAngle){
-        return Commands.parallel(setState( new SuperstructureState(shooterVelocity, hoodAngle, 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
+        return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
     }
 
     public Command passCommand(double shooterVelocity, double hoodAngle){
-        return Commands.parallel(setState( new SuperstructureState(shooterVelocity, hoodAngle, 1.0, 12.0, 12.0)), leds.flashAllLedsCommand(ledsConstants.MAGENTA, 10));
+        return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() + 10, robotState.getTargetAim() + .1, 1.0, 12.0, 12.0)), leds.flashAllLedsCommand(ledsConstants.MAGENTA, 10));
     }
 }
