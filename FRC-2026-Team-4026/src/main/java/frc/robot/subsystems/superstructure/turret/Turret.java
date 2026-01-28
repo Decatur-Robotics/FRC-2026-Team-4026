@@ -15,6 +15,7 @@ public class Turret extends SubsystemBase{
 
     public Turret(TurretIO io) {
         this.io = io;
+        //this might be changed to be set in auto later
         turretPosition = TurretConstants.TURRET_STARTING_POSITION; 
     }
 
@@ -25,6 +26,7 @@ public class Turret extends SubsystemBase{
         Logger.recordOutput("Turret Position", getPosition());
         Logger.recordOutput("Turret Voltage", getVoltage());
     }
+
 
     public Command setPositionCommand(double position){
         return runOnce(() -> io.setPosition(position));
@@ -42,6 +44,8 @@ public class Turret extends SubsystemBase{
         return inputs.turretData.turretPositionDegrees();
     }
 
+
+    //This sets the turret to zeroed position
     public Command zeroCommand(){
         return Commands.sequence(
             Commands.runOnce(() -> {io.setVoltage(turretVoltage);}),

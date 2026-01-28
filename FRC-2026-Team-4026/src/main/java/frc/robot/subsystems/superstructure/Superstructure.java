@@ -21,14 +21,16 @@ public class Superstructure extends SubsystemBase {
     private Hood hood;
     private leds leds;
 
-    private Pose2d robotPose = new Pose2d(0,0, new Rotation2d());
-  private double turretRotation = Math.atan((robotPose.getY() - FieldConstants.HUB_POSE_BLUE.getY())/(robotPose.getX() - FieldConstants.HUB_POSE_BLUE.getX()));
+//private Pose2d robotPose = new Pose2d(0,0, new Rotation2d());
+  //private double turretRotation = Math.atan((robotPose.getY() - FieldConstants.HUB_POSE_BLUE.getY())/(robotPose.getX() - FieldConstants.HUB_POSE_BLUE.getX()));
 
     private SuperstructureState targetState;
 
     private double shooterVelocity;
     private double hoodAngle;
 
+    //This is for making out robot both harder to defend and makes the chance of robot damage lower
+    private boolean defenseMode = false;
     
 
     public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, leds leds) {
@@ -44,12 +46,13 @@ public class Superstructure extends SubsystemBase {
         
         leds.setAllLedsCommand(ledsConstants.BLUE);
 
-        this.targetState = null;
+        this.targetState = SuperstructureConstants.STARTING_STATE;
 
+        setDefaultCommand(storeCommand());
 
     }
 
-    public Command setState(){
+    public Command setState(SuperstructureState targetState){
 
         this.targetState = targetState.copyInstatnce();
         return Commands.parallel(shooter.setVelocityCommand(targetState.shooterVelocity),
@@ -59,5 +62,44 @@ public class Superstructure extends SubsystemBase {
         indexer.setVoltageCommand(targetState.indexerVoltage));
     }
 
+    public void toggleDefenseMode(){
+        if(defenseMode){
+            defenseMode = false;
+        } else {
+            defenseMode = true;
+        }
+    }
 
+    public SuperstructureState getCurrentState(){
+        return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getLeftMotorVoltage(), intake.getIntakeVoltage());
+    }
+
+    // public double aim(){
+
+    // }
+
+    public Command intakeCommand(){
+        return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulseLedsCommand(ledsConstants.GREEN, 5));
+    }
+
+    public Command storeCommand(){
+        if(defenseMode){
+            return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 0.0, 0.0, 0.0)), leds.setAllLedsCommand(ledsConstants.BLUE));
+        }
+        else{
+            return Commands.parallel(setState(SuperstructureConstants.STORING_STATE), leds.setAllLedsCommand(ledsConstants.BLUE));
+        }
+    }
+
+    public Command dumpCommand(){
+        return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE), leds.pulseLedsCommand(ledsConstants.RED, 5));
+    }
+
+    public Command shootCommand(double shooterVelocity, double hoodAngle){
+        return Commands.parallel(setState( new SuperstructureState(shooterVelocity, hoodAngle, 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
+    }
+
+    public Command passCommand(double shooterVelocity, double hoodAngle){
+        return Commands.parallel(setState( new SuperstructureState(shooterVelocity, hoodAngle, 1.0, 12.0, 12.0)), leds.flashAllLedsCommand(ledsConstants.MAGENTA, 10));
+    }
 }
