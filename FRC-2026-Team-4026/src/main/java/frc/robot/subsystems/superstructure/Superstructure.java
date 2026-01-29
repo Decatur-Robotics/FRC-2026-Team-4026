@@ -83,6 +83,9 @@ public class Superstructure extends SubsystemBase {
     }
 
 
+    public Command startingCommand(){
+        return Commands.parallel(setState(SuperstructureConstants.STARTING_STATE), leds.setAllLedsCommand(ledsConstants.BLUE));
+    }
 
     public Command intakeCommand(){
         return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulseLedsCommand(ledsConstants.GREEN, 5));
