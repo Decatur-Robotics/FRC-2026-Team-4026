@@ -1,4 +1,4 @@
-package frc.robot.subsystems.indexer;
+package frc.robot.subsystems.superstructure.indexer;
 
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
