@@ -2,6 +2,9 @@ package frc.robot.subsystems.superstructure.hood;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -11,49 +14,63 @@ import org.ironmaple.simulation.motorsims.SimMotorConfigs;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 
+import edu.wpi.first.math.estimator.AngleStatistics;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
-import frc.robot.subsystems.superstructure.hood.HoodIO.HoodIOInputs;
 public class HoodIOSim implements HoodIO {
 
-    private final MapleMotorSim hoodSim;
-    private final SimulatedMotorController hoodMotorController;
+    private final DCMotorSim hoodSim;
+    private final SimulatedMotorController.GenericMotorController hoodMotorController;
+    private final double gearingRatio = 30;
+    private Voltage voltage;
 
     public HoodIOSim(){
-        this.hoodSim = new MapleMotorSim(new SimMotorConfigs(DCMotor.getMinion(1), 30, MomentOfInertia.ofBaseUnits(0, KilogramSquareMeters),Voltage.ofBaseUnits(0, Volts) ));
-        hoodMotorController = new SimulatedMotorController.GenericMotorController(DCMotor.getMinion(1));
+        this.hoodSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(0.001, 0.001),DCMotor.getMinion(1));
+        this.hoodMotorController = new SimulatedMotorController.GenericMotorController(DCMotor.getMinion(1));
         SimulatedBattery.addElectricalAppliances(this::getSupplyCurrent);
-        hoodSim.update(Time.ofBaseUnits(0, Seconds));
-        hoodSim.useMotorController(hoodMotorController);
+        hoodSim.update(0);
+
+        voltage = Volts.of(hoodSim.getInputVoltage());
     }
 
 
 
     @Override
     public void updateInputs(HoodIOInputs inputs){      
-        Voltage realVoltage = hoodSim.getAppliedVoltage();
+    
+        Angle realPosition = Rotations.of(hoodSim.getAngularPosition().magnitude()/gearingRatio);
+        AngularVelocity realVelocity = RadiansPerSecond.of(hoodSim.getAngularVelocityRadPerSec()/gearingRatio);
+        Voltage realVoltage =  hoodMotorController.constrainOutputVoltage(realPosition, realVelocity, voltage);
         realVoltage = SimulatedBattery.clamp(realVoltage);
         inputs.hoodData = new HoodIOData(
             true,
             realVoltage.in(Volts),
-            hoodSim.getAngularPosition().in(Rotations),
-            hoodSim.getSupplyCurrent().in(Amps),
-            hoodSim.getStatorCurrent().in(Amps)
+            realPosition.in(Rotations),
+            hoodSim.getCurrentDrawAmps(),
+            hoodSim.getCurrentDrawAmps()
             );
     }
 
     public Current getSupplyCurrent(){
-        return Amps.of(hoodSim.getStatorCurrent().in(Amps));
+        return Amps.of(hoodSim.getCurrentDrawAmps());
+    }
+
+    public void setVoltage(double voltage){
+        this.voltage = Volts.of(voltage);
     }
 
     public void setPosition(double position){
+        hoodSim.setAngle(position*gearingRatio);
 
     }
 }
