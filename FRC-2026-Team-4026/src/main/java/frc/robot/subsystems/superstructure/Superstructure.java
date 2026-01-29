@@ -78,9 +78,11 @@ public class Superstructure extends SubsystemBase {
         return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getLeftMotorVoltage(), intake.getIntakeVoltage());
     }
 
-    // public double aim(){
+    public boolean isHoodAtTarget(){
+        return (hood.getPosition() < targetState.hoodAngle + SuperstructureConstants.HOOD_DEADBAND) && (hood.getPosition() > targetState.hoodAngle - SuperstructureConstants.HOOD_DEADBAND);
+    }
 
-    // }
+
 
     public Command intakeCommand(){
         return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulseLedsCommand(ledsConstants.GREEN, 5));

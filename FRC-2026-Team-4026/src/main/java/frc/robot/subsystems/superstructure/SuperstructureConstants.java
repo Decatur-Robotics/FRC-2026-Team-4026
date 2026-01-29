@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure;
 import frc.robot.util.SuperstructureState;
 
 public class SuperstructureConstants {
+    public static final double HOOD_DEADBAND = 0.0;
     public static final SuperstructureState STARTING_STATE = new SuperstructureState(
         0.0,    // shooterVelocity
         0.0,    // hoodAngle
@@ -35,7 +36,7 @@ public class SuperstructureConstants {
         -6.0     // intakeVoltage
     );
 
-    
+
 
     
 }
