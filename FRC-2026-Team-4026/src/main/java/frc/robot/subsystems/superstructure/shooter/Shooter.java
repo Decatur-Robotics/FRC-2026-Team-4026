@@ -21,6 +21,10 @@ public double getVelocity() {
     return inputs.data.leftVelocity();
 }
 
+public double getCurrent() {
+    return inputs.data.supplyCurrentLeft();
+}
+
 public Command setVelocityCommand(double velocity) {
     return Commands.run(() -> io.setVelocity(velocity));
 }
