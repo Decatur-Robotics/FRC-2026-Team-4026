@@ -1,6 +1,7 @@
 package frc.robot.subsystems.superstructure.indexer;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.NewtonMeters;
 import static edu.wpi.first.units.Units.Volts;
 
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
@@ -8,10 +9,12 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Torque;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.math.numbers.*;
+import edu.wpi.first.math.system.plant.DCMotor;
 
 public class IndexerIOSim implements IndexerIO {
     public final DCMotor leftGearbox;
@@ -42,5 +45,9 @@ public class IndexerIOSim implements IndexerIO {
     public Current getSupplyCurrent(){
         // same as previous comment, both sides should be approximately equal
         return Amps.of(rightGearbox.getCurrent(rightTorque));
+    }
+
+    public Torque getTorque(){
+        return NewtonMeters.of(leftTorque);
     }
 }
