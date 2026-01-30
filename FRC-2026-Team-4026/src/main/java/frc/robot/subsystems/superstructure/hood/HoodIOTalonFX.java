@@ -15,7 +15,6 @@ public class HoodIOTalonFX implements HoodIO{
     public TalonFX motor;
     public TalonFXConfiguration config ;
 
-
     private MotionMagicVoltage positionRequest;
     private VoltageOut voltageRequest;
 
@@ -26,6 +25,7 @@ public class HoodIOTalonFX implements HoodIO{
     
     public HoodIOTalonFX(){
         motor = new TalonFX(Ports.HOOD_MOTOR);
+
         config = new TalonFXConfiguration();
         config.Slot0 = new Slot0Configs()
         .withKP(HoodConstants.kP)
@@ -34,8 +34,7 @@ public class HoodIOTalonFX implements HoodIO{
         .withKS(HoodConstants.kS)
         .withKV(HoodConstants.kV)
         .withKA(HoodConstants.kA)
-        .withKP(HoodConstants.kP)
-        ;
+        .withKP(HoodConstants.kP);
 
         position = motor.getPosition();
         voltage = motor.getMotorVoltage();
