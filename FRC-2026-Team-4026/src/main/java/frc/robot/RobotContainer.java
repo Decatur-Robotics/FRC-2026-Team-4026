@@ -4,8 +4,10 @@
 
 package frc.robot;
 
-import frc.robot.constants.Constants.OperatorConstants;
 import frc.robot.core.LogitechControllerButtons;
+import frc.robot.subsystems.superstructure.hood.Hood;
+import frc.robot.subsystems.superstructure.hood.HoodIO;
+import frc.robot.subsystems.superstructure.hood.HoodIOSim;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -27,13 +29,17 @@ import frc.robot.constants.FieldConstants;
  */
 
 //test
+
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
 
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  private static RobotContainer instance;
+  private final Hood hood;
   public RobotContainer() {
+    hood = new Hood(new HoodIOSim());
     // Configure the trigger bindings
     configurePrimaryBindings();
     configureSecondaryBindings();
@@ -94,6 +100,7 @@ public class RobotContainer {
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
+
   }
 
   /**
@@ -104,5 +111,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
       return null;
+  }
+
+  public static RobotContainer getInstance(){
+    return instance;
   }
 }

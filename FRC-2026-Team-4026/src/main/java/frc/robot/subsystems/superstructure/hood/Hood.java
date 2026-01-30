@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Hood extends SubsystemBase {
-    private double voltage;
+    private double voltage = 0.0;
     private double position;
 
     private HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
@@ -22,8 +22,10 @@ public class Hood extends SubsystemBase {
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Hood", inputs);
+        Logger.recordOutput("Hood position", getPosition() );
+        Logger.recordOutput("Hood voltage", getVoltage() );
     }
-
+    // commands to run io setters outside of file ykyk
     public Command setPositionCommand(double position){
         return Commands.runOnce(()-> io.setPosition(position));
     }
@@ -39,8 +41,8 @@ public class Hood extends SubsystemBase {
     public double getVoltage(){
         return inputs.hoodData.voltage();
     }
-
-    public Command zerCommand(){
+    // zero voltage and position
+    public Command zeroCommand(){
         return Commands.sequence(
             Commands.runOnce(()-> {io.setVoltage(voltage);}),
             Commands.runOnce(()->{io.setPosition(position);})
