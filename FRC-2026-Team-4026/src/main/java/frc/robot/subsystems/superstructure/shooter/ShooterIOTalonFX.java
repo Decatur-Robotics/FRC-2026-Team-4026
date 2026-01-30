@@ -13,7 +13,7 @@ import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Ports;
+import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 
 public class ShooterIOTalonFX implements ShooterIO {

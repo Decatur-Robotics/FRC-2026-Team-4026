@@ -11,7 +11,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Ports;
+import frc.robot.constants.Ports;
 
 public class ClimberTalonFX implements ClimberIO {
 
