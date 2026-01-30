@@ -14,7 +14,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.math.numbers.*;
 
 public class IndexerIOSim implements IndexerIO {
-    //i know that something's probably missing here, so comment what it is if you know.
     public final DCMotor leftGearbox;
     public final DCMotor rightGearbox;
     double leftTorque = 0.0;
@@ -41,6 +40,7 @@ public class IndexerIOSim implements IndexerIO {
     }
 
     public Current getSupplyCurrent(){
+        // same as previous comment, both sides should be approximately equal
         return Amps.of(rightGearbox.getCurrent(rightTorque));
     }
 }
