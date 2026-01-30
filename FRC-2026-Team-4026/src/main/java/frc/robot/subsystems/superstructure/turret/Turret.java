@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure.turret;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,13 +9,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Turret extends SubsystemBase{
     private double turretPosition;
     private double turretVoltage;
-    private double turretCurrent;
 
     private TurretIO io;
-    
     private TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
+
     public Turret(TurretIO io) {
         this.io = io;
+        //this might be changed to be set in auto later
         turretPosition = TurretConstants.TURRET_STARTING_POSITION; 
     }
 
@@ -26,8 +25,8 @@ public class Turret extends SubsystemBase{
         Logger.processInputs("Turret", inputs);
         Logger.recordOutput("Turret Position", getPosition());
         Logger.recordOutput("Turret Voltage", getVoltage());
-        
     }
+
 
     public Command setPositionCommand(double position){
         return runOnce(() -> io.setPosition(position));
@@ -45,10 +44,12 @@ public class Turret extends SubsystemBase{
         return inputs.turretData.turretPositionDegrees();
     }
 
+
+    //This sets the turret to zeroed position
     public Command zeroCommand(){
         return Commands.sequence(
             Commands.runOnce(() -> {io.setVoltage(turretVoltage);}),
-            Commands.runOnce(() -> {io.setPosition(0.0);})
+            Commands.runOnce(() -> {io.setPosition(turretPosition);})
         );
     }
     

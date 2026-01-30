@@ -7,14 +7,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 
-import static frc.robot.util.PhoenixUtil.tryUntilOk;;
+import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 public class TurretIOTalonFX implements TurretIO {
     private final TalonFX turretMotor;
@@ -25,8 +24,8 @@ public class TurretIOTalonFX implements TurretIO {
     private MotionMagicVoltage positionRequest;
     public TurretIOTalonFX() {
         turretMotor = new TalonFX(Ports.TURRET_MOTOR_ID);
-        config = new TalonFXConfiguration();
 
+        config = new TalonFXConfiguration();
         config.Slot0 = new Slot0Configs().withKP(TurretConstants.kP)
         .withKI(TurretConstants.kI)
         .withKD(TurretConstants.kD)
@@ -43,11 +42,13 @@ public class TurretIOTalonFX implements TurretIO {
         
         tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, turretPosition, turretVoltage, turretSupplyCurrent));
         tryUntilOk(5, () -> turretMotor.optimizeBusUtilization());
-        PhoenixUtil.registerSignals(true, turretPosition, turretVoltage, turretSupplyCurrent);
+        //turret is not on canivore
+        PhoenixUtil.registerSignals(false, turretPosition, turretVoltage, turretSupplyCurrent);
     }
 
     @Override
     public void periodic(){
+        //makes sure CAN stuff is right if something like a brownout happens
         if(turretMotor.hasResetOccurred()){
             turretMotor.optimizeBusUtilization();
             turretMotor.getPosition().setUpdateFrequency(40);
@@ -55,6 +56,7 @@ public class TurretIOTalonFX implements TurretIO {
         
     }
     
+    //sets the IO data in accordance to its current readings
     @Override
     public void updateInputs(TurretIOInputs inputs) {
         inputs.turretData = new TurretIOData(
@@ -70,6 +72,7 @@ public class TurretIOTalonFX implements TurretIO {
         turretMotor.setVoltage(voltage);
     }
 
+    //stops the motor(who could've guessed)
     @Override
     public void stop(){
         turretMotor.stopMotor();

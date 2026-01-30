@@ -5,12 +5,12 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 public class Hood extends SubsystemBase {
     private double voltage = 0.0;
     private double position;
 
     private HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
-    private HoodIOTalonFX motor;
     private HoodIO io;
 
     public Hood (HoodIO io){
@@ -33,7 +33,7 @@ public class Hood extends SubsystemBase {
     public Command setVoltageCommand(double voltage){
         return Commands.runOnce(()-> io.setVoltage(voltage));
     }
-
+    
     public double getPosition(){
        return inputs.hoodData.position();
     }
@@ -47,6 +47,5 @@ public class Hood extends SubsystemBase {
             Commands.runOnce(()-> {io.setVoltage(voltage);}),
             Commands.runOnce(()->{io.setPosition(position);})
         );
-
     }
 }

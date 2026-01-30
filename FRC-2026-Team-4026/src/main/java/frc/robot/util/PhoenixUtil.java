@@ -10,8 +10,10 @@ package frc.robot.util;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
@@ -26,6 +28,10 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
+
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
+import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 
 public class PhoenixUtil {
   /** Attempts to run the command until no error is produced. */
@@ -66,8 +72,83 @@ public class PhoenixUtil {
     }
   }
 
+ public static class TalonFXMotorControllerSim implements SimulatedMotorController {
+        private static int instances = 0;
+        public final int id;
 
-public static SwerveModuleConstants regulateModuleConstantForSimulation(
+        private final TalonFXSimState talonFXSimState;
+
+        public TalonFXMotorControllerSim(TalonFX talonFX) {
+            this.id = instances++;
+
+            this.talonFXSimState = talonFX.getSimState();
+        }
+
+        @Override
+        public Voltage updateControlSignal(
+                Angle mechanismAngle,
+                AngularVelocity mechanismVelocity,
+                Angle encoderAngle,
+                AngularVelocity encoderVelocity) {
+            talonFXSimState.setRawRotorPosition(encoderAngle);
+            talonFXSimState.setRotorVelocity(encoderVelocity);
+            talonFXSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage());
+            return talonFXSimState.getMotorVoltageMeasure();
+        }
+    }
+
+    public static class TalonFXMotorControllerWithRemoteCancoderSim extends TalonFXMotorControllerSim {
+        private final CANcoderSimState remoteCancoderSimState;
+
+        public TalonFXMotorControllerWithRemoteCancoderSim(TalonFX talonFX, CANcoder cancoder) {
+            super(talonFX);
+            this.remoteCancoderSimState = cancoder.getSimState();
+        }
+
+        @Override
+        public Voltage updateControlSignal(
+                Angle mechanismAngle,
+                AngularVelocity mechanismVelocity,
+                Angle encoderAngle,
+                AngularVelocity encoderVelocity) {
+            remoteCancoderSimState.setRawPosition(mechanismAngle);
+            remoteCancoderSimState.setVelocity(mechanismVelocity);
+
+            return super.updateControlSignal(mechanismAngle, mechanismVelocity, encoderAngle, encoderVelocity);
+        }
+    }
+
+    public static double[] getSimulationOdometryTimeStamps() {
+        final double[] odometryTimeStamps = new double[SimulatedArena.getSimulationSubTicksIn1Period()];
+        for (int i = 0; i < odometryTimeStamps.length; i++) {
+            odometryTimeStamps[i] = Timer.getFPGATimestamp()
+                    - 0.02
+                    + i * SimulatedArena.getSimulationDt().in(Seconds);
+        }
+
+        return odometryTimeStamps;
+    }
+
+    /**
+     *
+     *
+     * <h2>Regulates the {@link SwerveModuleConstants} for a single module.</h2>
+     *
+     * <p>This method applies specific adjustments to the {@link SwerveModuleConstants} for simulation purposes. These
+     * changes have no effect on real robot operations and address known simulation bugs:
+     *
+     * <ul>
+     *   <li><strong>Inverted Drive Motors:</strong> Prevents drive PID issues caused by inverted configurations.
+     *   <li><strong>Non-zero CanCoder Offsets:</strong> Fixes potential module state optimization issues.
+     *   <li><strong>Steer Motor PID:</strong> Adjusts PID values tuned for real robots to improve simulation
+     *       performance.
+     * </ul>
+     *
+     * <h4>Note:This function is skipped when running on a real robot, ensuring no impact on constants used on real
+     * robot hardware.</h4>
+     */
+    
+    public static SwerveModuleConstants regulateModuleConstantForSimulation(
             SwerveModuleConstants<?, ?, ?> moduleConstants) {
         // Skip regulation if running on a real robot
         if (RobotBase.isReal()) return moduleConstants;
@@ -97,4 +178,6 @@ public static SwerveModuleConstants regulateModuleConstantForSimulation(
                 // Adjust steer inertia
                 .withSteerInertia(KilogramSquareMeters.of(0.05));
     }
-}
+
+  }
+
