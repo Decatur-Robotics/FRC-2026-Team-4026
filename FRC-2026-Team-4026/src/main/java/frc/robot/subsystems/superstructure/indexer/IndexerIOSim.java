@@ -1,9 +1,16 @@
 package frc.robot.subsystems.superstructure.indexer;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Volts;
+
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
+
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.math.numbers.*;
 
 public class IndexerIOSim implements IndexerIO {
@@ -18,14 +25,22 @@ public class IndexerIOSim implements IndexerIO {
     public IndexerIOSim() {
        rightGearbox = DCMotor.getKrakenX44(1).withReduction(0);
        leftGearbox = DCMotor.getKrakenX44(1).withReduction(0);
+       SimulatedBattery.addElectricalAppliances(this::getSupplyCurrent);
     }
 
     @Override
     public void updateInputs(IndexerIOInputs inputs) {
-       inputs.indexerData = new IndexerIOData(true, true, rightGearbox.getVoltage(rightTorque, rightRadians), leftGearbox.getVoltage(leftTorque, leftRadians), leftGearbox.getCurrent(leftTorque), rightGearbox.getCurrent(rightTorque));
+        //right and left gearbox will be the same voltage approximately
+        Voltage simVoltage = Volts.of(rightGearbox.getVoltage(rightTorque, rightRadians)); 
+        simVoltage = SimulatedBattery.clamp(simVoltage);
+        inputs.indexerData = new IndexerIOData(true, true, rightGearbox.getVoltage(rightTorque, rightRadians), leftGearbox.getVoltage(leftTorque, leftRadians), leftGearbox.getCurrent(leftTorque), rightGearbox.getCurrent(rightTorque));
     }
 
     public void runOpenLoop(double voltage){
         closedLoop = false;
+    }
+
+    public Current getSupplyCurrent(){
+        return Amps.of(rightGearbox.getCurrent(rightTorque));
     }
 }
