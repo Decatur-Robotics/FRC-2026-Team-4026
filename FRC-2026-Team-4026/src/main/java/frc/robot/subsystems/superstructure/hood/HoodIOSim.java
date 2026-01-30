@@ -30,13 +30,11 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 public class HoodIOSim implements HoodIO {
 
     private final DCMotorSim hoodSim;
-    private final SimulatedMotorController.GenericMotorController hoodMotorController;
     private final double gearingRatio = 30;
     private Voltage voltage;
 
     public HoodIOSim(){
         this.hoodSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(0.001, 0.001),DCMotor.getMinion(1));
-        this.hoodMotorController = new SimulatedMotorController.GenericMotorController(DCMotor.getMinion(1));
         SimulatedBattery.addElectricalAppliances(this::getSupplyCurrent);
         hoodSim.update(0);
 
@@ -49,8 +47,7 @@ public class HoodIOSim implements HoodIO {
     public void updateInputs(HoodIOInputs inputs){      
     
         Angle realPosition = Rotations.of(hoodSim.getAngularPosition().magnitude()/gearingRatio);
-        AngularVelocity realVelocity = RadiansPerSecond.of(hoodSim.getAngularVelocityRadPerSec()/gearingRatio);
-        Voltage realVoltage =  hoodMotorController.constrainOutputVoltage(realPosition, realVelocity, voltage);
+        Voltage realVoltage =  Volts.of(hoodSim.getInputVoltage());
         realVoltage = SimulatedBattery.clamp(realVoltage);
         inputs.hoodData = new HoodIOData(
             true,
