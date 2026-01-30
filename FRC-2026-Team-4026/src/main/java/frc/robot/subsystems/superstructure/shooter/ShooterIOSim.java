@@ -1,0 +1,48 @@
+package frc.robot.subsystems.superstructure.shooter;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.subsystems.superstructure.shooter.ShooterIO.ShooterIOData;
+import frc.robot.subsystems.superstructure.shooter.ShooterIO.ShooterIOInputs;
+
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Volts;
+
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
+import org.ironmaple.simulation.motorsims.SimulatedMotorController;
+
+public class ShooterIOSim {
+    private final LinearSystem<N1, N1, N1> flywheelSystem = LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(2), 0, 10);
+
+    private FlywheelSim shooterSim; 
+    private final SimulatedMotorController.GenericMotorController motorLeft, motorRight;
+
+    private final PIDController controller = new PIDController (0,0,0);
+    
+    public ShooterIOSim(
+    ) {
+        motorLeft = new SimulatedMotorController.GenericMotorController(DCMotor.getKrakenX60(1));
+        motorRight = new SimulatedMotorController.GenericMotorController(DCMotor.getKrakenX60(1));
+        shooterSim = new FlywheelSim(flywheelSystem, DCMotor.getKrakenX60(2),0.02);
+
+        SimulatedBattery.addElectricalAppliances(this::getSupplyCurrent);
+        shooterSim.update(0.02);
+
+       }
+    public Current getSupplyCurrent () {
+        return Amps.of(shooterSim.getCurrentDrawAmps());
+    }
+    public void updateInputs(ShooterIOInputs inputs) {
+
+
+        inputs.data = new ShooterIOData (true,true,motorLeft.getAppliedVoltage().in(Volts), motorRight.getAppliedVoltage().in(Volts), shooterSim.getAngularVelocityRPM(), shooterSim.getAngularVelocityRPM(), getSupplyCurrent().in(Amps), getSupplyCurrent().in(Amps));
+    
+}
+      
+
+}
