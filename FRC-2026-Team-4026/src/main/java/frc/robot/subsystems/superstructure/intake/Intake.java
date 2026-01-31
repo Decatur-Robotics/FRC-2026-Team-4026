@@ -7,13 +7,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Intake {
 
-
     private IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+
     public Intake(IntakeIO io){
         this.io = io;
-
-        
     }
 
     public void periodic(){
@@ -29,14 +27,13 @@ public class Intake {
     public double getDeployPosition(){
 
         return inputs.intakeData.deployPosition();
-
     }
+
     public double getDeployVoltage(){
 
         return inputs.intakeData.deployVoltage();
     }
     public double getIntakeVoltage(){
-
         return inputs.intakeData.intakeVoltage();
     }
     public double getDeployCurrent(){
@@ -49,12 +46,10 @@ public class Intake {
     }
 
     public Command deployIntakeCommand(double position){
-
         return Commands.runOnce(() -> io.setDeployPosition(position));
-
     }
-    public Command retractIntakeCommand(double position){
 
+    public Command retractIntakeCommand(double position){
         return Commands.runOnce(() -> io.setDeployPosition(position));
     }
     public Command runIntakeCommand(double voltage){

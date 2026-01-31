@@ -18,22 +18,15 @@ public interface TurretIO {
         double turretPositionDegrees,
         double turretVoltage,
         double turretCurrentAmps
-    ) {
-    }
+    ){}
 
-    default void updateInputs(TurretIOInputs inputs) {
-    }
+    default void updateInputs(TurretIOInputs inputs){}
 
-    default void periodic() {
-    }
+    default void periodic(){}
     
-    default void setPosition(double turretPosition) {
-    }
+    default void setPosition(double turretPosition){}
 
-    default void stop(){
-        
-    }
+    default void stop(){}
 
-    default void setVoltage(double turretVoltage) {
-    }
+    default void setVoltage(double turretVoltage){}
 }

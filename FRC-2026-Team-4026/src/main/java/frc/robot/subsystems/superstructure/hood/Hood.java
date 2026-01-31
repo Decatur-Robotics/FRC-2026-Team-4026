@@ -5,14 +5,12 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.superstructure.hood.HoodIO.HoodIOInputs;
-import org.littletonrobotics.junction.AutoLog;
+
 public class Hood extends SubsystemBase {
-    private double voltage;
+    private double voltage = 0.0;
     private double position;
 
     private HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
-    private HoodIOTalonFX motor;
     private HoodIO io;
 
     public Hood (HoodIO io){
@@ -24,8 +22,10 @@ public class Hood extends SubsystemBase {
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Hood", inputs);
+        Logger.recordOutput("Hood position", getPosition() );
+        Logger.recordOutput("Hood voltage", getVoltage() );
     }
-
+    // commands to run io setters outside of file ykyk
     public Command setPositionCommand(double position){
         return Commands.runOnce(()-> io.setPosition(position));
     }
@@ -33,6 +33,7 @@ public class Hood extends SubsystemBase {
     public Command setVoltageCommand(double voltage){
         return Commands.runOnce(()-> io.setVoltage(voltage));
     }
+    
     public double getPosition(){
        return inputs.hoodData.position();
     }
@@ -40,12 +41,11 @@ public class Hood extends SubsystemBase {
     public double getVoltage(){
         return inputs.hoodData.voltage();
     }
-
-    public Command zerCommand(){
+    // zero voltage and position
+    public Command zeroCommand(){
         return Commands.sequence(
             Commands.runOnce(()-> {io.setVoltage(voltage);}),
             Commands.runOnce(()->{io.setPosition(position);})
         );
-
     }
 }
