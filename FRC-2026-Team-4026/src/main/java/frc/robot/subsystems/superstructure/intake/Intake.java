@@ -22,16 +22,17 @@ public class Intake {
         Logger.recordOutput("Deploy Position", getDeployPosition());
         Logger.recordOutput("Deploy Voltage", getDeployVoltage());
         Logger.recordOutput("Intake Voltage", getIntakeVoltage());
-
         Logger.recordOutput("Deploy Current", getDeployCurrent());
         Logger.recordOutput("Intake Current", getIntakeCurrent());
     }
 
     public double getDeployPosition(){
+
         return inputs.intakeData.deployPosition();
 
     }
     public double getDeployVoltage(){
+
         return inputs.intakeData.deployVoltage();
     }
     public double getIntakeVoltage(){
@@ -39,6 +40,7 @@ public class Intake {
         return inputs.intakeData.intakeVoltage();
     }
     public double getDeployCurrent(){
+
         return inputs.intakeData.deployCurrent();
 
     }
@@ -57,19 +59,14 @@ public class Intake {
     }
     public Command runIntakeCommand(double voltage){
 
-
         return Commands.startEnd(()-> io.setIntakeVoltage(voltage), () -> io.stopIntake());
         
-        
     }
-    public Command zeroCommand(double position, double voltage){
+    public Command zeroCommand(double position){
+
         return Commands.runOnce(() -> {io.setIntakeVoltage(0); io.setDeployPosition(position);});
 
     }
 
-
-
-    
-    
 }
 
