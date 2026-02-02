@@ -58,8 +58,9 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.vision.Vision;
 
-public class Drive extends SubsystemBase
+public class Drive extends SubsystemBase implements Vision.VisionConsumer
 // implements Vision.VisionConsumer 
 {
     // TunerConstants doesn't include these constants, so they are declared locally
@@ -330,11 +331,10 @@ public class Drive extends SubsystemBase
     }
 
     /** Returns the current odometry pose. */
-    @AutoLogOutput(key = "Odometry/Robot")
-    public Pose2d getPose() {
-        return poseEstimator.getEstimatedPosition();
-    }
-
+      @AutoLogOutput(key = "Odometry/Robot")
+  public Pose2d getPose() {
+    return new Pose2d(poseEstimator.getEstimatedPosition().getMeasureX(), poseEstimator.getEstimatedPosition().getMeasureY(), poseEstimator.getEstimatedPosition().getRotation());
+  }
     /** Returns the current odometry rotation. */
     public Rotation2d getRotation() {
         return getPose().getRotation();
@@ -347,10 +347,10 @@ public class Drive extends SubsystemBase
     }
 
     /** Adds a new timestamped vision measurement. */
-    // @Override
-    // public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-    //     poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-    // }
+    @Override
+    public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
+        poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
 
     /** Returns the maximum linear speed in meters per sec. */
     public double getMaxLinearSpeedMetersPerSec() {
