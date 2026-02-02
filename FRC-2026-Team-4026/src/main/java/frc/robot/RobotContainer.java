@@ -52,6 +52,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -233,19 +234,5 @@ driveSimulation = null;
     return instance;
   }
 
-  public void shootFuel(){
 
-    RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
-      new Translation2d(drive.getPose().getX(),drive.getPose().getY()),
-      new Translation2d(0,0),
-      drive.getChassisSpeeds(),
-      drive.getRotation(),
-      Meters.of(0.2),
-      MetersPerSecond.of(2),
-      Radians.of(hood.getPosition())
-    );
-
-    fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();
-    SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
-  }
 }
