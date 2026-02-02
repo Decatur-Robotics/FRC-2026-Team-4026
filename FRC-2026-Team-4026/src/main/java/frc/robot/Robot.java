@@ -118,5 +118,7 @@ Logger.start();
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    m_robotContainer.updateSimulation();
+  }
 }
