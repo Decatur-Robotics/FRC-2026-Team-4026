@@ -29,8 +29,15 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOSim;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 import frc.robot.subsystems.superstructure.hood.Hood;
@@ -46,6 +53,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,7 +80,7 @@ public class RobotContainer {
   // private final Superstructure superstructure;
   // private final Indexer indexer;
   // private final Intake intake;
-  // private final Shooter shooter;
+  private final Shooter shooter;
   // private final Hood hood;
   // private final RobotState robotState = new RobotState();
   // private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
@@ -83,8 +91,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private final Hood hood;
+
+
+
   public RobotContainer() {
     hood = new Hood(new HoodIOSim());
+    shooter = new Shooter(new ShooterIOTalonFX());
     // Configure the trigger bindings
 
 
@@ -219,5 +231,21 @@ driveSimulation = null;
 
   public static RobotContainer getInstance(){
     return instance;
+  }
+
+  public void shootFuel(){
+
+    RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
+      new Translation2d(drive.getPose().getX(),drive.getPose().getY()),
+      new Translation2d(0,0),
+      drive.getChassisSpeeds(),
+      drive.getRotation(),
+      Meters.of(0.2),
+      MetersPerSecond.of(2),
+      Radians.of(hood.getPosition())
+    );
+
+    fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();
+    SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
   }
 }
