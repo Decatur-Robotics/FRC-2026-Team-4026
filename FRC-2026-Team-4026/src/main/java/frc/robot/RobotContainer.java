@@ -5,6 +5,13 @@
 package frc.robot;
 
 import frc.robot.core.LogitechControllerButtons;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveCommands;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.hood.HoodIO;
 import frc.robot.subsystems.superstructure.hood.HoodIOSim;
@@ -34,11 +41,20 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
 
-  
+  private final Drive drive;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private final Hood hood;
   public RobotContainer() {
+      drive = new Drive(
+      new GyroIOPigeon2(),
+      new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+      new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+      new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+      new ModuleIOTalonFXReal(TunerConstants.BackRight),
+      (pose) -> {});
+
+      
     hood = new Hood(new HoodIOSim());
     // Configure the trigger bindings
     configurePrimaryBindings();
@@ -73,9 +89,16 @@ public class RobotContainer {
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
+        drive.setDefaultCommand(
+      DriveCommands.joystickDrive(
+        drive,
+        ()-> joystick.getY(),
+        ()-> joystick.getX(),
+        ()-> joystick.getTwist()
+    ));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
+    
   }
 
   private void configureSecondaryBindings() {
