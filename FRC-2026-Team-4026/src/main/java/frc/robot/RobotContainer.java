@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.constants.Constants.OperatorConstants;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -33,6 +32,12 @@ import frc.robot.subsystems.vision.VisionIOSim;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.AutoLogOutput;
+
+import frc.robot.subsystems.superstructure.hood.Hood;
+import frc.robot.subsystems.superstructure.hood.HoodIO;
+import frc.robot.subsystems.superstructure.hood.HoodIOSim;
+
+
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -61,6 +66,7 @@ import frc.robot.constants.FieldConstants;
  */
 
 //test
+
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   // private final Superstructure superstructure;
@@ -75,7 +81,10 @@ public class RobotContainer {
   private final SwerveDriveSimulation driveSimulation;
   private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  private static RobotContainer instance;
+  private final Hood hood;
   public RobotContainer() {
+    hood = new Hood(new HoodIOSim());
     // Configure the trigger bindings
 
 
@@ -168,6 +177,7 @@ driveSimulation = null;
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
+
   }
 
   /**
@@ -205,5 +215,9 @@ driveSimulation = null;
     SimulatedArena.getInstance().simulationPeriodic();
     Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
     Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
+  }
+
+  public static RobotContainer getInstance(){
+    return instance;
   }
 }
