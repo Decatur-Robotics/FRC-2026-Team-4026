@@ -35,18 +35,23 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -105,7 +110,7 @@ driveSimulation = null;
                                       new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT, driveSimulation::getSimulatedDriveTrainPose));
                 
      }
-
+     resetSimulationField();
          configurePrimaryBindings();
     configureSecondaryBindings();
   }
@@ -138,7 +143,6 @@ driveSimulation = null;
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
   }
@@ -162,7 +166,6 @@ driveSimulation = null;
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
   }
@@ -174,7 +177,14 @@ driveSimulation = null;
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-      return new PathPlannerAuto("Drive auto");
+      return new PathPlannerAuto("Normal Auto drive");
+  }
+
+  public Command pathfinderToPose(Pose2d targetPose) {
+    PathConstraints constraints = new PathConstraints(4.69, 3.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+    Command pathfinderCommand = AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
+    return pathfinderCommand;
   }
 
   // public Superstructure getSuperStructure() {
