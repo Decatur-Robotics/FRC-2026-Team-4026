@@ -8,7 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Ports;
+import frc.robot.constants.Ports;
 
 public class IndexerIOTalonFX implements IndexerIO{
     private TalonFX leftMotor, rightMotor;

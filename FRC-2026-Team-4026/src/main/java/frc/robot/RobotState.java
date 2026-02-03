@@ -26,20 +26,6 @@ public class RobotState {
     private Double speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
     
 public RobotState(){
-    if(Mode.SIM == Constants.currentMode){
-        driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d());
-        drive = new Drive(
-                        new GyroIOSim(driveSimulation.getGyroSimulation()),
-                        new ModuleIOTalonFXSim(
-                                TunerConstants.FrontLeft, driveSimulation.getModules()[0]),
-                        new ModuleIOTalonFXSim(
-                                TunerConstants.FrontRight, driveSimulation.getModules()[1]),
-                        new ModuleIOTalonFXSim(
-                                TunerConstants.BackLeft, driveSimulation.getModules()[2]),
-                        new ModuleIOTalonFXSim(
-                                TunerConstants.BackRight, driveSimulation.getModules()[3]),
-                        driveSimulation::setSimulationWorldPose);
-    }
     targetAims.put(0.0, 0.0);
     targetVelocities.put(0.0, 20.0);
 }
