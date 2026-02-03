@@ -20,7 +20,9 @@ public interface IndexerIO {
         Double rightMotorVoltage,
         Double leftMotorVoltage,
         Double leftCurrent,
-        Double rightCurrent
+        Double rightCurrent,
+        Double leftVelocity,
+        Double rightVelocity
     ){}
 
     default void updateInputs(IndexerIOInputs inputs){}
@@ -30,4 +32,5 @@ public interface IndexerIO {
     default void periodic(){}
 
     default void stop(){}
+    
 }        
