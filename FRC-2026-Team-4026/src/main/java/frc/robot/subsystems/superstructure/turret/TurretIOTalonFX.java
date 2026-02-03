@@ -63,7 +63,8 @@ public class TurretIOTalonFX implements TurretIO {
             turretMotor.isConnected(),
             turretPosition.getValueAsDouble(),
             turretVoltage.getValueAsDouble(),
-            turretSupplyCurrent.getValueAsDouble()
+            turretSupplyCurrent.getValueAsDouble(),
+            turretMotor.getDeviceTemp().getValueAsDouble()
         );
     }
 

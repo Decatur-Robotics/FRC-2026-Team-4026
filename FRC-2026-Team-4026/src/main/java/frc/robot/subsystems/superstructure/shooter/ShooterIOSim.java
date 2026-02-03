@@ -40,7 +40,7 @@ public class ShooterIOSim {
     public void updateInputs(ShooterIOInputs inputs) {
 
 
-        inputs.data = new ShooterIOData (true,true,motorLeft.getAppliedVoltage().in(Volts), motorRight.getAppliedVoltage().in(Volts), shooterSim.getAngularVelocityRPM(), shooterSim.getAngularVelocityRPM(), getSupplyCurrent().in(Amps), getSupplyCurrent().in(Amps));
+        inputs.data = new ShooterIOData (true,true,motorLeft.getAppliedVoltage().in(Volts), motorRight.getAppliedVoltage().in(Volts), shooterSim.getAngularVelocityRPM(), shooterSim.getAngularVelocityRPM(), getSupplyCurrent().in(Amps), getSupplyCurrent().in(Amps),0.0,0.0);
     
 }
       
