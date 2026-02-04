@@ -84,24 +84,26 @@ public class RobotContainer {
   private static RobotContainer instance;
   private final Hood hood;
   public RobotContainer() {
-    hood = new Hood(new HoodIOSim());
+
     // Configure the trigger bindings
 
 
      if(Constants.currentMode != Constants.Mode.SIM) {
-driveSimulation = null;
-       this.drive = new Drive(
-                        new GyroIOPigeon2(),
+      hood = new Hood( new HoodIOTalonFX());
+      driveSimulation = null;
+      this.drive = new Drive(
+        new GyroIOPigeon2(),
                         new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
                         new ModuleIOTalonFXReal(TunerConstants.FrontRight),
                         new ModuleIOTalonFXReal(TunerConstants.BackLeft),
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
-            vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
+      vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
                             new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
     
     }
  else {
+      hood = new Hood(new HoodIOSim());
              driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
                 drive = new Drive(
@@ -215,9 +217,5 @@ driveSimulation = null;
     SimulatedArena.getInstance().simulationPeriodic();
     Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
     Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
-  }
-
-  public static RobotContainer getInstance(){
-    return instance;
   }
 }
