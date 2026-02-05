@@ -87,8 +87,6 @@ public class RobotContainer {
   // private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
   
   private final Drive drive;
-  private final SwerveDriveSimulation driveSimulation;
-  private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private final Hood hood;
@@ -96,25 +94,36 @@ public class RobotContainer {
 
 
   public RobotContainer() {
+      drive = new Drive(
+      new GyroIOPigeon2(),
+      new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+      new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+      new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+      new ModuleIOTalonFXReal(TunerConstants.BackRight),
+      (pose) -> {});
+
+      
     hood = new Hood(new HoodIOSim());
     shooter = new Shooter(new ShooterIOTalonFX());
     // Configure the trigger bindings
 
 
      if(Constants.currentMode != Constants.Mode.SIM) {
-driveSimulation = null;
-       this.drive = new Drive(
-                        new GyroIOPigeon2(),
+      hood = new Hood( new HoodIOTalonFX());
+      driveSimulation = null;
+      this.drive = new Drive(
+        new GyroIOPigeon2(),
                         new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
                         new ModuleIOTalonFXReal(TunerConstants.FrontRight),
                         new ModuleIOTalonFXReal(TunerConstants.BackLeft),
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
-            vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
+      vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
                             new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
     
     }
  else {
+      hood = new Hood(new HoodIOSim());
              driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
                 drive = new Drive(
@@ -165,8 +174,16 @@ driveSimulation = null;
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+        drive.setDefaultCommand(
+      DriveCommands.joystickDrive(
+        drive,
+        ()-> joystick.getY(),
+        ()-> joystick.getX(),
+        ()-> joystick.getTwist()
+    ));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
+    
   }
 
   private void configureSecondaryBindings() {

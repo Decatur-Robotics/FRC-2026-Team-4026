@@ -60,7 +60,8 @@ public class HoodIOTalonFX implements HoodIO{
             position.getValueAsDouble(),
             voltage.getValueAsDouble(),
             supplyAmps.getValueAsDouble(),
-            torqueCurrent.getValueAsDouble()
+            torqueCurrent.getValueAsDouble(),
+            motor.getDeviceTemp().getValueAsDouble()
             );
     }
 
