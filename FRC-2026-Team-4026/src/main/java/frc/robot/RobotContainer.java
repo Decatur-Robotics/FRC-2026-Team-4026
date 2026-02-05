@@ -23,6 +23,7 @@ import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIO;
+import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -65,7 +66,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
-
+import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -96,23 +97,26 @@ public class RobotContainer {
 
 
   public RobotContainer() {
-    hood = new Hood(new HoodIOSim());
-    shooter = new Shooter(new ShooterIOTalonFX());
+
+
     // Configure the trigger bindings
 
 
      if(Constants.currentMode != Constants.Mode.SIM) {
-driveSimulation = null;
-       this.drive = new Drive(
-                        new GyroIOPigeon2(),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
-                        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                        (pose) -> {});
-            vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
-                            new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
-    
+      driveSimulation = null;
+      this.drive = new Drive(
+        new GyroIOPigeon2(),
+        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+        new ModuleIOTalonFXReal(TunerConstants.BackRight),
+        (pose) -> {});
+      vision = 
+        new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
+        new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+        hood = new Hood(new HoodIOTalonFX());
+        shooter = new Shooter(new ShooterIOTalonFX());
+
     }
  else {
              driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
@@ -130,7 +134,8 @@ driveSimulation = null;
                         driveSimulation::setSimulationWorldPose);
               vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT, driveSimulation::getSimulatedDriveTrainPose),
                                       new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT, driveSimulation::getSimulatedDriveTrainPose));
-                
+              hood = new Hood(new HoodIOSim());
+              shooter = new Shooter(new ShooterIOSim());
      }
      resetSimulationField();
          configurePrimaryBindings();

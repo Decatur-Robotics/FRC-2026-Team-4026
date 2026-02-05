@@ -1,3 +1,4 @@
+
 package frc.robot.subsystems.superstructure.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -77,7 +78,18 @@ public void periodic () {
 
 @Override
 public void updateInputs (ShooterIOInputs inputs){
-    inputs.data = new ShooterIOData (motorLeft.isConnected(),motorRight.isConnected(), motorLeft.getSupplyVoltage().getValueAsDouble(), motorRight.getSupplyVoltage().getValueAsDouble(), motorLeft.getVelocity().getValueAsDouble(), motorRight.getVelocity().getValueAsDouble(), motorLeft.getSupplyCurrent().getValueAsDouble(), motorRight.getSupplyCurrent().getValueAsDouble());
+    inputs.data = new ShooterIOData (
+        motorLeft.isConnected(),
+        motorRight.isConnected(),
+        motorLeft.getSupplyVoltage().getValueAsDouble(),
+        motorRight.getSupplyVoltage().getValueAsDouble(),
+        motorLeft.getVelocity().getValueAsDouble(),
+        motorRight.getVelocity().getValueAsDouble(),
+        motorLeft.getSupplyCurrent().getValueAsDouble(),
+        motorRight.getSupplyCurrent().getValueAsDouble(),
+        motorLeft.getDeviceTemp().getValueAsDouble(),
+        motorRight.getDeviceTemp().getValueAsDouble()
+        );
 }
 
 }
