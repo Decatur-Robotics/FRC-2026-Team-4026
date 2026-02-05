@@ -47,8 +47,7 @@ public class IntakeIOSim implements IntakeIO{
             (IntakeConstants.DEPLOY_MIN_ANGLE*3.14)/180, 
             (IntakeConstants.DEPLOY_MAX_ANGLE*3.14)/180,
             true, 
-            (IntakeConstants.STORED_INTAKE_POSITION*3.14)/180, 
-            null);
+            (IntakeConstants.STORED_INTAKE_POSITION*3.14)/180);
     
             this.intakeSimulation = IntakeSimulation.OverTheBumperIntake("Fuel", 
             drivetrain,
@@ -82,7 +81,7 @@ public class IntakeIOSim implements IntakeIO{
             intakeSimulation.startIntake();
         }
         else
-
+        {
             controller.setGoal(position);
             double pidOutput = controller.calculate(encoderSim.getDistance(),
             Units.degreesToRadians(IntakeConstants.STORED_INTAKE_POSITION));
@@ -90,10 +89,10 @@ public class IntakeIOSim implements IntakeIO{
 
             intakeSimulation.stopIntake();
         }
+    }
     @Override
-    //make these motors
     public void updateInputs(IntakeIOInputs inputs){
-        inputs.intakeData = new IntakeIO.IntakeIOData(
+        inputs.intakeData = new IntakeIOData(
         true,
         true,
         intakeSim.getInputVoltage(),

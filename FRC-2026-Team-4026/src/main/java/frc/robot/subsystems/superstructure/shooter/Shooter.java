@@ -1,5 +1,8 @@
 package frc.robot.subsystems.superstructure.shooter;
 import edu.wpi.first.wpilibj2.command.Commands;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -36,5 +39,6 @@ public Command setVoltageCommand(double voltage) {
 @Override
 public void periodic () {
     io.updateInputs(inputs);
+    Logger.processInputs("Shooter", inputs);
 }
 }

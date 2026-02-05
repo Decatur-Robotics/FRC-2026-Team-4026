@@ -8,19 +8,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Indexer extends SubsystemBase{
     private IndexerIO io;
     private boolean isEStopped = false;
-    private final String inputsName;
     private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
     public Indexer(IndexerIO io) {
-        this.inputsName = this.getClass().getSimpleName() + "Inputs";
         this.io = io;
     }
     @Override
     public void periodic(){
         io.updateInputs(inputs);
-        Logger.processInputs(inputsName, inputs);
-        Logger.recordOutput("Left and Right Current:", getLeftCurrent()+", "+getRightCurrent());
-        Logger.recordOutput("Left and Right Voltage:", getLeftMotorVoltage()+", "+getRightMotorVoltage());
+        Logger.processInputs("Indexer", inputs);
+        Logger.recordOutput("Left and Right Indexer Current:", getLeftCurrent()+", "+getRightCurrent());
+        Logger.recordOutput("Left and Right Indexer Voltage:", getLeftMotorVoltage()+", "+getRightMotorVoltage());
         if (isEStopped){
             io.stop();
         }

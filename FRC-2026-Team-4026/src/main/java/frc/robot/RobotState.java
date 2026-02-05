@@ -18,14 +18,19 @@ import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 
 public class RobotState {
     private Drive drive;
-    private Pose2d robotPose = drive.getPose();
-    private InterpolatingDoubleTreeMap targetAims = new InterpolatingDoubleTreeMap();
-    private InterpolatingDoubleTreeMap targetVelocities = new InterpolatingDoubleTreeMap();
-    private Double robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
-    private SwerveDriveSimulation driveSimulation;
-    private Double speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
+    private Pose2d robotPose;
+    private InterpolatingDoubleTreeMap targetAims;
+    private InterpolatingDoubleTreeMap targetVelocities;
+    private Double robotDistance;
+    private Double speedOffset;
     
-public RobotState(){
+public RobotState(Drive drive){
+    this.drive = drive;
+    robotPose = drive.getPose();
+    targetAims = new InterpolatingDoubleTreeMap();
+    targetVelocities = new InterpolatingDoubleTreeMap();
+    robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
+    speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
     targetAims.put(0.0, 0.0);
     targetVelocities.put(0.0, 20.0);
 }

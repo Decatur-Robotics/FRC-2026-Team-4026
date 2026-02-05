@@ -26,6 +26,8 @@ public class Superstructure extends SubsystemBase {
 
   //private double turretRotation = Math.atan((robotPose.getY() - FieldConstants.HUB_POSE_BLUE.getY())/(robotPose.getX() - FieldConstants.HUB_POSE_BLUE.getX()));
 
+    private boolean isSimulation = Robot.isSimulation();
+
     private SuperstructureState targetState;
 
     private double shooterVelocity;
@@ -52,7 +54,7 @@ public class Superstructure extends SubsystemBase {
 
         this.targetState = SuperstructureConstants.STARTING_STATE;
 
-        setDefaultCommand(storeCommand());
+        // setDefaultCommand(storeCommand());
 
     }
 
@@ -104,11 +106,14 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE), leds.pulseLedsCommand(ledsConstants.RED, 5));
     }
 
-    public Command shootCommand(double shooterVelocity, double hoodAngle){
+    public Command shootCommand(){
         return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
     }
 
     public Command passCommand(double shooterVelocity, double hoodAngle){
+        if(isSimulation){
+            
+        }
         return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() + 10, robotState.getTargetAim() + .1, 1.0, 12.0, 12.0)), leds.flashAllLedsCommand(ledsConstants.MAGENTA, 10));
     }
 }
