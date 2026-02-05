@@ -69,22 +69,23 @@ import frc.robot.constants.FieldConstants;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  // private final Superstructure superstructure;
-  // private final Indexer indexer;
-  // private final Intake intake;
-  // private final Shooter shooter;
-  // private final Hood hood;
-  // private final RobotState robotState = new RobotState();
-  // private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
-  
+
+
   private final Drive drive;
-  private final SwerveDriveSimulation driveSimulation;
-  private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private final Hood hood;
   public RobotContainer() {
+      drive = new Drive(
+      new GyroIOPigeon2(),
+      new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+      new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+      new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+      new ModuleIOTalonFXReal(TunerConstants.BackRight),
+      (pose) -> {});
 
+      
+    hood = new Hood(new HoodIOSim());
     // Configure the trigger bindings
 
 
@@ -154,8 +155,16 @@ public class RobotContainer {
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+        drive.setDefaultCommand(
+      DriveCommands.joystickDrive(
+        drive,
+        ()-> joystick.getY(),
+        ()-> joystick.getX(),
+        ()-> joystick.getTwist()
+    ));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
+    
   }
 
   private void configureSecondaryBindings() {
