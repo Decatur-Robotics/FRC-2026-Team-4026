@@ -1,3 +1,4 @@
+
 package frc.robot.subsystems.superstructure.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;

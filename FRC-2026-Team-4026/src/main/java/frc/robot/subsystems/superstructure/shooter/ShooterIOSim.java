@@ -20,7 +20,7 @@ import static edu.wpi.first.units.Units.Volts;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 
-public class ShooterIOSim {
+public class ShooterIOSim implements ShooterIO {
     private final LinearSystem<N1, N1, N1> flywheelSystem = LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(2), 0, 10);
 
     private FlywheelSim shooterSim; 
