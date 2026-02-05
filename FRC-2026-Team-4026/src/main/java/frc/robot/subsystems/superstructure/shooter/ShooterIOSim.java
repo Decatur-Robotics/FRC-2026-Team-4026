@@ -20,7 +20,7 @@ import static edu.wpi.first.units.Units.Volts;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 
-public class ShooterIOSim implements ShooterIO {
+public class ShooterIOSim implements ShooterIO{
     private final LinearSystem<N1, N1, N1> flywheelSystem = LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(2), 0, 10);
 
     private FlywheelSim shooterSim; 
@@ -50,7 +50,10 @@ public class ShooterIOSim implements ShooterIO {
         AngularVelocity realVelocity = RotationsPerSecond.of(shooterSim.getAngularVelocityRPM()/10);
         Voltage leftVoltage = SimulatedBattery.clamp(targetVoltage);
 
-        inputs.data = new ShooterIOData (true,true,motorLeft.getAppliedVoltage().in(Volts), motorRight.getAppliedVoltage().in(Volts), shooterSim.getAngularVelocityRPM(), shooterSim.getAngularVelocityRPM(), getSupplyCurrent().in(Amps), getSupplyCurrent().in(Amps),0.0,0.0);
+        
+    
+        
+        inputs.data = new ShooterIOData (true,true,leftVoltage.in(Volts), leftVoltage.in(Volts), shooterSim.getAngularVelocityRPM(), shooterSim.getAngularVelocityRPM(), getSupplyCurrent().in(Amps), getSupplyCurrent().in(Amps));
     
 }
 

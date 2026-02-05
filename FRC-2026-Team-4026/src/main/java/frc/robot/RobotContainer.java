@@ -20,30 +20,26 @@ import frc.robot.subsystems.superstructure.hood.HoodIOTalonFX;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.superstructure.intake.Intake;
+import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIO;
-import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOSim;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.hood.HoodIO;
 import frc.robot.subsystems.superstructure.hood.HoodIOSim;
+
+import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
+import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 
 
 import org.littletonrobotics.junction.Logger;
@@ -53,9 +49,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -66,7 +60,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
-import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -79,22 +73,20 @@ import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  // private final Superstructure superstructure;
-  // private final Indexer indexer;
-  // private final Intake intake;
+  private final Superstructure superstructure;
+  private final Indexer indexer;
+  private final Intake intake;
   private final Shooter shooter;
-  // private final Hood hood;
-  // private final RobotState robotState = new RobotState();
-  // private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
+  //private final Hood hood;
+  private final RobotState robotState = new RobotState();
+  private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
   
   private final Drive drive;
+  private final SwerveDriveSimulation driveSimulation;
+  private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private final Hood hood;
-  private final SwerveDriveSimulation driveSimulation;
-  private final Vision vision;
-
-
   public RobotContainer() {
 
     // Configure the trigger bindings
@@ -111,10 +103,13 @@ driveSimulation = null;
                         (pose) -> {});
             vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
                             new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
-
             shooter = new Shooter(new ShooterIOTalonFX());
-            hood = new Hood(new HoodIOTalonFX());
-     }
+            hood = new Hood (new HoodIOTalonFX());
+            intake = new Intake (new IntakeIOTalonFX());
+            indexer = new Indexer (new IndexerIOTalonFX());
+            superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+            
+    }
  else {
              driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
@@ -131,8 +126,12 @@ driveSimulation = null;
                         driveSimulation::setSimulationWorldPose);
               vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT, driveSimulation::getSimulatedDriveTrainPose),
                                       new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT, driveSimulation::getSimulatedDriveTrainPose));
-              hood = new Hood(new HoodIOSim());
-              shooter = new Shooter(new ShooterIOSim());
+                                      shooter = new Shooter(new ShooterIOSim());
+                                      hood = new Hood (new HoodIOSim());
+                                      intake = new Intake (new IntakeIOSim(driveSimulation));
+                                      indexer = new Indexer (new IndexerIOSim());
+                                      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+                
      }
      resetSimulationField();
          configurePrimaryBindings();
@@ -167,16 +166,8 @@ driveSimulation = null;
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-        drive.setDefaultCommand(
-      DriveCommands.joystickDrive(
-        drive,
-        ()-> joystick.getY(),
-        ()-> joystick.getX(),
-        ()-> joystick.getTwist()
-    ));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    
   }
 
   private void configureSecondaryBindings() {
@@ -197,6 +188,14 @@ driveSimulation = null;
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
+
+        triggerRight.whileTrue(superstructure.shootCommand());
+        bumperLeft.whileTrue(superstructure.passCommand());
+        a.whileTrue(superstructure.intakeCommand());
+        b.whileTrue(superstructure.dumpCommand());
+        
+
+        
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
@@ -243,6 +242,4 @@ driveSimulation = null;
   public static RobotContainer getInstance(){
     return instance;
   }
-
-
 }
