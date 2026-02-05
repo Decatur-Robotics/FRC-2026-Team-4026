@@ -100,7 +100,10 @@ public class IntakeIOSim implements IntakeIO{
         0,
         intakeSim.getCurrentDrawAmps(),
         deploySim.getCurrentDrawAmps(),
-        deploySim.getAngleRads());
+        deploySim.getAngleRads(),
+        0.0,
+        0.0
+        );
     }
 
     @Override

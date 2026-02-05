@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface HoodIO {
     @AutoLog
     public class HoodIOInputs{
-        public HoodIOData hoodData = new HoodIOData(false, 0.0, 0.0, 0.0, 0.0);
+        public HoodIOData hoodData = new HoodIOData(false, 0.0, 0.0, 0.0, 0.0,0.0);
     }
 
     public record HoodIOData(
@@ -13,7 +13,8 @@ public interface HoodIO {
         double voltage,
         double position,
         double supplyAmps,
-        double torqueCurrent
+        double torqueCurrent,
+        double temp
 
     ){}
     default void periodic(){}
