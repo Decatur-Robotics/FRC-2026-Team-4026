@@ -27,6 +27,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+
 public class HoodIOSim implements HoodIO {
 
     private final DCMotorSim hoodSim;
