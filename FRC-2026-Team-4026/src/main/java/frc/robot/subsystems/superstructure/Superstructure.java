@@ -15,9 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.constants.FieldConstants;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
@@ -33,6 +31,7 @@ public class Superstructure extends SubsystemBase {
     private Hood hood;
     private leds leds;
     private RobotState robotState;
+
   //private double turretRotation = Math.atan((robotPose.getY() - FieldConstants.HUB_POSE_BLUE.getY())/(robotPose.getX() - FieldConstants.HUB_POSE_BLUE.getX()));
 
     private SuperstructureState targetState;
@@ -50,7 +49,9 @@ public class Superstructure extends SubsystemBase {
         this.shooter = shooter;
         this.hood = hood;
         this.leds = leds;
+
         this.robotState = robotState;
+        
 
         this.shooterVelocity = 0.0;
         this.hoodAngle = 0.0;
@@ -111,7 +112,7 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE), leds.pulseLedsCommand(ledsConstants.RED, 5));
     }
 
-    public Command shootCommand(double shooterVelocity, double hoodAngle){
+     public Command shootCommand(){
         // only runs shoot fuel if in simulation
         if(Robot.isSimulation()){
             return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10), shootFuelCommand());
@@ -121,7 +122,7 @@ public class Superstructure extends SubsystemBase {
         }
     }
 
-    public Command passCommand(double shooterVelocity, double hoodAngle){
+    public Command passCommand(){
         return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() + 10, robotState.getTargetAim() + .1, 1.0, 12.0, 12.0)), leds.flashAllLedsCommand(ledsConstants.MAGENTA, 10), shootFuelCommand());
     }
 
@@ -139,9 +140,10 @@ public class Superstructure extends SubsystemBase {
 
         fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();
         SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
-    }
+}
 
-    public Command shootFuelCommand(){
+ public Command shootFuelCommand(){
         return Commands.runOnce(()->shootFuel());
-    }
+ }
+
 }
