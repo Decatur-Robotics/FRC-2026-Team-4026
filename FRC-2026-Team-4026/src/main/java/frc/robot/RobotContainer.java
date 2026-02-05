@@ -165,7 +165,18 @@ driveSimulation = null;
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
+
+
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+ drive.setDefaultCommand(
+      DriveCommands.joystickDrive(
+        drive,
+        ()-> joystick.getY(),
+        ()-> joystick.getX(),
+        ()-> joystick.getTwist()
+    ));
+
+   
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
   }
