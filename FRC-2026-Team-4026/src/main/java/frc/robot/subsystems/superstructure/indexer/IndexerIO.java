@@ -11,7 +11,10 @@ public interface IndexerIO {
             0.0,
             0.0,
             0.0,
-            0.0);
+            0.0,
+            0.0,
+            0.0
+            );
     }
 
     public record IndexerIOData(
@@ -20,7 +23,9 @@ public interface IndexerIO {
         Double rightMotorVoltage,
         Double leftMotorVoltage,
         Double leftCurrent,
-        Double rightCurrent
+        Double rightCurrent,
+        double leftTemp,
+        double rightTemp
     ){}
 
     default void updateInputs(IndexerIOInputs inputs){}
