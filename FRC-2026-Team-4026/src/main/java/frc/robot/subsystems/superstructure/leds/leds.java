@@ -35,8 +35,14 @@ public class leds implements Subsystem {
     private int red = 0;
     private int green = 0;
     private int blue = 0;
-    private int rainbowStage = 1;
-    private int rainbowSpeed = 2;
+    private int fadeStage = 1;
+    private final int rainbowSpeed = 2;
+
+    private final int redFadeBottom = 200;
+    private final int redFadeTop = 255;
+    private final int blueFadeBottom = 140;
+    private final int blueFadeTop = 240;
+    private final int fadeSpeed = 5;
     public leds(){
         led = new AddressableLED(Ports.ADDRESSABLE_LED);
 
@@ -100,10 +106,26 @@ public class leds implements Subsystem {
         pulseLEDS(ledsConstants.BLUE, length);
         pulseLEDS(ledsConstants.MAGENTA, length);
     }
-    
+
     public void rainbowLEDS(){
         mode = 3;
     }
+    public void fadeRedLEDS(){
+        mode = 4;
+        red = 255;
+        blue = 0;
+        green = 0;
+        fadeStage = 2;
+    }
+
+    public void fadeBlueLEDS(){
+        mode = 5;
+        red = 0;
+        blue = 255;
+        green = 0;
+        fadeStage = 2;
+    }
+
 
     //commands
     public Command setAllLedsCommand(TeamColor color){
@@ -126,8 +148,14 @@ public class leds implements Subsystem {
         return runOnce(()-> rainbowLEDS());
     }
 
+    public Command fadeRedLEDSCommand(){
+        return runOnce(()->fadeRedLEDS());
+    }
 
-
+    public Command fadeBlueLEDSCommand(){
+        return runOnce(()->fadeBlueLEDS());
+    }
+    
     @Override
     public void periodic(){
         periodsPassed ++;
@@ -184,25 +212,25 @@ public class leds implements Subsystem {
            }
 
         }  else if (mode == 3){
-            if (rainbowStage == 1){
+            if (fadeStage == 1){
                 if (red < 10){
-                    rainbowStage = 2;
+                    fadeStage = 2;
                 } else{
                     red -= rainbowSpeed;
                     green += rainbowSpeed;
                 }
             } 
-            else if (rainbowStage == 2){
+            else if (fadeStage == 2){
                 if (green < 10){
-                    rainbowStage = 3;
+                    fadeStage = 3;
                 } else{
                     green -= rainbowSpeed;
                     blue += rainbowSpeed;
                 }
             }
-            else if (rainbowStage == 3){
+            else if (fadeStage == 3){
                 if ( blue < 10){
-                    rainbowStage = 1;
+                    fadeStage = 1;
                 } else {
                     blue -= rainbowSpeed;
                     red += rainbowSpeed;
@@ -233,7 +261,58 @@ public class leds implements Subsystem {
             }
         }
 
+        if(mode == 4){
+            if (fadeStage == 1){
+                if(red <= redFadeBottom){
+                    fadeStage = 2;
+                } else{
+                    red -= fadeSpeed;
+                }
+            } else if (fadeStage == 2){
+                if(red >= redFadeTop){
+                    fadeStage = 1;
+                } else{
+                    red += fadeSpeed;
+                }
+            }
+            if(red > 255){
+                red =255;
+            }
+            if (red < 0){
+                red = 0;
+            }
 
+            for(int i = 0; i < length; i++){
+                buffer.setRGB(i, red, 0, 0);
+            }
+        }
+
+
+        if(mode == 5){
+            if (fadeStage == 1){
+                if(blue <= blueFadeBottom){
+                    fadeStage = 2;
+                } else{
+                    blue -= fadeSpeed;
+                }
+            } else if (fadeStage == 2){
+                if(blue >= blueFadeTop){
+                    fadeStage = 1;
+                } else{
+                    blue += fadeSpeed;
+                }
+            }
+            if(blue > 255){
+                blue =255;
+            }
+            if (blue < 0){
+                blue = 0;
+            }
+
+            for(int i = 0; i < length; i++){
+                buffer.setRGB(i, 0, 0, blue);
+            }
+        }
 
         if (periodsPassed > 5) {
 			periodsPassed = 0;
