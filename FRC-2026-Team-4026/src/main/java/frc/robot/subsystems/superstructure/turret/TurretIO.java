@@ -9,6 +9,7 @@ public interface TurretIO {
             false,
             0.0,
             0.0,
+            0.0,
             0.0
         );
     }
@@ -17,23 +18,17 @@ public interface TurretIO {
         boolean motorConnected,
         double turretPositionDegrees,
         double turretVoltage,
-        double turretCurrentAmps
-    ) {
-    }
+        double turretCurrentAmps,
+        double temp
+    ){}
 
-    default void updateInputs(TurretIOInputs inputs) {
-    }
+    default void updateInputs(TurretIOInputs inputs){}
 
-    default void periodic() {
-    }
+    default void periodic(){}
     
-    default void setPosition(double turretPosition) {
-    }
+    default void setPosition(double turretPosition){}
 
-    default void stop(){
-        
-    }
+    default void stop(){}
 
-    default void setVoltage(double turretVoltage) {
-    }
+    default void setVoltage(double turretVoltage){}
 }
