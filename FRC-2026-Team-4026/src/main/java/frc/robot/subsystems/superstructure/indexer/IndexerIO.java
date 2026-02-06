@@ -15,6 +15,7 @@ public interface IndexerIO {
             0.0,
             0.0
             );
+
     }
 
     public record IndexerIOData(
@@ -24,6 +25,8 @@ public interface IndexerIO {
         Double leftMotorVoltage,
         Double leftCurrent,
         Double rightCurrent,
+        Double leftVelocity,
+        Double rightVelocity
         double leftTemp,
         double rightTemp
     ){}
@@ -35,4 +38,5 @@ public interface IndexerIO {
     default void periodic(){}
 
     default void stop(){}
+    
 }        

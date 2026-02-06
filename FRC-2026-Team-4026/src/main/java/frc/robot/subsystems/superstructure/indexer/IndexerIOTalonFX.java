@@ -41,6 +41,7 @@ public class IndexerIOTalonFX implements IndexerIO{
             leftMotor.optimizeBusUtilization(40);
             rightMotor.getPosition().setUpdateFrequency(40);
         }
+        
     }
 
     @Override
@@ -52,6 +53,8 @@ public class IndexerIOTalonFX implements IndexerIO{
             rightCurrent.getValueAsDouble(),
             voltageLeft.getValueAsDouble(),
             voltageRight.getValueAsDouble(),
+            leftMotor.getVelocity().getValueAsDouble(),
+            rightMotor.getVelocity().getValueAsDouble()
             leftMotor.getDeviceTemp().getValueAsDouble(),
             rightMotor.getDeviceTemp().getValueAsDouble()
         );
