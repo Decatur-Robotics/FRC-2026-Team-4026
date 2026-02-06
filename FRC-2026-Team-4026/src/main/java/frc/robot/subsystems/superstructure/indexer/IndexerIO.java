@@ -11,6 +11,8 @@ public interface IndexerIO {
             0.0,
             0.0,
             0.0,
+            0.0, 
+            0.0, 
             0.0);
     }
 

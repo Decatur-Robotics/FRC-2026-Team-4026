@@ -26,17 +26,15 @@ public class Indexer extends SubsystemBase{
         if (isEStopped){
             io.stop();
         }
-        if(getLeftCurrent() > IndexerConstants.maxCurrent && getLeftVelocity() == 0 || getRightCurrent() > IndexerConstants.maxCurrent && getRightVelocity() == 0){
-            inputs.indexerData.leftVelocity *= -1;
-            inputs.indexerData.rightVelocity *= -1;
-            Commands.waitSeconds(0.2);
-            inputs.indexerData.leftVelocity = *= -1;
-            inputs.indexerData.rightVelocity *= -1;
-            
+        if(getLeftCurrent() > IndexerConstants.MAX_CURRENT && getLeftVelocity() == 0 || getRightCurrent() > IndexerConstants.MAX_CURRENT && getRightVelocity() == 0){
+            setVoltageCommand(-6);
+            Commands.waitSeconds(0.7);
+            setVoltageCommand(6);
         }
     }
     
     public Command setVoltageCommand(double voltage){
+        
     return this.runOnce(() -> {
             io.setVoltage(voltage);
         });
@@ -64,4 +62,5 @@ public class Indexer extends SubsystemBase{
 
     public double getRightVelocity(){
         return inputs.indexerData.rightVelocity();
+    }    
 }
