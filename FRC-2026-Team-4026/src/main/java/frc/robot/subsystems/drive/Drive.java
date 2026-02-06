@@ -61,7 +61,6 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.vision.Vision;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer
-// implements Vision.VisionConsumer 
 {
     // TunerConstants doesn't include these constants, so they are declared locally
     static final double ODOMETRY_FREQUENCY =

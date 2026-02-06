@@ -1,7 +1,15 @@
 package frc.robot.subsystems.superstructure;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -104,11 +112,38 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE), leds.pulseLedsCommand(ledsConstants.RED, 5));
     }
 
-    public Command shootCommand(double shooterVelocity, double hoodAngle){
-        return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
+     public Command shootCommand(){
+        // only runs shoot fuel if in simulation
+        if(Robot.isSimulation()){
+            return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10), shootFuelCommand());
+        }
+        else{
+            return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
+        }
     }
 
-    public Command passCommand(double shooterVelocity, double hoodAngle){
-        return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() + 10, robotState.getTargetAim() + .1, 1.0, 12.0, 12.0)), leds.flashAllLedsCommand(ledsConstants.MAGENTA, 10));
+    public Command passCommand(){
+        return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() + 10, robotState.getTargetAim() + .1, 1.0, 12.0, 12.0)), leds.flashAllLedsCommand(ledsConstants.MAGENTA, 10), shootFuelCommand());
     }
+
+    public void shootFuel(){
+
+        RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
+            robotState.getDrivePose(),
+            new Translation2d(0,0),
+            robotState.getChassisSpeed(),
+            robotState.getDriveRotatoin(),
+            Meters.of(0.2),
+            MetersPerSecond.of(2),
+            Radians.of(hood.getPosition())
+        );
+
+        fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();
+        SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
+}
+
+ public Command shootFuelCommand(){
+        return Commands.runOnce(()->shootFuel());
+ }
+
 }

@@ -11,9 +11,11 @@ public interface IndexerIO {
             0.0,
             0.0,
             0.0,
-            0.0, 
-            0.0, 
-            0.0);
+            0.0,
+            0.0,
+            0.0
+            );
+
     }
 
     public record IndexerIOData(
@@ -25,6 +27,8 @@ public interface IndexerIO {
         Double rightCurrent,
         Double leftVelocity,
         Double rightVelocity
+        double leftTemp,
+        double rightTemp
     ){}
 
     default void updateInputs(IndexerIOInputs inputs){}

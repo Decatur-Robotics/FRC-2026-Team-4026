@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.Voltage;
 public interface ShooterIO {
     @AutoLog
 public class ShooterIOInputs { 
-    public ShooterIOData data = new ShooterIOData (false,false,0.0,0.0,0.0,0.0,0.0,0.0);
+    public ShooterIOData data = new ShooterIOData (false,false,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
     public Voltage leftVoltage;
 }
 
@@ -20,7 +20,9 @@ public record ShooterIOData (
     double leftVoltage,
     double rightVoltage,
     double supplyCurrentLeft,
-    double supplyCurrentRight
+    double supplyCurrentRight,
+    double leftTemp,
+    double rightTemp
     
 )
 {}
