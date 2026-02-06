@@ -13,6 +13,8 @@ public interface IndexerIO {
             0.0,
             0.0,
             0.0,
+            0.0,
+            0.0,
             0.0
             );
 
@@ -21,12 +23,12 @@ public interface IndexerIO {
     public record IndexerIOData(
         Boolean rightMotorConnected,
         Boolean leftMotorConnected,
-        Double rightMotorVoltage,
-        Double leftMotorVoltage,
-        Double leftCurrent,
-        Double rightCurrent,
-        Double leftVelocity,
-        Double rightVelocity
+        double rightMotorVoltage,
+        double leftMotorVoltage,
+        double leftCurrent,
+        double rightCurrent,
+        double leftVelocity,
+        double rightVelocity,
         double leftTemp,
         double rightTemp
     ){}

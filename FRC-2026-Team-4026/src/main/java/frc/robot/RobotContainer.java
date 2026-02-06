@@ -176,7 +176,7 @@ driveSimulation = null;
         ()-> joystick.getTwist()
     ));
 
-   
+  b.whileTrue(drive.setMinimumBumpVelocityCommand());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
   }

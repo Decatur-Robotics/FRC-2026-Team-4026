@@ -332,7 +332,18 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
         }
         return output;
     }
+    public void setMinimumBumpVelocity(){
+        if( getPose().getX() > 3 && getPose().getX() < 5){
+            if(getPose().getY() > 1.5 && getPose().getY() < 3.5 || getPose().getY() > 4.5 && getPose().getY() < 6.5){
+                if(Math.hypot(getChassisSpeeds().vxMetersPerSecond,getChassisSpeeds().vyMetersPerSecond)< 2){
+                    runVelocity(new ChassisSpeeds(getRotation().getSin()*2,getRotation().getCos()*2,getRotation().getDegrees()));
+                }
+        }}
+    }
 
+    public Command setMinimumBumpVelocityCommand(){
+        return runOnce(()->setMinimumBumpVelocity());
+    }
     /** Returns the current odometry pose. */
       @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
