@@ -47,7 +47,7 @@ public class DriveCommands {
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-    private RobotState robotState = new RobotState();
+    
 
     private DriveCommands() {}
 
@@ -267,11 +267,4 @@ public class DriveCommands {
         double gyroDelta = 0.0;
     }
 
-    public void setRotation () {
-       ProfiledPIDController angleController = new ProfiledPIDController(
-                ANGLE_KP, 0.0, ANGLE_KD, new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-       angleController.setGoal(ANGLE_KD);
-
-       
-    }
 }
