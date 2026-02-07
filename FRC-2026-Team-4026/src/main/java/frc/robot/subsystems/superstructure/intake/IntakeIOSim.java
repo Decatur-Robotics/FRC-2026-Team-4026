@@ -71,24 +71,26 @@ public class IntakeIOSim implements IntakeIO{
     @Override
     public void setDeployPosition(double position) {
 
-        if (position == IntakeConstants.DEPLOY_INTAKE_POSITION){
+        deploySim.setState(position, 0);
 
-            controller.setGoal(position);
-            double pidOutput = controller.calculate(encoderSim.getDistance(),
-            Units.degreesToRadians(IntakeConstants.DEPLOY_INTAKE_POSITION));
-            deploySim.setInputVoltage(pidOutput);
+        // if (position == IntakeConstants.DEPLOY_INTAKE_POSITION){
 
-            intakeSimulation.startIntake();
-        }
-        else
-        {
-            controller.setGoal(position);
-            double pidOutput = controller.calculate(encoderSim.getDistance(),
-            Units.degreesToRadians(IntakeConstants.STORED_INTAKE_POSITION));
-            deploySim.setInputVoltage(pidOutput);
+        //     controller.setGoal(position);
+        //     double pidOutput = controller.calculate(encoderSim.getDistance(),
+        //     Units.degreesToRadians(IntakeConstants.DEPLOY_INTAKE_POSITION));
+        //     deploySim.setInputVoltage(pidOutput);
 
-            intakeSimulation.stopIntake();
-        }
+        //     intakeSimulation.startIntake();
+        // }
+        // else
+        // {
+        //     controller.setGoal(position);
+        //     double pidOutput = controller.calculate(encoderSim.getDistance(),
+        //     Units.degreesToRadians(IntakeConstants.STORED_INTAKE_POSITION));
+        //     deploySim.setInputVoltage(pidOutput);
+
+        //     intakeSimulation.stopIntake();
+        // }
     }
     @Override
     public void updateInputs(IntakeIOInputs inputs){
@@ -106,6 +108,7 @@ public class IntakeIOSim implements IntakeIO{
     public void setIntakeVoltage(double voltage){
 
         intakeSim.setInputVoltage(voltage);
+        intakeSimulation.startIntake();
     }
 
     @Override

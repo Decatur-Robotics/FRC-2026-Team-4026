@@ -23,7 +23,7 @@ public class IntakeConstants {
 
     public static final double INTAKE_VOLTAGE = 0;  
     
-    public static final double DEPLOY_MOI = 1;
+    public static final double DEPLOY_MOI = .5;
 
     public static final double ENCODER_DIST_PER_PULSE = .1757;
     public static final Distance INTAKE_WIDTH = Inches.of(20.5);

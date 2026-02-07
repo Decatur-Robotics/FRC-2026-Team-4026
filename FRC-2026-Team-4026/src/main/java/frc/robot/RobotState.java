@@ -31,8 +31,10 @@ public RobotState(Drive drive){
     targetVelocities = new InterpolatingDoubleTreeMap();
     robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
     speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
-    targetAims.put(0.0, 0.0);
-    targetVelocities.put(0.0, 20.0);
+    targetAims.put(0.1, 0.0);
+    targetVelocities.put(1.0, 20.0);
+    targetAims.put(1.0, 0.1);
+    targetVelocities.put(2.0, 40.0);
 }
     public double getTargetAim(){
         return targetAims.get(robotDistance);
