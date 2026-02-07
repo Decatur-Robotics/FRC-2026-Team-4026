@@ -1,5 +1,7 @@
 package frc.robot.subsystems.superstructure.hopper;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -28,6 +30,7 @@ public Command setVoltageCommand(double voltage) {
 }
 public void periodic () {
     io.updateInputs(inputs);
+    Logger.processInputs("Hopper", inputs);
 }
 
 }
