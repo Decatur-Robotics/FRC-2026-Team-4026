@@ -19,7 +19,7 @@ public class IntakeIOSim implements IntakeIO{
 
     private final DCMotorSim intakeSim;
     private final SingleJointedArmSim deploySim;
-
+    private double pidOutput;
     private final ProfiledPIDController controller = new ProfiledPIDController(
     IntakeConstants.kP, 
     IntakeConstants.kI, 
@@ -75,7 +75,7 @@ public class IntakeIOSim implements IntakeIO{
         if (position == IntakeConstants.DEPLOY_INTAKE_POSITION){
 
             controller.setGoal(position);
-            double pidOutput = controller.calculate(encoderSim.getDistance(),
+            pidOutput = controller.calculate(encoderSim.getDistance(),
             Units.degreesToRadians(IntakeConstants.DEPLOY_INTAKE_POSITION));
             deploySim.setInputVoltage(pidOutput);
 
@@ -84,7 +84,7 @@ public class IntakeIOSim implements IntakeIO{
         else
 
             controller.setGoal(position);
-            double pidOutput = controller.calculate(encoderSim.getDistance(),
+            pidOutput = controller.calculate(encoderSim.getDistance(),
             Units.degreesToRadians(IntakeConstants.STORED_INTAKE_POSITION));
             deploySim.setInputVoltage(pidOutput);
 
@@ -97,7 +97,7 @@ public class IntakeIOSim implements IntakeIO{
         true,
         true,
         intakeSim.getInputVoltage(),
-        0,
+        pidOutput,
         intakeSim.getCurrentDrawAmps(),
         deploySim.getCurrentDrawAmps(),
         deploySim.getAngleRads());
