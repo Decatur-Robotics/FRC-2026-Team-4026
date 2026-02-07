@@ -4,6 +4,8 @@ import frc.robot.util.SuperstructureState;
 
 public class SuperstructureConstants {
     public static final double HOOD_DEADBAND = 0.0;
+    //velocity brownout limit needs to be increased
+    public static final double VELOCITY_BROWNOUT_LIMIT = 0.0;
     public static final SuperstructureState STARTING_STATE = new SuperstructureState(
         0.0,    // shooterVelocity
         0.0,    // hoodAngle
