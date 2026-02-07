@@ -113,7 +113,7 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE), leds.pulseLedsCommand(ledsConstants.RED, 5));
     }
 
-    public Command shootCommand(double shooterVelocity, double hoodAngle){
+    public Command shootCommand(){
         if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
             return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         }
@@ -136,7 +136,7 @@ public class Superstructure extends SubsystemBase {
         }
     }
 
-    public Command passCommand(double shooterVelocity, double hoodAngle){
+    public Command passCommand(){
         if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
             return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         }

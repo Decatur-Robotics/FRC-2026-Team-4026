@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.*;
 
 import java.lang.Thread.State;
 
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -17,8 +19,8 @@ public class Shooter extends SubsystemBase {
     private ShooterIO io;
     private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
-    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.2).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> signalLogger.writeString("state", state.toString())),
-    new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts), inputs.data.leftVelocity(), this));
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.2).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> SignalLogger.writeString("state", state.toString())),
+    new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
 
 
 public Shooter (ShooterIO io) {

@@ -6,16 +6,17 @@ import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import static edu.wpi.first.units.Units.*;
 
-public class Intake {
+public class Intake extends SubsystemBase{
 
     private IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> signalLogger.writeString("state", state.toString())),
-    new SysIdRoutine.Mechanism((volts) -> io.setDeployPosition(volts), inputs.intakeData.deployPosition(), this));
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> SignalLogger.writeString("state", state.toString())),
+    new SysIdRoutine.Mechanism((volts) -> io.setDeployVoltage(volts.in(Volts)),null, this));
 
     public Intake(IntakeIO io){
         this.io = io;

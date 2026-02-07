@@ -32,11 +32,12 @@ public class Climber extends SubsystemBase {
 
 
     public Command setPositionCommand(double position){
-        return runOnce(() -> io.setPosition(position));
+        return Commands.runOnce(() -> io.setPosition(position));
     }
 	public Command setVoltageCommand(double voltage){
-		return runOnce(()->io.setVoltage(voltage));
+		return Commands.runOnce(()->io.setVoltage(voltage));
 	}
+
 
 	public Command climbL1Command(){
 		return Commands.sequence(
