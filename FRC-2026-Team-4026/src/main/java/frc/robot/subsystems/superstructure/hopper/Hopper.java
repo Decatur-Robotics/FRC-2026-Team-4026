@@ -6,16 +6,28 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Ports;
 
-public class Hopper {
+public class Hopper extends SubsystemBase{
 
-    private TalonFX motorRight, motorLeft;
+    private double voltage;
+    private HopperIO io;
+    private HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
 
-public void setVoltage (double voltage) {
-        motorLeft.setVoltage(voltage);
-        motorRight.setVoltage(voltage);
-        motorRight.setControl(new Follower(Ports.HOPPER_MOTOR_LEFT, MotorAlignmentValue.Opposed));
-}    
+public Hopper (HopperIO io) {
+    this.io = io;
+    voltage = inputs.data.leftVoltage();
+}
+public double getCurrent() {
+    return inputs.data.supplyCurrentLeft();
+}
+
+public Command setVoltageCommand(double voltage) {
+    return Commands.run(() -> io.setVoltage(voltage));
+}
+public void periodic () {
+    io.updateInputs(inputs);
+}
 
 }

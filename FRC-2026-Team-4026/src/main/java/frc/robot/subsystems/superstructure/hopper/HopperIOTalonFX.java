@@ -17,7 +17,7 @@ import frc.robot.subsystems.superstructure.hopper.HopperIO.HopperIOInputs;
 import frc.robot.util.PhoenixUtil;
 
 public class HopperIOTalonFX implements HopperIO{
-    public TalonFX motorLeft, motorRight;
+    private TalonFX motorRight, motorLeft;
     private TalonFXConfiguration config;
 
     private StatusSignal<Voltage> voltage;
@@ -69,7 +69,9 @@ public void updateInputs (HopperIOInputs inputs){
         motorLeft.getSupplyVoltage().getValueAsDouble(),
         motorRight.getSupplyVoltage().getValueAsDouble(),
         motorLeft.getDeviceTemp().getValueAsDouble(),
-        motorRight.getDeviceTemp().getValueAsDouble()
+        motorRight.getDeviceTemp().getValueAsDouble(),
+        motorLeft.getSupplyCurrent().getValueAsDouble(),
+        motorRight.getSupplyCurrent().getValueAsDouble()
         );
 }
 }

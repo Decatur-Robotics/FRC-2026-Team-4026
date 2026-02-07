@@ -8,15 +8,17 @@ public interface HopperIO {
 
     @AutoLog    
     public class HopperIOInputs {
-    public HopperIOData data = new HopperIOData(false, false, 0.0,0.0,0.0,0.0);
+    public HopperIOData data = new HopperIOData(false, false, 0.0,0.0,0.0,0.0,0.0,0.0);
     public Voltage leftVoltage;
 }
 
 public record HopperIOData(
     boolean motorLeftConnected,
     boolean motorRightConnected,
-    double motorLeftVoltage,
-    double motorRightVoltage,
+    double leftVoltage,
+    double rightVoltage,
+    double supplyCurrentLeft,
+    double supplyCurrentRight,
     double leftTemp,
     double rightTemp
 )
