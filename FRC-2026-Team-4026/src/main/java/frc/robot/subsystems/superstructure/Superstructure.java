@@ -83,7 +83,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public SuperstructureState getCurrentState(){
-        return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getLeftMotorVoltage(), intake.getIntakeVoltage());
+        return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getMechanumVoltage(), intake.getIntakeVoltage());
     }
 
     public boolean isHoodAtTarget(){

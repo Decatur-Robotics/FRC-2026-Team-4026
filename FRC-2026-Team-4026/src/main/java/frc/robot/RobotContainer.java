@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveCommands;
@@ -134,8 +135,7 @@ driveSimulation = null;
                                       hood = new Hood (new HoodIOSim());
                                       intake = new Intake (new IntakeIOSim(driveSimulation));
                                       indexer = new Indexer (new IndexerIOSim());
-                                      //change to climber sim
-                                      climber = new Climber(new ClimberTalonFX());
+                                      climber = new Climber(new ClimberIOSim());
                                       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
                 
      }
@@ -210,7 +210,7 @@ driveSimulation = null;
         bumperLeft.whileTrue(superstructure.passCommand());
         a.whileTrue(superstructure.intakeCommand());
         b.whileTrue(superstructure.dumpCommand());
-        
+
         down.whileTrue(climber.climbL1Command());
         right.whileTrue(climber.climbL2Command());
         up.whileTrue(climber.climbL3Command());
