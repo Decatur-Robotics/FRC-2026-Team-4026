@@ -342,7 +342,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
     }
 
     public Command setMinimumBumpVelocityCommand(){
-        return runOnce(()->setMinimumBumpVelocity());
+        return Commands.runOnce(()->setMinimumBumpVelocity());
     }
     /** Returns the current odometry pose. */
       @AutoLogOutput(key = "Odometry/Robot")
