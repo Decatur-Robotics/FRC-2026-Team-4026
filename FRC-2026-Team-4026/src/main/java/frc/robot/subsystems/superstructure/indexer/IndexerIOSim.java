@@ -48,5 +48,9 @@ public class IndexerIOSim implements IndexerIO {
         return Amps.of(rightGearbox.getCurrentDrawAmps());
     }
 
+    public void setVoltage(double voltage){
+        rightGearbox.setInputVoltage(voltage);
+        leftGearbox.setInputVoltage(voltage);
+    }
 
 }

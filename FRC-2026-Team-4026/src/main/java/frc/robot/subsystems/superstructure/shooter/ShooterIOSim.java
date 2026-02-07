@@ -50,22 +50,19 @@ public class ShooterIOSim implements ShooterIO {
 
         AngularVelocity realVelocity = RotationsPerSecond.of(shooterSim.getAngularVelocityRPM()/10);
         Voltage leftVoltage = SimulatedBattery.clamp(targetVoltage);
-
-        
-    
-        
         inputs.data = new ShooterIOData (true,true,leftVoltage.in(Volts), leftVoltage.in(Volts), shooterSim.getAngularVelocityRPM(), shooterSim.getAngularVelocityRPM(), getSupplyCurrent().in(Amps), getSupplyCurrent().in(Amps));
     
 }
 
+    @Override
     public void setVoltage (double voltage) {
         targetVoltage = Volts.of(voltage);
+        shooterSim.setInputVoltage(targetVoltage.in(Volts));
     }
 
+    @Override
     public void setVelocity(double velocity){
-        double currentVelocity = RotationsPerSecond.of(velocity/10).in(RotationsPerSecond);
-        double outputVoltage = controller.calculate(currentVelocity, velocity);
-        targetVoltage = Volts.of(outputVoltage);
+        shooterSim.setAngularVelocity(velocity);
     }
       
 

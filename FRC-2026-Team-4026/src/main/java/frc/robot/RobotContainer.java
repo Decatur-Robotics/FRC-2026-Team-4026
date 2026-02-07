@@ -175,7 +175,7 @@ public class RobotContainer {
         ()-> joystick.getX(),
         ()-> joystick.getTwist()
     ));
-        b.whileTrue(shooter.setVelocityCommand(100));
+        b.whileTrue(superstructure.intakeCommand());
   }
 
   private void configureSecondaryBindings() {
