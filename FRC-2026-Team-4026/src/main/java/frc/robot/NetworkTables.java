@@ -7,7 +7,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class NetworkTables {
     private Subscriber subcX;
     private Subscriber subcY;
-    private Subscriber subBallCount; 
+
     private Subscriber subRotationOfGamePiece;
 
     public NetworkTables(){
@@ -19,12 +19,11 @@ public class NetworkTables {
     //gets the topics (essentially subfiles) from the table
     DoubleTopic cY = table.getDoubleTopic("cY");
     DoubleTopic cX = table.getDoubleTopic("cX");
-    DoubleTopic ballCount = table.getDoubleTopic("ballCount");
+
     DoubleTopic rotationOfGamePiece = table.getDoubleTopic("rotationOfGamePiece");
 //Makes a subscriber for eahc of the networktable topics that gets transmitted
     subcX = new Subscriber(cX);
     subcY = new Subscriber(cY);
-    subBallCount = new Subscriber(ballCount);
     subRotationOfGamePiece = new Subscriber(rotationOfGamePiece);
     }
     public double getCX(){
@@ -34,9 +33,7 @@ public class NetworkTables {
     public double getCY(){
         return subcY.getValue();
     }
-    public double getBallCount(){
-        return subBallCount.getValue();
-    }
+
     public double getFuelRotation(){
         return subRotationOfGamePiece.getValue();
     }
