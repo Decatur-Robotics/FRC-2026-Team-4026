@@ -2,6 +2,8 @@ package frc.robot.subsystems.superstructure.hood;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,8 +16,8 @@ public class Hood extends SubsystemBase {
 
     private HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
     private HoodIO io;
-    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.2).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> signalLogger.writeString("state", state.toString())),
-    new SysIdRoutine.Mechanism((volts) -> io.setPosition(volts), inputs.hoodData.position(), this));
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.2).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> SignalLogger.writeString("state", state.toString())),
+    new SysIdRoutine.Mechanism((volts) -> io.setPosition(volts.in(Volts)), null, this));
 
     public Hood (HoodIO io){
         this.io = io;

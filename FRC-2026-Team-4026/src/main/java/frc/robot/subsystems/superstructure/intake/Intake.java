@@ -14,8 +14,8 @@ public class Intake {
 
     private IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> signalLogger.writeString("state", state.toString())),
-    new SysIdRoutine.Mechanism((volts) -> io.setDeployPosition(volts), inputs.intakeData.deployPosition(), this));
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> SignalLogger.writeString("state", state.toString())),
+    new SysIdRoutine.Mechanism((volts) -> io.setDeployPosition(volts.in(Volts)), null, this));
 
     public Intake(IntakeIO io){
         this.io = io;
