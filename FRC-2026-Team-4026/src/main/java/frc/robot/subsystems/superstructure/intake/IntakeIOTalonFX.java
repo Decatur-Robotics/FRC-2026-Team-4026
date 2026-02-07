@@ -77,7 +77,9 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployVoltage.getValueAsDouble(),
         intakeCurrent.getValueAsDouble(),
         deployCurrent.getValueAsDouble(),
-        deployPosition.getValueAsDouble()
+        deployPosition.getValueAsDouble(),
+        intakeMotor.getDeviceTemp().getValueAsDouble(),
+        deployMotor.getDeviceTemp().getValueAsDouble()
         );
     }
     @Override

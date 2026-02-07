@@ -4,10 +4,12 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
@@ -73,5 +75,16 @@ public RobotState(){
 
     public double getTurretRotation() {
         return Math.atan((robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY())/(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX()));
+    }
+    public Translation2d getDrivePose(){
+        return new Translation2d(drive.getPose().getX(),drive.getPose().getY());
+    }
+
+    public ChassisSpeeds getChassisSpeed(){
+        return drive.getChassisSpeeds();
+    }
+
+    public Rotation2d getDriveRotatoin(){
+        return drive.getRotation();
     }
 }

@@ -20,6 +20,7 @@ import frc.robot.subsystems.superstructure.hood.HoodIOTalonFX;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.superstructure.intake.Intake;
+import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIO;
@@ -36,6 +37,9 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.hood.HoodIO;
 import frc.robot.subsystems.superstructure.hood.HoodIOSim;
+
+import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
+import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 
 
 import org.littletonrobotics.junction.Logger;
@@ -69,13 +73,13 @@ import frc.robot.constants.FieldConstants;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  // private final Superstructure superstructure;
-  // private final Indexer indexer;
-  // private final Intake intake;
-  // private final Shooter shooter;
-  // private final Hood hood;
-  // private final RobotState robotState = new RobotState();
-  // private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
+  private final Superstructure superstructure;
+  private final Indexer indexer;
+  private final Intake intake;
+  private final Shooter shooter;
+  //private final Hood hood;
+  private final RobotState robotState = new RobotState();
+  private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
   
   private final Drive drive;
   private final SwerveDriveSimulation driveSimulation;
@@ -84,7 +88,7 @@ public class RobotContainer {
   private static RobotContainer instance;
   private final Hood hood;
   public RobotContainer() {
-    hood = new Hood(new HoodIOSim());
+
     // Configure the trigger bindings
 
 
@@ -99,7 +103,12 @@ driveSimulation = null;
                         (pose) -> {});
             vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
                             new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
-    
+            shooter = new Shooter(new ShooterIOTalonFX());
+            hood = new Hood (new HoodIOTalonFX());
+            intake = new Intake (new IntakeIOTalonFX());
+            indexer = new Indexer (new IndexerIOTalonFX());
+            superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+            
     }
  else {
              driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
@@ -117,6 +126,11 @@ driveSimulation = null;
                         driveSimulation::setSimulationWorldPose);
               vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT, driveSimulation::getSimulatedDriveTrainPose),
                                       new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT, driveSimulation::getSimulatedDriveTrainPose));
+                                      shooter = new Shooter(new ShooterIOSim());
+                                      hood = new Hood (new HoodIOSim());
+                                      intake = new Intake (new IntakeIOSim(driveSimulation));
+                                      indexer = new Indexer (new IndexerIOSim());
+                                      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
                 
      }
      resetSimulationField();
@@ -151,7 +165,18 @@ driveSimulation = null;
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
+
+
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+ drive.setDefaultCommand(
+      DriveCommands.joystickDrive(
+        drive,
+        ()-> joystick.getY(),
+        ()-> joystick.getX(),
+        ()-> joystick.getTwist()
+    ));
+
+  b.whileTrue(drive.setMinimumBumpVelocityCommand());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
   }
@@ -174,6 +199,14 @@ driveSimulation = null;
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
+
+        triggerRight.whileTrue(superstructure.shootCommand());
+        bumperLeft.whileTrue(superstructure.passCommand());
+        a.whileTrue(superstructure.intakeCommand());
+        b.whileTrue(superstructure.dumpCommand());
+        
+
+        
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.

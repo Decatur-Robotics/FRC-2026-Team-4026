@@ -3,7 +3,10 @@ package frc.robot.subsystems.superstructure.indexer;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.superstructure.indexer.IndexerIO.IndexerIOInputs;
+import frc.robot.subsystems.superstructure.indexer.IndexerIOInputsAutoLogged;
 
 public class Indexer extends SubsystemBase{
     private IndexerIO io;
@@ -24,9 +27,15 @@ public class Indexer extends SubsystemBase{
         if (isEStopped){
             io.stop();
         }
+        if(getLeftCurrent() > IndexerConstants.MAX_CURRENT && getLeftVelocity() == 0 || getRightCurrent() > IndexerConstants.MAX_CURRENT && getRightVelocity() == 0){
+            setVoltageCommand(-6);
+            Commands.waitSeconds(0.7);
+            setVoltageCommand(6);
+        }
     }
     
     public Command setVoltageCommand(double voltage){
+        
     return this.runOnce(() -> {
             io.setVoltage(voltage);
         });
@@ -47,4 +56,12 @@ public class Indexer extends SubsystemBase{
     public double getRightMotorVoltage(){
         return inputs.indexerData.rightMotorVoltage();
     }
+
+    public double getLeftVelocity(){
+        return inputs.indexerData.leftVelocity();
+}
+
+    public double getRightVelocity(){
+        return inputs.indexerData.rightVelocity();
+    }    
 }

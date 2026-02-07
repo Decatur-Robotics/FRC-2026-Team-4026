@@ -10,11 +10,12 @@ public interface ClimberIO {
 			false,
 			0.0,
 			0.0,
+			0.0,
 			0.0
 		);
 	}
 
-	public record ClimberIOData(boolean motorConnected, double posDeg, double voltage, double amps) {}
+	public record ClimberIOData(boolean motorConnected, double posDeg, double voltage, double amps,double temp) {}
 
 	default void updateInputs(ClimberIOInputs inputs) {}
 	default void periodic() {}

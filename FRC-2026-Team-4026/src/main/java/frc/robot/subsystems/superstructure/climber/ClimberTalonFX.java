@@ -59,7 +59,8 @@ public class ClimberTalonFX implements ClimberIO {
             motor.isConnected(),
             position.getValueAsDouble(),
             voltage.getValueAsDouble(),
-            current.getValueAsDouble()
+            current.getValueAsDouble(),
+            motor.getDeviceTemp().getValueAsDouble()
         );
     }
 

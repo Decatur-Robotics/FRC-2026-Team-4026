@@ -36,7 +36,7 @@ public class IndexerIOSim implements IndexerIO {
         //right and left gearbox will be the same voltage approximately
         Voltage simVoltage = Volts.of(rightGearbox.getInputVoltage()); 
         simVoltage = SimulatedBattery.clamp(simVoltage);
-        inputs.indexerData = new IndexerIOData(true, true, rightGearbox.getInputVoltage(), leftGearbox.getInputVoltage(), leftGearbox.getCurrentDrawAmps(), rightGearbox.getCurrentDrawAmps());
+        inputs.indexerData = new IndexerIOData(true, true, rightGearbox.getInputVoltage(), leftGearbox.getInputVoltage(), leftGearbox.getCurrentDrawAmps(), rightGearbox.getCurrentDrawAmps(),0.0,0.0,0.0,0.0);
     }
 
     public void runOpenLoop(double voltage){
