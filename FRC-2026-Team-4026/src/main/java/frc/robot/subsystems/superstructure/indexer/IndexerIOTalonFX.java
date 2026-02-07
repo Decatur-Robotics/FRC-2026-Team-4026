@@ -54,7 +54,7 @@ public class IndexerIOTalonFX implements IndexerIO{
             voltageLeft.getValueAsDouble(),
             voltageRight.getValueAsDouble(),
             leftMotor.getVelocity().getValueAsDouble(),
-            rightMotor.getVelocity().getValueAsDouble()
+            rightMotor.getVelocity().getValueAsDouble(),
             leftMotor.getDeviceTemp().getValueAsDouble(),
             rightMotor.getDeviceTemp().getValueAsDouble()
         );
