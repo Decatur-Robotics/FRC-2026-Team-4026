@@ -14,15 +14,15 @@ public class Shooter extends SubsystemBase {
 public Shooter (ShooterIO io) {
     this.io = io;
     velocity = ShooterConstants.FUEL_REST_VELOCITY;
-    voltage = inputs.data.leftVoltage();
+    voltage = inputs.data.voltage();
 }
 
 public double getVelocity() {
-    return inputs.data.leftVelocity();
+    return inputs.data.velocity();
 }
 
 public double getCurrent() {
-    return inputs.data.supplyCurrentLeft();
+    return inputs.data.supplyCurrent();
 }
 
 public Command setVelocityCommand(double velocity) {

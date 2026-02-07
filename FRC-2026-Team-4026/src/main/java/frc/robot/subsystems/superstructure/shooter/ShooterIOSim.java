@@ -24,7 +24,7 @@ public class ShooterIOSim implements ShooterIO{
     private final LinearSystem<N1, N1, N1> flywheelSystem = LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(2), 0, 10);
 
     private FlywheelSim shooterSim; 
-    private final SimulatedMotorController.GenericMotorController motorLeft, motorRight;
+    private final SimulatedMotorController.GenericMotorController motor;
 
     private final PIDController controller = new PIDController (0,0,0);
 
@@ -32,8 +32,7 @@ public class ShooterIOSim implements ShooterIO{
 
     public ShooterIOSim(
     ) {
-        motorLeft = new SimulatedMotorController.GenericMotorController(DCMotor.getKrakenX60(1));
-        motorRight = new SimulatedMotorController.GenericMotorController(DCMotor.getKrakenX60(1));
+        motor = new SimulatedMotorController.GenericMotorController(DCMotor.getKrakenX60(1));
         shooterSim = new FlywheelSim(flywheelSystem, DCMotor.getKrakenX60(2),0.0);
 
         SimulatedBattery.addElectricalAppliances(this::getSupplyCurrent);
@@ -48,12 +47,15 @@ public class ShooterIOSim implements ShooterIO{
     public void updateInputs(ShooterIOInputs inputs) {
 
         AngularVelocity realVelocity = RotationsPerSecond.of(shooterSim.getAngularVelocityRPM()/10);
-        Voltage leftVoltage = SimulatedBattery.clamp(targetVoltage);
+        Voltage voltage = SimulatedBattery.clamp(targetVoltage);
 
-        
-    
-        
-        inputs.data = new ShooterIOData (true,true,leftVoltage.in(Volts), leftVoltage.in(Volts), shooterSim.getAngularVelocityRPM(), shooterSim.getAngularVelocityRPM(), getSupplyCurrent().in(Amps), getSupplyCurrent().in(Amps),0.0,0.0);
+        inputs.data = new ShooterIOData (
+            true,
+            voltage.in(Volts),
+            shooterSim.getAngularVelocityRPM(),
+            getSupplyCurrent().in(Amps),
+            0.0
+            );
     
 }
 

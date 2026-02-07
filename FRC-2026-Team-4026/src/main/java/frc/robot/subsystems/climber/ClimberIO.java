@@ -1,4 +1,4 @@
-package frc.robot.subsystems.superstructure.climber;
+package frc.robot.subsystems.climber;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -8,6 +8,7 @@ public interface ClimberIO {
 	public class ClimberIOInputs {
 		public ClimberIOData climberData = new ClimberIOData(
 			false,
+			false,
 			0.0,
 			0.0,
 			0.0,
@@ -15,7 +16,7 @@ public interface ClimberIO {
 		);
 	}
 
-	public record ClimberIOData(boolean motorConnected, double posDeg, double voltage, double amps,double temp) {}
+	public record ClimberIOData(boolean motorConnected,boolean followerMotorConnected, double posDeg, double voltage, double amps,double temp) {}
 
 	default void updateInputs(ClimberIOInputs inputs) {}
 	default void periodic() {}

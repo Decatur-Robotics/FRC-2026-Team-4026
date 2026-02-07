@@ -1,4 +1,4 @@
-package frc.robot.subsystems.superstructure.climber;
+package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -57,6 +57,7 @@ public class ClimberTalonFX implements ClimberIO {
     public void updateInputs(ClimberIOInputs inputs) {
         inputs.climberData = new ClimberIOData(
             motor.isConnected(),
+            followMotor.isConnected(),
             position.getValueAsDouble(),
             voltage.getValueAsDouble(),
             current.getValueAsDouble(),
