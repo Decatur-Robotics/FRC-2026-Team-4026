@@ -12,7 +12,7 @@ public class Ports {
     public static final int ADDRESSABLE_LED = 0;
 
 
-    public static final int INDEXER_MOTOR_MECHANUM = 0;
+    public static final int INDEXER_MOTOR_MECANUM = 0;
     public static final int INDEXER_MOTOR_BELT = 0;
     public static final int INDEXER_MOTOR_KICK = 0;
 

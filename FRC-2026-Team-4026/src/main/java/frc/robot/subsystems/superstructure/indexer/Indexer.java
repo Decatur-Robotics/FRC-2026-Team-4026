@@ -22,13 +22,13 @@ public class Indexer extends SubsystemBase{
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs(inputsName, inputs);
-        Logger.recordOutput("Mechanum current and Voltage:", getMechanumCurrent()+", "+getMechanumVoltage());
+        Logger.recordOutput("Mecanum current and Voltage:", getMecanumCurrent()+", "+getMecanumVoltage());
         Logger.recordOutput("Belt Current and Voltage:", getBeltCurrent()+", "+getBeltVoltage());
         Logger.recordOutput("Kick Current and Voltage:", getKickCurrent()+", "+getKickVoltage());
         if (isEStopped){
             io.stop();
         }
-        if(getMechanumCurrent() > IndexerConstants.MAX_CURRENT && getMechanumVelocity() == 0 || getBeltCurrent() > IndexerConstants.MAX_CURRENT && getBeltVelocity() == 0 || getKickCurrent() > IndexerConstants.MAX_CURRENT && getKickVelocity() == 0 ){
+        if(getMecanumCurrent() > IndexerConstants.MAX_CURRENT && getMecanumVelocity() == 0 || getBeltCurrent() > IndexerConstants.MAX_CURRENT && getBeltVelocity() == 0 || getKickCurrent() > IndexerConstants.MAX_CURRENT && getKickVelocity() == 0 ){
             setVoltageCommand(-6);
             Commands.waitSeconds(0.7);
             setVoltageCommand(6);
@@ -42,8 +42,8 @@ public class Indexer extends SubsystemBase{
         });
     }
 
-    public double getMechanumCurrent(){
-        return inputs.indexerData.mechanumCurrent();
+    public double getMecanumCurrent(){
+        return inputs.indexerData.mecanumCurrent();
     }
 
     public double getBeltCurrent(){
@@ -53,8 +53,8 @@ public class Indexer extends SubsystemBase{
         return inputs.indexerData.kickCurrent();
     }
 
-    public double getMechanumVoltage(){
-        return inputs.indexerData.mechanumVoltage();
+    public double getMecanumVoltage(){
+        return inputs.indexerData.mecanumVoltage();
     }
 
     public double getBeltVoltage(){
@@ -66,8 +66,8 @@ public class Indexer extends SubsystemBase{
     }
 
 
-    public double getMechanumVelocity(){
-        return inputs.indexerData.mechanumVelocity();
+    public double getMecanumVelocity(){
+        return inputs.indexerData.mecanumVelocity();
 }
 
     public double getBeltVelocity(){
