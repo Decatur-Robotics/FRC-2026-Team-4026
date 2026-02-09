@@ -101,5 +101,9 @@ public class IntakeIOTalonFX implements IntakeIO{
         intakeMotor.stopMotor();
     }
 
+    public void setDeployVoltage(double voltage){
+        voltageRequest = new VoltageOut(voltage);
+    }
+
 
 }
