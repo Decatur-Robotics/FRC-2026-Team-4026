@@ -98,7 +98,4 @@ public class IntakeIOTalonFX implements IntakeIO{
     public void stopIntake(){
         intakeMotor.stopMotor();
     }
-
-
-
 }

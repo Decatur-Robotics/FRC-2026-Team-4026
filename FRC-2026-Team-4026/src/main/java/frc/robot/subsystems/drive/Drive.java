@@ -345,6 +345,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
     }
 
+
     /** Adds a new timestamped vision measurement. */
     @Override
     public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
@@ -372,4 +373,5 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
             new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
         };
     }
+
 }

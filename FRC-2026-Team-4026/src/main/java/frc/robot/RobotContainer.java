@@ -177,6 +177,7 @@ public class RobotContainer {
     ));
         b.whileTrue(superstructure.shootCommand());
         a.whileTrue(superstructure.intakeCommand());
+
   }
 
   private void configureSecondaryBindings() {
