@@ -54,4 +54,11 @@ public class Hood extends SubsystemBase {
             Commands.runOnce(()->{io.setPosition(position);})
         );
     }
+
+    public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
+        return sysIdRoutine.quasistatic(direction);  
+    }
+    public Command sysIdDynamic (SysIdRoutine.Direction direction) {
+        return sysIdRoutine.dynamic(direction);
+    }
 }
