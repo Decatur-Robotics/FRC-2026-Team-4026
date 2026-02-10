@@ -38,4 +38,6 @@ public interface IntakeIO {
     default void stopIntake(){}
 
     default void periodic(){}
+
+    default void setDeployVoltage(double voltage){}
 }

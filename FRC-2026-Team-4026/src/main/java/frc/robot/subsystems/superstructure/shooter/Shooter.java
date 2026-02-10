@@ -49,4 +49,11 @@ public Command setVoltageCommand(double voltage) {
 public void periodic () {
     io.updateInputs(inputs);
 }
+
+public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
+        return sysIdRoutine.quasistatic(direction);
+    }
+    public Command sysIdDynamic (SysIdRoutine.Direction direction) {
+        return sysIdRoutine.dynamic(direction);
+    }
 }

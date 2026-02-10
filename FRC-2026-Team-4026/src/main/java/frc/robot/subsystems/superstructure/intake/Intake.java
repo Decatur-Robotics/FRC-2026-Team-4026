@@ -71,5 +71,12 @@ public class Intake extends SubsystemBase{
 
     }
 
+    public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
+        return sysIdRoutine.quasistatic(direction);
+    }
+    public Command sysIdDynamic (SysIdRoutine.Direction direction) {
+        return sysIdRoutine.dynamic(direction);
+    }
+
 }
 
