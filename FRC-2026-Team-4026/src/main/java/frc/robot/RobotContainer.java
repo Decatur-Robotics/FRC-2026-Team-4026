@@ -6,6 +6,9 @@ package frc.robot;
 
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveCommands;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -78,6 +81,7 @@ public class RobotContainer {
   private final Intake intake;
   private final Shooter shooter;
   //private final Hood hood;
+  private final Climber climber;
   private final RobotState robotState = new RobotState();
   private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
   
@@ -107,6 +111,7 @@ driveSimulation = null;
             hood = new Hood (new HoodIOTalonFX());
             intake = new Intake (new IntakeIOTalonFX());
             indexer = new Indexer (new IndexerIOTalonFX());
+            climber = new Climber(new ClimberTalonFX());
             superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
             
     }
@@ -130,6 +135,7 @@ driveSimulation = null;
                                       hood = new Hood (new HoodIOSim());
                                       intake = new Intake (new IntakeIOSim(driveSimulation));
                                       indexer = new Indexer (new IndexerIOSim());
+                                      climber = new Climber(new ClimberIOSim());
                                       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
                 
      }
@@ -204,6 +210,9 @@ driveSimulation = null;
         bumperLeft.whileTrue(superstructure.passCommand());
         a.whileTrue(superstructure.intakeCommand());
         b.whileTrue(superstructure.dumpCommand());
+
+        down.whileTrue(climber.climberDownCommand());
+        up.whileTrue(climber.climberUpCommand());
         
 
         
@@ -252,5 +261,9 @@ driveSimulation = null;
 
   public static RobotContainer getInstance(){
     return instance;
+  }
+
+  public Pose2d getDrivePose(){
+    return drive.getPose();
   }
 }

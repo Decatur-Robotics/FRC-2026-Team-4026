@@ -22,12 +22,13 @@ public class Indexer extends SubsystemBase{
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs(inputsName, inputs);
-        Logger.recordOutput("Left and Right Current:", getLeftCurrent()+", "+getRightCurrent());
-        Logger.recordOutput("Left and Right Voltage:", getLeftMotorVoltage()+", "+getRightMotorVoltage());
+        Logger.recordOutput("Mecanum current and Voltage:", getMecanumCurrent()+", "+getMecanumVoltage());
+        Logger.recordOutput("Belt Current and Voltage:", getBeltCurrent()+", "+getBeltVoltage());
+        Logger.recordOutput("Kick Current and Voltage:", getKickCurrent()+", "+getKickVoltage());
         if (isEStopped){
             io.stop();
         }
-        if(getLeftCurrent() > IndexerConstants.MAX_CURRENT && getLeftVelocity() == 0 || getRightCurrent() > IndexerConstants.MAX_CURRENT && getRightVelocity() == 0){
+        if(getMecanumCurrent() > IndexerConstants.MAX_CURRENT && getMecanumVelocity() == 0 || getBeltCurrent() > IndexerConstants.MAX_CURRENT && getBeltVelocity() == 0 || getKickCurrent() > IndexerConstants.MAX_CURRENT && getKickVelocity() == 0 ){
             setVoltageCommand(-6);
             Commands.waitSeconds(0.7);
             setVoltageCommand(6);
@@ -41,27 +42,39 @@ public class Indexer extends SubsystemBase{
         });
     }
 
-    public double getLeftCurrent(){
-        return inputs.indexerData.leftCurrent();
+    public double getMecanumCurrent(){
+        return inputs.indexerData.mecanumCurrent();
     }
 
-    public double getRightCurrent(){
-        return inputs.indexerData.rightCurrent();
+    public double getBeltCurrent(){
+        return inputs.indexerData.beltCurrent();
     }
-    
-    public double getLeftMotorVoltage(){
-        return inputs.indexerData.leftMotorVoltage();
-    }
-
-    public double getRightMotorVoltage(){
-        return inputs.indexerData.rightMotorVoltage();
+    public double getKickCurrent(){
+        return inputs.indexerData.kickCurrent();
     }
 
-    public double getLeftVelocity(){
-        return inputs.indexerData.leftVelocity();
+    public double getMecanumVoltage(){
+        return inputs.indexerData.mecanumVoltage();
+    }
+
+    public double getBeltVoltage(){
+        return inputs.indexerData.beltVoltage();
+    }
+
+    public double getKickVoltage(){
+        return inputs.indexerData.kickVoltage();
+    }
+
+
+    public double getMecanumVelocity(){
+        return inputs.indexerData.mecanumVelocity();
 }
 
-    public double getRightVelocity(){
-        return inputs.indexerData.rightVelocity();
+    public double getBeltVelocity(){
+        return inputs.indexerData.beltVelocity();
+    }    
+
+    public double getKickVelocity(){
+        return inputs.indexerData.kickVelocity();
     }    
 }

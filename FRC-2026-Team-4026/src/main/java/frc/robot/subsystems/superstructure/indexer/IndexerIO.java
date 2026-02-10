@@ -8,6 +8,11 @@ public interface IndexerIO {
         public IndexerIOData indexerData = new IndexerIOData(
             false,
             false,
+            false,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
             0.0,
             0.0,
             0.0,
@@ -21,16 +26,21 @@ public interface IndexerIO {
     }
 
     public record IndexerIOData(
-        boolean rightMotorConnected,
-        boolean leftMotorConnected,
-        double rightMotorVoltage,
-        double leftMotorVoltage,
-        double leftCurrent,
-        double rightCurrent,
-        double leftVelocity,
-        double rightVelocity,
-        double leftTemp,
-        double rightTemp
+        Boolean mechanumMotorConnected,
+        Boolean beltMotorConnected,
+        Boolean kickMotorConnected,
+        double mecanumVoltage,
+        double beltVoltage,
+        double kickVoltage,
+        double mecanumCurrent,
+        double beltCurrent,
+        double kickCurrent,
+        double mecanumVelocity,
+        double beltVelocity,
+        double kickVelocity,
+        double mecanumTemp,
+        double beltTemp,
+        double kickTemp
     ){}
 
     default void updateInputs(IndexerIOInputs inputs){}

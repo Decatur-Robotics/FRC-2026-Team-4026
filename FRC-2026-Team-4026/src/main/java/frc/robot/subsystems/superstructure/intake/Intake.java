@@ -16,7 +16,7 @@ public class Intake extends SubsystemBase{
     private IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
     private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> SignalLogger.writeString("state", state.toString())),
-    new SysIdRoutine.Mechanism((volts) -> io.setDeployVoltage(volts.in(Volts)), null, this));
+    new SysIdRoutine.Mechanism((volts) -> io.setDeployVoltage(volts.in(Volts)),null, this));
 
     public Intake(IntakeIO io){
         this.io = io;

@@ -18,7 +18,7 @@ import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 
 public class ShooterIOTalonFX implements ShooterIO {
-    public TalonFX motorLeft, motorRight;
+    public TalonFX motor;
     private TalonFXConfiguration config;
 
     private StatusSignal<Voltage> voltage;
@@ -32,63 +32,51 @@ public class ShooterIOTalonFX implements ShooterIO {
 
 
     public ShooterIOTalonFX () {
-        motorLeft = new TalonFX(Ports.SHOOTER_MOTOR_LEFT);
-        motorRight = new TalonFX (Ports.SHOOTER_MOTOR_RIGHT);
+        motor = new TalonFX(Ports.SHOOTER_MOTOR_LEFT);
         
         config = new TalonFXConfiguration ();
 
-        voltage = motorLeft.getMotorVoltage();
+        voltage = motor.getMotorVoltage();
     
         voltageRequest = new VoltageOut(voltage.getValueAsDouble());
         
         velocityRequest = new MotionMagicVelocityDutyCycle(velocity.getValueAsDouble());
 
-        motorLeft.getConfigurator().apply(config);
-        motorRight.getConfigurator().apply(config);
-        motorRight.setControl(new Follower(Ports.SHOOTER_MOTOR_LEFT, MotorAlignmentValue.Opposed));
+        motor.getConfigurator().apply(config);
+        motor.getConfigurator().apply(config);
+        velocity = motor.getVelocity();
 
-         velocity = motorLeft.getVelocity();
-
-        tryUntilOk(
-            5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, velocity)
-        );
-
-         tryUntilOk(
-             5, () -> motorLeft.optimizeBusUtilization());
-
+        tryUntilOk(5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, velocity));
+        tryUntilOk(5, () -> motor.optimizeBusUtilization());
         PhoenixUtil.registerSignals(true, velocity,voltage);    
     }
 
 @Override
 public void setVelocity (double velocity){
-    motorLeft.setControl(velocityRequest.withVelocity(velocity)); 
+    motor.setControl(velocityRequest.withVelocity(velocity)); 
 }
 
 @Override
 public void setVoltage (double voltage){
-    motorLeft.setVoltage(voltage);
+    motor.setVoltage(voltage);
 }
 
 @Override
 public void periodic () {
-    if (motorLeft.hasResetOccurred()||     motorRight.hasResetOccurred()) {
-        motorLeft.optimizeBusUtilization(); motorRight.optimizeBusUtilization(); motorLeft.getVelocity().setUpdateFrequency(40);
+    if (motor.hasResetOccurred()) {
+        motor.optimizeBusUtilization();
+        motor.getVelocity().setUpdateFrequency(40);
     }
 }
 
 @Override
 public void updateInputs (ShooterIOInputs inputs){
     inputs.data = new ShooterIOData (
-        motorLeft.isConnected(),
-        motorRight.isConnected(),
-        motorLeft.getSupplyVoltage().getValueAsDouble(),
-        motorRight.getSupplyVoltage().getValueAsDouble(),
-        motorLeft.getVelocity().getValueAsDouble(),
-        motorRight.getVelocity().getValueAsDouble(),
-        motorLeft.getSupplyCurrent().getValueAsDouble(),
-        motorRight.getSupplyCurrent().getValueAsDouble(),
-        motorLeft.getDeviceTemp().getValueAsDouble(),
-        motorRight.getDeviceTemp().getValueAsDouble()
+        motor.isConnected(),
+        motor.getSupplyVoltage().getValueAsDouble(),
+        motor.getVelocity().getValueAsDouble(),
+        motor.getSupplyCurrent().getValueAsDouble(),
+        motor.getDeviceTemp().getValueAsDouble()
         );
 }
 
