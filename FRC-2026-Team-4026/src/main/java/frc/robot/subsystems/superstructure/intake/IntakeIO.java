@@ -33,8 +33,6 @@ public interface IntakeIO {
 
     default void setDeployPosition(double position){}
 
-    default void setDeployVoltage(double voltage){}
-
     default void stopIntake(){}
 
     default void periodic(){}

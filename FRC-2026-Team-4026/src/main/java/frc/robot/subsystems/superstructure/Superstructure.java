@@ -128,18 +128,8 @@ public class Superstructure extends SubsystemBase {
             }
         else {
             return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-
-    public Command passCommand(){
-        if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
-            return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-        }
-            
-        }
-        else {
-            return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 0.0, 12.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-        }
-        }
-        
+        }}
+    }
 
     public Command passCommand(){
        if (defenseMode) {

@@ -32,7 +32,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
 
     public ShooterIOTalonFX () {
-        motor = new TalonFX(Ports.SHOOTER_MOTOR_LEFT);
+        motor = new TalonFX(Ports.SHOOTER_MOTOR);
         
         config = new TalonFXConfiguration ();
 
