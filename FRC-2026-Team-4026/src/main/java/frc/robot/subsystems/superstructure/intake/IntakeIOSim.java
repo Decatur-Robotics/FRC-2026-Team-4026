@@ -19,13 +19,12 @@ public class IntakeIOSim implements IntakeIO{
 
     private final DCMotorSim intakeSim;
     private final SingleJointedArmSim deploySim;
-
     private final ProfiledPIDController controller = new ProfiledPIDController(
     IntakeConstants.kP, 
     IntakeConstants.kI, 
     IntakeConstants.kD,
     new TrapezoidProfile.Constraints(0, 0));
-
+    private double pidOutput;
     private final IntakeSimulation intakeSimulation;
         //make encoder! add the encoder channels this goes in overall constants file?
         private final Encoder encoder = new Encoder(0, 1);
@@ -38,7 +37,8 @@ public class IntakeIOSim implements IntakeIO{
             DCMotor.getKrakenX44(1));
             //need params for singlejoitned arm sim
 
-            deploySim = new SingleJointedArmSim(LinearSystemId.createSingleJointedArmSystem(DCMotor.getKrakenX44(1),
+            deploySim = new SingleJointedArmSim(LinearSystemId.createSingleJointedArmSystem(DCMotor.getKrakenX44(2),
+
             IntakeConstants.DEPLOY_MOI,
             17.31),
             DCMotor.getKrakenX44(1), 
@@ -49,6 +49,8 @@ public class IntakeIOSim implements IntakeIO{
             true, 
             (IntakeConstants.STORED_INTAKE_POSITION*3.14)/180);
     
+
+            
             this.intakeSimulation = IntakeSimulation.OverTheBumperIntake("Fuel", 
             drivetrain,
             IntakeConstants.INTAKE_WIDTH,
@@ -97,11 +99,19 @@ public class IntakeIOSim implements IntakeIO{
         inputs.intakeData = new IntakeIOData(
         true,
         true,
+        true,
         intakeSim.getInputVoltage(),
-        0,
+        pidOutput,
+        pidOutput,
         intakeSim.getCurrentDrawAmps(),
         deploySim.getCurrentDrawAmps(),
-        deploySim.getAngleRads());
+        deploySim.getCurrentDrawAmps(),
+        deploySim.getAngleRads(),
+        deploySim.getAngleRads(),
+        0.0,
+        0.0,
+        0.0
+        );
     }
 
     @Override

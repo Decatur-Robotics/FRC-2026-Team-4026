@@ -4,17 +4,27 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
     @AutoLog
-    public class IntakeIOInputs {
-        public IntakeIOData intakeData = new IntakeIOData(false,false,0.0,0.0,0.0,0.0,0.0);
+    class IntakeIOInputs {
+        public IntakeIOData intakeData = new IntakeIOData(false,false,false,0,0,0,0,0,0.0,0.0,0.0,0.0,0.0,0.0);
     }
     public record IntakeIOData(
         boolean intakeMotorConnected,
         boolean deployMotorConnected,
+        boolean deployFollowerMotorConnected,
         double intakeVoltage,
         double deployVoltage,
+        double deployFollowVoltage,
         double intakeCurrent,
         double deployCurrent,
-        double deployPosition
+        double deployFollowCurrent,
+        double deployPosition,
+        double deployFollowPosition,
+        double intakeTemp,
+        double deployTemp,
+        double deployFollowTemp
+
+ 
+
     ){}
 
     default void updateInputs(IntakeIOInputs inputs){}
@@ -23,7 +33,11 @@ public interface IntakeIO {
 
     default void setDeployPosition(double position){}
 
+    default void setDeployVoltage(double voltage){}
+
     default void stopIntake(){}
 
     default void periodic(){}
+
+    default void setDeployVoltage(double voltage){}
 }

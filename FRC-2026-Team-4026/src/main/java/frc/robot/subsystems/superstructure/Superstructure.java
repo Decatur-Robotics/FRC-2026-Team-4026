@@ -85,7 +85,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public SuperstructureState getCurrentState(){
-        return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getLeftMotorVoltage(), intake.getIntakeVoltage());
+        return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getMecanumVoltage(), intake.getIntakeVoltage());
     }
 
     public boolean isHoodAtTarget(){
@@ -98,6 +98,9 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command intakeCommand(){
+        if (defenseMode){
+            return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 1.0, 0.0, 12*robotState.getBrownoutVoltage())), leds.pulseLedsCommand(ledsConstants.GREEN, 5));
+        }
         return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulseLedsCommand(ledsConstants.GREEN, 5));
     }
 
@@ -105,6 +108,7 @@ public class Superstructure extends SubsystemBase {
         if(defenseMode){
             return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 0.0, 0.0, 0.0)), leds.setAllLedsCommand(ledsConstants.BLUE));
         }
+
         else{
             return Commands.parallel(setState(SuperstructureConstants.STORING_STATE), leds.setAllLedsCommand(ledsConstants.BLUE));
         }
@@ -114,34 +118,70 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE), leds.pulseLedsCommand(ledsConstants.RED, 5));
     }
 
-         public Command shootCommand(){
-        // only runs shoot fuel if in simulation
-        if(Robot.isSimulation()){
-            return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10), shootFuelCommand());
+    public Command shootCommand(){
+        if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
+            return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         }
         else{
-            return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 1.0, 12, 12.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
-        }
-    }
+            if (RobotState.BATTERY_BROWNOUT_PROTECTION){
+                return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() < SuperstructureConstants.VELOCITY_BROWNOUT_LIMIT ? robotState.getTargetVelocity() : 0.0,  
+                robotState.getTargetAim(), 1.0, 6, 6)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
+                
+            }
+        else {
+            return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
 
     public Command passCommand(){
-        return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() + 10, robotState.getTargetAim() + .1, 1.0, 12.0, 12.0)), leds.flashAllLedsCommand(ledsConstants.MAGENTA, 10), shootFuelCommand());
-    }
+        if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
+            return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+        }
+            
+        }
+        else {
+            return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity(), robotState.getTargetAim(), 0.0, 12.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+        }
+        }
+        
+
+    public Command passCommand(){
+       if (defenseMode) {
+            if (robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())<robotState.getTargetVelocity()+10){
+                return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 0.0, 0.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+            }
+            else {
+                return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity()+10, robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim()+0.1,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+
+            }
+       }
+       else {
+            return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity()+10, robotState.getTargetAim()+0.1, 0.0, 12.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+        }
+        }
+            
+    
 
     public void shootFuel(){
 
         RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
             robotState.getDrivePose(),
-            new Translation2d(0.0, 0.0),
+            new Translation2d(0,0),
             robotState.getChassisSpeed(),
             robotState.getDriveRotatoin(),
             Meters.of(0.2),
-            MetersPerSecond.of(10.0),
-            Radians.of(hood.getPosition()+Math.PI/2)
+            MetersPerSecond.of(2),
+            Radians.of(hood.getPosition())
         );
 
         fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();
         SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
+}
+
+ public Command shootFuelCommand(){
+        return Commands.runOnce(()->shootFuel());
+ }
+
+
+
 }
 
  public Command shootFuelCommand(){

@@ -6,6 +6,9 @@ package frc.robot;
 
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveCommands;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -39,6 +42,9 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.hood.HoodIO;
 import frc.robot.subsystems.superstructure.hood.HoodIOSim;
+
+import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
+import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 
 
 import org.littletonrobotics.junction.Logger;
@@ -165,7 +171,18 @@ public class RobotContainer {
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
+
+
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+ drive.setDefaultCommand(
+      DriveCommands.joystickDrive(
+        drive,
+        ()-> joystick.getY(),
+        ()-> joystick.getX(),
+        ()-> joystick.getTwist()
+    ));
+
+  b.whileTrue(drive.setMinimumBumpVelocityCommand());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
             drive.setDefaultCommand(
@@ -198,6 +215,17 @@ public class RobotContainer {
         JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
+
+        triggerRight.whileTrue(superstructure.shootCommand());
+        bumperLeft.whileTrue(superstructure.passCommand());
+        a.whileTrue(superstructure.intakeCommand());
+        b.whileTrue(superstructure.dumpCommand());
+
+        down.whileTrue(climber.climberDownCommand());
+        up.whileTrue(climber.climberUpCommand());
+        
+
+        
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
@@ -242,11 +270,16 @@ public class RobotContainer {
     Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
   }
 
-  public RobotContainer getInstance(){
-    return instance;
-  }
 
   public Superstructure getSuperstructure() {
     return superstructure;
+  }
+}
+  public static RobotContainer getInstance(){
+    return instance;
+  }
+
+  public Pose2d getDrivePose(){
+    return drive.getPose();
   }
 }

@@ -55,7 +55,8 @@ public class HoodIOSim implements HoodIO {
             hoodSim.getInputVoltage(),
             realPosition.in(Rotations),
             hoodSim.getCurrentDrawAmps(),
-            hoodSim.getCurrentDrawAmps()
+            hoodSim.getCurrentDrawAmps(),
+            0.0
             );
     }
 
