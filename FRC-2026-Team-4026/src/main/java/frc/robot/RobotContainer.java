@@ -84,6 +84,7 @@ public class RobotContainer {
   private final Shooter shooter;
   private final Hood hood;
   private final RobotState robotState;
+  private final Climber climber;
   private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
   
   public final Drive drive;
@@ -101,7 +102,7 @@ public class RobotContainer {
       indexer = new Indexer(new IndexerIOTalonFX());
       intake = new Intake(new IntakeIOTalonFX());
       shooter = new Shooter(new ShooterIOTalonFX());
-
+      climber = new Climber(new ClimberTalonFX());
       driveSimulation = null;
       this.drive = new Drive(
         new GyroIOPigeon2(),
@@ -123,6 +124,7 @@ public class RobotContainer {
       driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
       intake = new Intake(new IntakeIOSim(driveSimulation));
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+      climber = new Climber(new ClimberIOSim());
       drive = new Drive(
                         new GyroIOSim(driveSimulation.getGyroSimulation()),
                         new ModuleIOTalonFXSim(
@@ -274,7 +276,7 @@ public class RobotContainer {
   public Superstructure getSuperstructure() {
     return superstructure;
   }
-}
+
   public static RobotContainer getInstance(){
     return instance;
   }

@@ -52,7 +52,7 @@ public RobotState(Drive drive){
     voltageToVelocity.put(6.0, 600.0);
     totalCurrentDraw = PDH.getTotalCurrent();
     busVoltage = PDH.getVoltage();
-
+}
 
 
     public void periodic(){

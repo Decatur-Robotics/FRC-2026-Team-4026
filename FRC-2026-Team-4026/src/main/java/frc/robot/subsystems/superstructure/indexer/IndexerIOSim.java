@@ -67,8 +67,9 @@ public class IndexerIOSim implements IndexerIO {
     }
 
     public void setVoltage(double voltage){
-        rightGearbox.setInputVoltage(voltage);
-        leftGearbox.setInputVoltage(voltage);
+        mechanumMotorSim.setInputVoltage(voltage);
+        beltMotorSim.setInputVoltage(voltage);
+        kickMotorSim.setInputVoltage(voltage);
     }
 
 }

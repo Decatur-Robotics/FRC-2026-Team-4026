@@ -19,7 +19,7 @@ public class Indexer extends SubsystemBase{
     @Override
     public void periodic(){
         io.updateInputs(inputs);
-        Logger.processInputs(inputsName, inputs);
+        Logger.processInputs("Indexer", inputs);
         Logger.recordOutput("Mecanum current and Voltage:", getMecanumCurrent()+", "+getMecanumVoltage());
         Logger.recordOutput("Belt Current and Voltage:", getBeltCurrent()+", "+getBeltVoltage());
         Logger.recordOutput("Kick Current and Voltage:", getKickCurrent()+", "+getKickVoltage());

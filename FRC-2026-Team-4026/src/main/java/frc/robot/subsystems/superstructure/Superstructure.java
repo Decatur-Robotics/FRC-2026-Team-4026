@@ -170,12 +170,4 @@ public class Superstructure extends SubsystemBase {
         return Commands.runOnce(()->shootFuel());
  }
 
-
-
-}
-
- public Command shootFuelCommand(){
-        return Commands.runOnce(()->shootFuel());
- }
-
 }
