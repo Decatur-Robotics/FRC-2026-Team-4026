@@ -1,6 +1,7 @@
 package frc.robot.subsystems.superstructure.shooter;
 import edu.wpi.first.wpilibj2.command.Commands;
 
+import org.littletonrobotics.junction.Logger;
 import static edu.wpi.first.units.Units.*;
 
 import java.lang.Thread.State;
@@ -48,6 +49,7 @@ public Command setVoltageCommand(double voltage) {
 @Override
 public void periodic () {
     io.updateInputs(inputs);
+    Logger.processInputs("Shooter", inputs);
 }
 
 public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {

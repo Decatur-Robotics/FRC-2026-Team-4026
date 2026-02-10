@@ -30,23 +30,29 @@ public class RobotState {
     private double brownoutProtectionVoltage = 1.432*Math.log10(PDH.getVoltage()-7);
 
     private Drive drive;
-    private Pose2d robotPose = drive.getPose();
-    private InterpolatingDoubleTreeMap targetAims = new InterpolatingDoubleTreeMap();
-    private InterpolatingDoubleTreeMap targetVelocities = new InterpolatingDoubleTreeMap();
-    private Double robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
-    private SwerveDriveSimulation driveSimulation;
-    private Double speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
+    private Pose2d robotPose;
+    private InterpolatingDoubleTreeMap targetAims;
+    private InterpolatingDoubleTreeMap targetVelocities;
+    private Double robotDistance;
+    private Double speedOffset;
+      private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
     
-    private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
-
-public RobotState(){
-    targetAims.put(0.0, 0.0);
-    targetVelocities.put(0.0, 20.0);
-    voltageToVelocity.put(0.0, 0.0);
+public RobotState(Drive drive){
+    this.drive = drive;
+    robotPose = drive.getPose();
+    targetAims = new InterpolatingDoubleTreeMap();
+    targetVelocities = new InterpolatingDoubleTreeMap();
+    robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
+    speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
+    targetAims.put(0.1, 0.0);
+    targetVelocities.put(1.0, 30.0);
+    targetAims.put(1.0, 0.1);
+    targetVelocities.put(2.0, 40.0);
+      voltageToVelocity.put(0.0, 0.0);
     voltageToVelocity.put(6.0, 600.0);
     totalCurrentDraw = PDH.getTotalCurrent();
     busVoltage = PDH.getVoltage();
-}
+
 
 
     public void periodic(){

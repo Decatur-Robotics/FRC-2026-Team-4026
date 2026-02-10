@@ -11,11 +11,9 @@ import frc.robot.subsystems.superstructure.indexer.IndexerIOInputsAutoLogged;
 public class Indexer extends SubsystemBase{
     private IndexerIO io;
     private boolean isEStopped = false;
-    private final String inputsName;
     private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
     public Indexer(IndexerIO io) {
-        this.inputsName = this.getClass().getSimpleName() + "Inputs";
         this.io = io;
     }
     @Override

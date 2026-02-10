@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 import edu.wpi.first.units.measure.Voltage;
 
 public interface ShooterIO {
-    @AutoLog
+@AutoLog
 public class ShooterIOInputs { 
     public ShooterIOData data = new ShooterIOData (false,0.0,0.0,0.0,0.0);
     public Voltage leftVoltage;

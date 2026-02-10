@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IndexerIO {
     @AutoLog
     public class IndexerIOInputs{
-        public IndexerIOData indexerData = new IndexerIOData(
+         public IndexerIOData indexerData = new IndexerIOData(
             false,
             false,
             false,

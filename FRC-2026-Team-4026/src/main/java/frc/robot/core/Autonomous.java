@@ -21,9 +21,10 @@ public class Autonomous {
 
 
     public void registerNamedCommands() {
-        // final Superstructure superstructure = robotContainer.getSuperStructure();
-        // NamedCommands.registerCommand("Shoot", superstructure.shootCommand(0, 0));
-        // NamedCommands.registerCommand("Intake", superstructure.intakeCommand());
+        final Superstructure superstructure = robotContainer.getSuperstructure();
+        NamedCommands.registerCommand("Shoot", superstructure.shootCommand());
+        NamedCommands.registerCommand("Intake", superstructure.intakeCommand());
+        NamedCommands.registerCommand("Store", superstructure.storeCommand());
 
     }   
 }

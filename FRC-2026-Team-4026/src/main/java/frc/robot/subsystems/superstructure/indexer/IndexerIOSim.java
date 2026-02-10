@@ -66,5 +66,9 @@ public class IndexerIOSim implements IndexerIO {
         return Amps.of(mechanumMotorSim.getCurrentDrawAmps());
     }
 
+    public void setVoltage(double voltage){
+        rightGearbox.setInputVoltage(voltage);
+        leftGearbox.setInputVoltage(voltage);
+    }
 
 }

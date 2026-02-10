@@ -7,7 +7,7 @@ public interface IntakeIO {
     class IntakeIOInputs {
         public IntakeIOData intakeData = new IntakeIOData(false,false,false,0,0,0,0,0,0.0,0.0,0.0,0.0,0.0,0.0);
     }
-    record IntakeIOData(
+    public record IntakeIOData(
         boolean intakeMotorConnected,
         boolean deployMotorConnected,
         boolean deployFollowerMotorConnected,
