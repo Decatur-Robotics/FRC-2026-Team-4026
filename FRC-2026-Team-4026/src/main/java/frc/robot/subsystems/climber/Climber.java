@@ -2,16 +2,20 @@ package frc.robot.subsystems.climber;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.config.RobotConfig;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.climber.ClimberIOInputsAutoLogged;
-
+import frc.robot.RobotContainer;
+import frc.robot.RobotState;
+import frc.robot.constants.FieldConstants;
 public class Climber extends SubsystemBase {
 	
 	private final ClimberIO io;
 	private ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-
+	private RobotContainer robotContainer = new RobotContainer().getInstance();
 	private double voltage = 0.0;
 	private double position = 0.0;
 
@@ -39,27 +43,12 @@ public class Climber extends SubsystemBase {
 	}
 
 
-	public Command climbL1Command(){
-		return Commands.sequence(
-		setPositionCommand(ClimberConstants.CLIMBER_L1_POSITION),
-		setPositionCommand(ClimberConstants.CLIMBER_STARTING_POSITION)
-		);	
+	public Command climberUpCommand(){
+		return Commands.runOnce(()->setPositionCommand(ClimberConstants.CLIMBER_UP_POSITION));
 	}
 
-	public Command climbL2Command(){
-		return Commands.sequence(
-		climbL1Command(),
-		setPositionCommand(ClimberConstants.CLIMBER_L2_POSITION),
-		setPositionCommand(ClimberConstants.CLIMBER_STARTING_POSITION)
-		);	
-	}
-
-	public Command climbL3Command(){
-		return Commands.sequence(
-		climbL2Command(),
-		setPositionCommand(ClimberConstants.CLIMBER_L3_POSITION),
-		setPositionCommand(ClimberConstants.CLIMBER_STARTING_POSITION)
-		);	
+	public Command climberDownCommand(){
+		return Commands.runOnce(()->setPositionCommand(ClimberConstants.CLIMBER_DOWN_POSITION));
 	}
 
 

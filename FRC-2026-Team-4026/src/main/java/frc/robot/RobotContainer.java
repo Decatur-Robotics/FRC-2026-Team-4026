@@ -211,9 +211,8 @@ driveSimulation = null;
         a.whileTrue(superstructure.intakeCommand());
         b.whileTrue(superstructure.dumpCommand());
 
-        down.whileTrue(climber.climbL1Command());
-        right.whileTrue(climber.climbL2Command());
-        up.whileTrue(climber.climbL3Command());
+        down.whileTrue(climber.climberDownCommand());
+        up.whileTrue(climber.climberUpCommand());
         
 
         
@@ -262,5 +261,9 @@ driveSimulation = null;
 
   public static RobotContainer getInstance(){
     return instance;
+  }
+
+  public Pose2d getDrivePose(){
+    return drive.getPose();
   }
 }

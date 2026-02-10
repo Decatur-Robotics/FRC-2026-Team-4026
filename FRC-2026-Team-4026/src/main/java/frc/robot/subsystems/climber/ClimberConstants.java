@@ -10,7 +10,8 @@ public class ClimberConstants {
 	public static final double kA = 0.0;
 
 	public static final double CLIMBER_STARTING_POSITION = 0.0;
-	public static final double CLIMBER_L1_POSITION = 0.0;
-	public static final double CLIMBER_L2_POSITION = 0.0;
-	public static final double CLIMBER_L3_POSITION = 0.0;
+	public static final double CLIMBER_AUTO_POSITION = 0.0;
+	public static final double CLIMBER_UP_POSITION = 0.0;
+	public static final double CLIMBER_DOWN_POSITION = 0.0;
+
 }
