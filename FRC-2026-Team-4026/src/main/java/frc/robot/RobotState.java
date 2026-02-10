@@ -26,8 +26,8 @@ public class RobotState {
     private double busVoltage;
     public static boolean CURRENT_LIMITS_EXCEEDED;
     public static boolean BATTERY_BROWNOUT_PROTECTION;
-    private double brownoutProtectionVoltage = 9;
     private PowerDistribution PDH = new PowerDistribution();
+    private double brownoutProtectionVoltage = 1.432*Math.log10(PDH.getVoltage()-7);
 
     private Drive drive;
     private Pose2d robotPose = drive.getPose();
@@ -37,12 +37,17 @@ public class RobotState {
     private SwerveDriveSimulation driveSimulation;
     private Double speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
     
+    private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
+
 public RobotState(){
     targetAims.put(0.0, 0.0);
     targetVelocities.put(0.0, 20.0);
+    voltageToVelocity.put(0.0, 0.0);
+    voltageToVelocity.put(6.0, 600.0);
     totalCurrentDraw = PDH.getTotalCurrent();
     busVoltage = PDH.getVoltage();
 }
+
 
     public void periodic(){
         busVoltage = PDH.getVoltage();
@@ -60,6 +65,14 @@ public RobotState(){
 
         
     }
+
+    public double getVoltageToVelocity(double voltage){
+    return voltageToVelocity.get(voltage);
+}
+
+public double getBrownoutVoltage() {
+    return brownoutProtectionVoltage;
+}
     public double getTargetAim(){
         return targetAims.get(robotDistance);
     }
