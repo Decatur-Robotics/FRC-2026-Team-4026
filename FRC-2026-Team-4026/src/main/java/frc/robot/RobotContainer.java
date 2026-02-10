@@ -175,8 +175,8 @@ public class RobotContainer {
         ()-> joystick.getX(),
         ()-> joystick.getTwist()
     ));
-        b.whileTrue(superstructure.shootCommand());
-        a.whileTrue(superstructure.intakeCommand());
+
+        y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
 
   }
 
