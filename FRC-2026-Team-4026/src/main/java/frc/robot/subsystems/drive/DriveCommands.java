@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.NetworkTables;
+import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -42,6 +44,8 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+
+  private NetworkTables networkTables = new NetworkTables();
 
   private DriveCommands() {}
 
@@ -151,6 +155,21 @@ public class DriveCommands {
         // Reset PID controller when command starts
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
+  public Command DriveToFuel(Drive drive){
+    //gets the new rotation by getting the heading of the fuel from the camera of the robot then adding it to the current robot heading
+      Supplier<Rotation2d> rotation = () -> new Rotation2d(Math.toRadians(networkTables.getFuelRotation() * -1)
+      + drive.getRotation().getRadians());
+      //gets the x and y like a joystick to move towards the fuel
+      DoubleSupplier x = () -> (Math.cos(rotation.get().getRadians()));
+      DoubleSupplier y = () -> (Math.sin(rotation.get().getRadians()));
+      DoubleSupplier omegaSupplier = () -> 0;
+      //lobotomized setrotation command
+      ProfiledPIDController angleController = new ProfiledPIDController(
+                5.0, 0.0, 0.4, new TrapezoidProfile.Constraints(8.0, 20.0));
+
+      return Commands.run(() -> {angleController.setGoal(rotation.get().getRadians());
+      joystickDrive(drive, x, y,omegaSupplier);});
+  } 
 
   /**
    * Measures the velocity feedforward constants for the drive motors.
@@ -282,7 +301,9 @@ public class DriveCommands {
                               + formatter.format(Units.metersToInches(wheelRadius))
                               + " inches");
                     })));
+    
   }
+  
 
   private static class WheelRadiusCharacterizationState {
     double[] positions = new double[4];
