@@ -19,13 +19,12 @@ public class IntakeIOSim implements IntakeIO{
 
     private final DCMotorSim intakeSim;
     private final SingleJointedArmSim deploySim;
-    private double pidOutput;
     private final ProfiledPIDController controller = new ProfiledPIDController(
     IntakeConstants.kP, 
     IntakeConstants.kI, 
     IntakeConstants.kD,
     new TrapezoidProfile.Constraints(0, 0));
-
+    private double pidOutput;
     private final IntakeSimulation intakeSimulation;
         //make encoder! add the encoder channels this goes in overall constants file?
         private final Encoder encoder = new Encoder(0, 1);
@@ -38,7 +37,8 @@ public class IntakeIOSim implements IntakeIO{
             DCMotor.getKrakenX44(1));
             //need params for singlejoitned arm sim
 
-            deploySim = new SingleJointedArmSim(LinearSystemId.createSingleJointedArmSystem(DCMotor.getKrakenX44(1),
+            deploySim = new SingleJointedArmSim(LinearSystemId.createSingleJointedArmSystem(DCMotor.getKrakenX44(2),
+
             IntakeConstants.DEPLOY_MOI,
             17.31),
             DCMotor.getKrakenX44(1), 
@@ -47,9 +47,10 @@ public class IntakeIOSim implements IntakeIO{
             (IntakeConstants.DEPLOY_MIN_ANGLE*3.14)/180, 
             (IntakeConstants.DEPLOY_MAX_ANGLE*3.14)/180,
             true, 
-            (IntakeConstants.STORED_INTAKE_POSITION*3.14)/180, 
-            null);
+            (IntakeConstants.STORED_INTAKE_POSITION*3.14)/180);
     
+
+            
             this.intakeSimulation = IntakeSimulation.OverTheBumperIntake("Fuel", 
             drivetrain,
             IntakeConstants.INTAKE_WIDTH,
@@ -72,41 +73,52 @@ public class IntakeIOSim implements IntakeIO{
     @Override
     public void setDeployPosition(double position) {
 
-        if (position == IntakeConstants.DEPLOY_INTAKE_POSITION){
+        deploySim.setState(position, 0);
 
-            controller.setGoal(position);
-            pidOutput = controller.calculate(encoderSim.getDistance(),
-            Units.degreesToRadians(IntakeConstants.DEPLOY_INTAKE_POSITION));
-            deploySim.setInputVoltage(pidOutput);
+        // if (position == IntakeConstants.DEPLOY_INTAKE_POSITION){
 
-            intakeSimulation.startIntake();
-        }
-        else
+        //     controller.setGoal(position);
+        //     double pidOutput = controller.calculate(encoderSim.getDistance(),
+        //     Units.degreesToRadians(IntakeConstants.DEPLOY_INTAKE_POSITION));
+        //     deploySim.setInputVoltage(pidOutput);
 
-            controller.setGoal(position);
-            pidOutput = controller.calculate(encoderSim.getDistance(),
-            Units.degreesToRadians(IntakeConstants.STORED_INTAKE_POSITION));
-            deploySim.setInputVoltage(pidOutput);
+        //     intakeSimulation.startIntake();
+        // }
+        // else
+        // {
+        //     controller.setGoal(position);
+        //     double pidOutput = controller.calculate(encoderSim.getDistance(),
+        //     Units.degreesToRadians(IntakeConstants.STORED_INTAKE_POSITION));
+        //     deploySim.setInputVoltage(pidOutput);
 
-            intakeSimulation.stopIntake();
-        }
+        //     intakeSimulation.stopIntake();
+        // }
+    }
     @Override
-    //make these motors
     public void updateInputs(IntakeIOInputs inputs){
-        inputs.intakeData = new IntakeIO.IntakeIOData(
+        inputs.intakeData = new IntakeIOData(
+        true,
         true,
         true,
         intakeSim.getInputVoltage(),
         pidOutput,
+        pidOutput,
         intakeSim.getCurrentDrawAmps(),
         deploySim.getCurrentDrawAmps(),
-        deploySim.getAngleRads());
+        deploySim.getCurrentDrawAmps(),
+        deploySim.getAngleRads(),
+        deploySim.getAngleRads(),
+        0.0,
+        0.0,
+        0.0
+        );
     }
 
     @Override
     public void setIntakeVoltage(double voltage){
 
         intakeSim.setInputVoltage(voltage);
+        intakeSimulation.startIntake();
     }
 
     @Override

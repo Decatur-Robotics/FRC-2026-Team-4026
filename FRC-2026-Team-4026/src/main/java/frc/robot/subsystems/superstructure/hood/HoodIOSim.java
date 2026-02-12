@@ -48,14 +48,15 @@ public class HoodIOSim implements HoodIO {
     public void updateInputs(HoodIOInputs inputs){      
     
         Angle realPosition = Rotations.of(hoodSim.getAngularPosition().magnitude()/gearingRatio);
-        Voltage realVoltage =  Volts.of(hoodSim.getInputVoltage());
-        realVoltage = SimulatedBattery.clamp(realVoltage);
+        // Voltage realVoltage =  Volts.of(hoodSim.getInputVoltage());
+        // realVoltage = SimulatedBattery.clamp(realVoltage);
         inputs.hoodData = new HoodIOData(
             true,
-            realVoltage.in(Volts),
+            hoodSim.getInputVoltage(),
             realPosition.in(Rotations),
             hoodSim.getCurrentDrawAmps(),
-            hoodSim.getCurrentDrawAmps()
+            hoodSim.getCurrentDrawAmps(),
+            0.0
             );
     }
 
@@ -63,10 +64,12 @@ public class HoodIOSim implements HoodIO {
         return Amps.of(hoodSim.getCurrentDrawAmps());
     }
 
+    @Override
     public void setVoltage(double voltage){
-        this.voltage = Volts.of(voltage);
+        hoodSim.setInputVoltage(voltage);
     }
 
+    @Override
     public void setPosition(double position){
         hoodSim.setAngle(position*gearingRatio);
 

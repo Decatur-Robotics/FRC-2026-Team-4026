@@ -5,22 +5,42 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IndexerIO {
     @AutoLog
     public class IndexerIOInputs{
-        public IndexerIOData indexerData = new IndexerIOData(
+         public IndexerIOData indexerData = new IndexerIOData(
             false,
             false,
+            false,
             0.0,
             0.0,
             0.0,
-            0.0);
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+            );
+
     }
 
     public record IndexerIOData(
-        Boolean rightMotorConnected,
-        Boolean leftMotorConnected,
-        Double rightMotorVoltage,
-        Double leftMotorVoltage,
-        Double leftCurrent,
-        Double rightCurrent
+        Boolean mechanumMotorConnected,
+        Boolean beltMotorConnected,
+        Boolean kickMotorConnected,
+        double mecanumVoltage,
+        double beltVoltage,
+        double kickVoltage,
+        double mecanumCurrent,
+        double beltCurrent,
+        double kickCurrent,
+        double mecanumVelocity,
+        double beltVelocity,
+        double kickVelocity,
+        double mecanumTemp,
+        double beltTemp,
+        double kickTemp
     ){}
 
     default void updateInputs(IndexerIOInputs inputs){}
@@ -30,4 +50,5 @@ public interface IndexerIO {
     default void periodic(){}
 
     default void stop(){}
+    
 }        
