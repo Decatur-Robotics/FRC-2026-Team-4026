@@ -30,6 +30,18 @@ public class leds implements Subsystem {
     ArrayList<TeamColor> ledsToAdd = new ArrayList<TeamColor>();
     // different modes for leds.  1 = normal flashing   2 = pulsing
     private int mode;
+
+    private int red = 0;
+    private int green = 0;
+    private int blue = 0;
+    private int fadeStage = 1;
+    private final int rainbowSpeed = 2;
+
+    private final int redFadeBottom = 200;
+    private final int redFadeTop = 255;
+    private final int blueFadeBottom = 140;
+    private final int blueFadeTop = 240;
+    private final int fadeSpeed = 5;
     public leds(){
         led = new AddressableLED(Ports.ADDRESSABLE_LED);
 
@@ -84,7 +96,37 @@ public class leds implements Subsystem {
         }
     }
 
+    public void rainbowPulseLEDS(int length){
+        pulseLEDS(ledsConstants.RED, length);
+        pulseLEDS(ledsConstants.ORANGE, length);
+        pulseLEDS(ledsConstants.YELLOW, length);
+        pulseLEDS(ledsConstants.GREEN, length);
+        pulseLEDS(ledsConstants.CYAN, length);
+        pulseLEDS(ledsConstants.BLUE, length);
+        pulseLEDS(ledsConstants.MAGENTA, length);
+    }
 
+    public void rainbowLEDS(){
+        mode = 3;
+    }
+    public void fadeRedLEDS(){
+        mode = 4;
+        red = 255;
+        blue = 0;
+        green = 0;
+        fadeStage = 2;
+    }
+
+    public void fadeBlueLEDS(){
+        mode = 5;
+        red = 0;
+        blue = 255;
+        green = 0;
+        fadeStage = 2;
+    }
+
+
+    //commands
     public Command setAllLedsCommand(TeamColor color){
         return runOnce(()-> setAllPixels(color));
     }
@@ -97,11 +139,22 @@ public class leds implements Subsystem {
         return runOnce(()-> pulseLEDS(color, amount));
     }
 
+    public Command rainbowPulseLEDSCommand(int length){
+        return runOnce(()-> rainbowPulseLEDS(length));
+    }
 
+    public Command rainbowLEDSCommand(){
+        return runOnce(()-> rainbowLEDS());
+    }
 
+    public Command fadeRedLEDSCommand(){
+        return runOnce(()->fadeRedLEDS());
+    }
 
-
-
+    public Command fadeBlueLEDSCommand(){
+        return runOnce(()->fadeBlueLEDS());
+    }
+    
     @Override
     public void periodic(){
         periodsPassed ++;
@@ -135,8 +188,13 @@ public class leds implements Subsystem {
 
            stepAllPixels();
            if(ledsToAdd.size() >0){
+
+            buffer.setRGB(0,ledsToAdd.get(0).r,ledsToAdd.get(0).g,ledsToAdd.get(0).b);
+            ledsToAdd.remove(0);
            } else{
+
             buffer.setRGB(0,0,0,0);
+
            }
           
            if(ledsToAdd.size() == 0){
@@ -151,9 +209,109 @@ public class leds implements Subsystem {
                     numFlashes = 0;
                 }
            }
+
+        }  else if (mode == 3){
+            if (fadeStage == 1){
+                if (red < 10){
+                    fadeStage = 2;
+                } else{
+                    red -= rainbowSpeed;
+                    green += rainbowSpeed;
+                }
+            } 
+            else if (fadeStage == 2){
+                if (green < 10){
+                    fadeStage = 3;
+                } else{
+                    green -= rainbowSpeed;
+                    blue += rainbowSpeed;
+                }
+            }
+            else if (fadeStage == 3){
+                if ( blue < 10){
+                    fadeStage = 1;
+                } else {
+                    blue -= rainbowSpeed;
+                    red += rainbowSpeed;
+                }
+            }
+            // if value of colors are out of range it fixes it
+            if (red > 255){
+                red = 255;
+            }
+            if (green > 255){
+                green = 255;
+            }
+            if( blue > 255){
+                blue = 255;
+            }
+            if (red < 0){
+                red = 0;
+            }
+            if( green < 0){
+                green = 0;
+            }
+            if (blue < 0){
+                blue = 0;
+            }
+
+            for(int i = 0; i < length; i++){
+                buffer.setRGB(i, red, green, blue);
+            }
+        }
+
+        if(mode == 4){
+            if (fadeStage == 1){
+                if(red <= redFadeBottom){
+                    fadeStage = 2;
+                } else{
+                    red -= fadeSpeed;
+                }
+            } else if (fadeStage == 2){
+                if(red >= redFadeTop){
+                    fadeStage = 1;
+                } else{
+                    red += fadeSpeed;
+                }
+            }
+            if(red > 255){
+                red =255;
+            }
+            if (red < 0){
+                red = 0;
+            }
+
+            for(int i = 0; i < length; i++){
+                buffer.setRGB(i, red, 0, 0);
+            }
         }
 
 
+        if(mode == 5){
+            if (fadeStage == 1){
+                if(blue <= blueFadeBottom){
+                    fadeStage = 2;
+                } else{
+                    blue -= fadeSpeed;
+                }
+            } else if (fadeStage == 2){
+                if(blue >= blueFadeTop){
+                    fadeStage = 1;
+                } else{
+                    blue += fadeSpeed;
+                }
+            }
+            if(blue > 255){
+                blue =255;
+            }
+            if (blue < 0){
+                blue = 0;
+            }
+
+            for(int i = 0; i < length; i++){
+                buffer.setRGB(i, 0, 0, blue);
+            }
+        }
 
         if (periodsPassed > 5) {
 			periodsPassed = 0;
