@@ -49,7 +49,9 @@ public RobotState(Drive drive){
     targetAims.put(1.0, 0.1);
     targetVelocities.put(2.0, 40.0);
       voltageToVelocity.put(0.0, 0.0);
-    voltageToVelocity.put(6.0, 600.0);
+    voltageToVelocity.put(6.0, 40.0);
+    voltageToVelocity.put(8.0, 64.0);
+    voltageToVelocity.put(12.0, 85.0);
     totalCurrentDraw = PDH.getTotalCurrent();
     busVoltage = PDH.getVoltage();
 }
