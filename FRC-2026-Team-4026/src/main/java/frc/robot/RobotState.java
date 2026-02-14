@@ -2,6 +2,8 @@ package frc.robot;
 
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -18,6 +20,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
+import frc.robot.util.GeometryUtil;
 
 public class RobotState {
     // add params for PDH object
@@ -38,6 +41,9 @@ public class RobotState {
     private Double speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
     
     private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
+
+    private static RobotState instance;
+    private Translation2d hubToRobot = new Translation2d(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
 
 public RobotState(){
     targetAims.put(0.0, 0.0);
@@ -100,4 +106,28 @@ public double getBrownoutVoltage() {
     public Rotation2d getDriveRotatoin(){
         return drive.getRotation();
     }
+
+     
+    public static RobotState getInstance() {
+         return instance;
+    }
+
+    public static Pose2d getEstimatedRobotPose(){
+        return instance.drive.getPose();
+    }
+
+    public double getChassisVelocity(){
+        return GeometryUtil.getChassisTranslationSpeeds(drive.getChassisSpeeds());
+
+    }
+
+    public ChassisSpeeds getFieldVelocity(){
+       return ChassisSpeeds.fromFieldRelativeSpeeds(drive.getChassisSpeeds(), drive.getRotation());
+
+}
+    public Translation2d getHubLocalizedRobotPose(){
+        return hubToRobot;
+    }
+
+
 }

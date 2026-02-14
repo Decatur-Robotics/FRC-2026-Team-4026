@@ -253,4 +253,8 @@ driveSimulation = null;
   public static RobotContainer getInstance(){
     return instance;
   }
+
+  public Drive getDrive() {
+    return drive;
+  }
 }
