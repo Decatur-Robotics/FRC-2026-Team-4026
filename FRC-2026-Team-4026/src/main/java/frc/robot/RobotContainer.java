@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
@@ -93,6 +94,7 @@ public class RobotContainer {
   private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
+  private Autonomous autonomous;
   public RobotContainer() {
 
     // Configure the trigger bindings
@@ -117,6 +119,7 @@ public class RobotContainer {
                             new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT),
                             new VisionIOPhotonVision(VisionConstants.CAMERA_BACK_NAME, VisionConstants.ROBOT_TO_CAMERA_BACK));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+      autonomous = new Autonomous(drive);
     
     }
  else {
@@ -143,6 +146,7 @@ public class RobotContainer {
                                       new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                 robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+      autonomous = new Autonomous(drive);
      }
      resetSimulationField();
          configurePrimaryBindings();
