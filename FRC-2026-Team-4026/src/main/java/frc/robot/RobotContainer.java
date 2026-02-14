@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
@@ -92,8 +93,9 @@ public class RobotContainer {
   private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
+  private final Autonomous autonomous;
   public RobotContainer() {
-
+    instance = this;
     // Configure the trigger bindings
 
 
@@ -115,6 +117,7 @@ public class RobotContainer {
       vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
                             new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+      autonomous = new Autonomous(instance, superstructure, drive);
     
     }
  else {
@@ -140,6 +143,7 @@ public class RobotContainer {
                                       new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT, driveSimulation::getSimulatedDriveTrainPose));
                                 robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+      autonomous  = new Autonomous(instance, superstructure, drive);
      }
      resetSimulationField();
          configurePrimaryBindings();
@@ -185,6 +189,9 @@ public class RobotContainer {
     ));
 
   b.whileTrue(drive.setMinimumBumpVelocityCommand());
+  a.whileTrue(changePathOverideFeedbackCommand());
+  triggerRight.whileTrue(superstructure.shootCommand());
+  triggerLeft.whileTrue(superstructure.intakeCommand());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
             drive.setDefaultCommand(
@@ -284,4 +291,9 @@ public class RobotContainer {
   public Pose2d getDrivePose(){
     return drive.getPose();
   }
+
+  public Command  changePathOverideFeedbackCommand(){
+    return autonomous.changePathOverideFeedbackCommand();
+  }
+
 }

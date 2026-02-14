@@ -8,6 +8,7 @@ public class NetworkTables {
     private Subscriber subcX;
     private Subscriber subcY;
     private Subscriber subcount; 
+    private Subscriber subRotationOfGamePiece;
 
     public NetworkTables(){
     //Its not datatable i forget what it was it was something similar though. its in vison
@@ -19,10 +20,12 @@ public class NetworkTables {
     DoubleTopic cY = table.getDoubleTopic("cY");
     DoubleTopic cX = table.getDoubleTopic("cX");
     DoubleTopic count = table.getDoubleTopic("count");
+    DoubleTopic rotationOfGamePiece = table.getDoubleTopic("rotationOfGamePiece");
 //Makes a subscriber for eahc of the networktable topics that gets transmitted
     subcX = new Subscriber(cX);
     subcY = new Subscriber(cY);
     subcount = new Subscriber(count);
+    subRotationOfGamePiece = new Subscriber(rotationOfGamePiece);
     }
     public double getCX(){
         //this is the method created in subscriber that returns the value of the topic that the subscriber is subscribed to
@@ -35,5 +38,8 @@ public class NetworkTables {
         return subcount.getValue();
     }
 
+    public double getFuelRotation(){
+         return subRotationOfGamePiece.getValue();
+    }
     
 }

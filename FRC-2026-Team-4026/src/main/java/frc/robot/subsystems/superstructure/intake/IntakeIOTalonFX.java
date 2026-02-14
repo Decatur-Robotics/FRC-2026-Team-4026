@@ -44,12 +44,7 @@ public class IntakeIOTalonFX implements IntakeIO{
         .withKV(IntakeConstants.kV)
         .withKA(IntakeConstants.kA);
 
-        deployPosition = deployMotor.getPosition();
-        deployFollowPosition = deployFollowMotor.getPosition();
 
-        intakeCurrent = intakeMotor.getSupplyCurrent();
-
-        positionRequest = new MotionMagicVoltage(deployPosition.getValueAsDouble()).withEnableFOC(true);
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
 
         deployMotor = new TalonFX(Ports.DEPLOY_MOTOR_PORT);
@@ -62,6 +57,17 @@ public class IntakeIOTalonFX implements IntakeIO{
 
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
+
+
+        deployPosition = deployMotor.getPosition();
+        deployFollowPosition = deployFollowMotor.getPosition();
+
+        intakeCurrent = intakeMotor.getSupplyCurrent();
+
+        deployCurrent = deployMotor.getStatorCurrent();
+        deployFollowCurrent = deployFollowMotor.getStatorCurrent();
+        
+        positionRequest = new MotionMagicVoltage(deployPosition.getValueAsDouble()).withEnableFOC(true);
         BaseStatusSignal.setUpdateFrequencyForAll(40, intakeVoltage,deployVoltage);
         tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeVoltage,deployVoltage,deployFollowVoltage, intakeCurrent, deployCurrent,deployFollowCurrent, deployPosition,deployFollowPosition));
         tryUntilOk(5, () -> intakeMotor.optimizeBusUtilization());

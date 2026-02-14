@@ -8,7 +8,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
@@ -18,6 +20,8 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
+import frc.robot.subsystems.superstructure.intake.Intake;
+import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
 
 public class RobotState {
     // add params for PDH object
@@ -30,15 +34,19 @@ public class RobotState {
     private double brownoutProtectionVoltage = 1.432*Math.log10(PDH.getVoltage()-7);
 
     private Drive drive;
+    private Intake intake;
     private Pose2d robotPose;
     private InterpolatingDoubleTreeMap targetAims;
     private InterpolatingDoubleTreeMap targetVelocities;
     private Double robotDistance;
     private Double speedOffset;
       private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
-    
+    private Timer timer;
+    private boolean hasIntaked;
+    private RobotContainer robotContainer;
 public RobotState(Drive drive){
     this.drive = drive;
+    robotContainer = RobotContainer.getInstance();
     robotPose = drive.getPose();
     targetAims = new InterpolatingDoubleTreeMap();
     targetVelocities = new InterpolatingDoubleTreeMap();
@@ -54,6 +62,8 @@ public RobotState(Drive drive){
     voltageToVelocity.put(12.0, 85.0);
     totalCurrentDraw = PDH.getTotalCurrent();
     busVoltage = PDH.getVoltage();
+    timer = new Timer();
+    intake = new Intake(new IntakeIOTalonFX());
 }
 
 
@@ -71,7 +81,24 @@ public RobotState(Drive drive){
             BATTERY_BROWNOUT_PROTECTION = true;
         }
 
-        
+        if (DriverStation.isAutonomous() && intake.isDeployed()){
+            if (timer.isRunning() == false){
+                hasIntaked = false;
+                timer.reset();
+                timer.start();
+            }
+            else{
+                if( intake.isActuallyIntaking()){
+                    hasIntaked = true;
+                }
+            }
+            if (timer.hasElapsed(1)){
+                if (hasIntaked == false){
+                    robotContainer.changePathOverideFeedbackCommand();
+                }
+                timer.stop();
+            }
+        }
     }
 
     public double getVoltageToVelocity(double voltage){

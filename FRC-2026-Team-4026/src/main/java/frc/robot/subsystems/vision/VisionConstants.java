@@ -11,11 +11,11 @@ public class VisionConstants {
     public static final double MAX_POSE_AMBIGUITY = 0.3;
 
         public static final Transform3d ROBOT_TO_CAMERA_FRONT_LEFT = new Transform3d(
-        new Translation3d(-0.28, -0.26, 0), 
-        new Rotation3d(0, -0.34, -Math.PI - 0.67));
+        new Translation3d(0, 0, 0), 
+        new Rotation3d(0, -0, 0));
     public static final Transform3d ROBOT_TO_CAMERA_FRONT_RIGHT = new Transform3d(
-        new Translation3d(-0.28, 0.26, 0), 
-        new Rotation3d(0, -0.34, -Math.PI + 0.68));
+        new Translation3d(0, 0, 0), 
+        new Rotation3d(0, 0, 0));
     public static final Transform3d ROBOT_TO_CAMERA_BACK = new Transform3d(
         new Translation3d(0, 0, 0), 
         new Rotation3d(0, 0, 0));

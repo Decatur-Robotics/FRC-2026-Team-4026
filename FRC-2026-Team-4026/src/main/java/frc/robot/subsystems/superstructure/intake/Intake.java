@@ -37,6 +37,14 @@ public class Intake extends SubsystemBase{
         return inputs.intakeData.deployPosition();
     }
 
+    public boolean isDeployed(){
+        return getDeployPosition() > IntakeConstants.DEPLOY_INTAKE_POSITION  - 5 && getDeployPosition() < IntakeConstants.DEPLOY_INTAKE_POSITION + 5;
+    }
+
+    public boolean isActuallyIntaking(){
+        return getIntakeCurrent() > IntakeConstants.INTAKING_CURRENT_THRESHOLD;
+    }
+
     public double getDeployVoltage(){
 
         return inputs.intakeData.deployVoltage();

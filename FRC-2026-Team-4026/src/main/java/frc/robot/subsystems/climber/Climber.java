@@ -14,7 +14,7 @@ public class Climber extends SubsystemBase {
 	
 	private final ClimberIO io;
 	private ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-	private RobotContainer robotContainer = new RobotContainer().getInstance();
+	private RobotContainer robotContainer = RobotContainer.getInstance();
 	private double voltage = 0.0;
 	private double position = 0.0;
 
