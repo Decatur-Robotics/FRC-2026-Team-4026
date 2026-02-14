@@ -11,11 +11,11 @@ public class NetworkTables {
     private Subscriber subRotationOfGamePiece;
 
     public NetworkTables(){
-    //Its not datatable i forget what it was it was something similar though. its in vison
+
     //Gets the default network table. I think this is always called no matter what
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    //gets the specific table from the network tables. it's cuirrently named datatable but that should be changed
-    NetworkTable table = inst.getTable("dataTable");
+    //gets the specific table from the network tables.
+    NetworkTable table = inst.getTable("datatable");
     //gets the topics (essentially subfiles) from the table
     DoubleTopic cY = table.getDoubleTopic("cY");
     DoubleTopic cX = table.getDoubleTopic("cX");
@@ -34,8 +34,8 @@ public class NetworkTables {
     public double getCY(){
         return subcY.getValue();
     }
-    public double getCount(){
-        return subcount.getValue();
+    public double getFuelRotation(){
+        return subRotationOfGamePiece.getValue();
     }
 
     public double getFuelRotation(){
