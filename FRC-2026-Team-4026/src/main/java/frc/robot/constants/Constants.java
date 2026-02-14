@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
    public static boolean disableHAL = false;
+     public static final boolean tuningMode = false;
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }

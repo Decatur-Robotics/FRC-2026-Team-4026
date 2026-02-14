@@ -204,6 +204,8 @@ public class RobotContainer {
 
         y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
 
+        a.whileTrue(superstructure.intakeCommand());
+
   }
 
   private void configureSecondaryBindings() {

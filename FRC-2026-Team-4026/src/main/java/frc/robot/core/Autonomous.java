@@ -15,16 +15,16 @@ public class Autonomous {
     private Drive swerve;
     private Pose2d m;
     public Autonomous(Drive swerve) {
-        this.robotContainer = RobotContainer.getInstance();
-        this.superstructure = robotContainer.getSuperstructure();
+        // this.robotContainer = RobotContainer.getInstance();
+        // this.superstructure = robotContainer.getSuperstructure();
         this.swerve = swerve;
         registerNamedCommands();
     }
 
 
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("Shoot", superstructure.shootCommand());
-        NamedCommands.registerCommand("Intake", superstructure.intakeCommand());
-        NamedCommands.registerCommand("Store", superstructure.storeCommand());
+        // NamedCommands.registerCommand("Shoot", superstructure.shootCommand());
+        // NamedCommands.registerCommand("Intake", superstructure.intakeCommand());
+        // NamedCommands.registerCommand("Store", superstructure.storeCommand());
     }   
 }

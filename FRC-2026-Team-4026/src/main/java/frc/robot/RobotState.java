@@ -37,7 +37,6 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.Vision.VisionConsumer;
-import lombok.Getter;
 
 public class RobotState implements VisionConsumer
 {
@@ -53,9 +52,9 @@ public class RobotState implements VisionConsumer
 
     private static final double poseBufferTime = 2.0; // seconds
 
-    @Getter @AutoLogOutput private Pose2d odemetryPose = Pose2d.kZero;
-    @Getter @AutoLogOutput private Pose2d estimatedPose = Pose2d.kZero;
-    @Getter @AutoLogOutput private Pose2d visionPose = Pose2d.kZero;
+    @AutoLogOutput private Pose2d odemetryPose = Pose2d.kZero;
+    @AutoLogOutput private Pose2d estimatedPose = Pose2d.kZero;
+     @AutoLogOutput private Pose2d visionPose = Pose2d.kZero;
 
       private Rotation2d gyroOffset = Rotation2d.kZero;
 
