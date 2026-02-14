@@ -118,7 +118,7 @@ public class RobotContainer {
       vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
                             new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
-      autonomous = new Autonomous(instance, superstructure, drive);
+      autonomous = new Autonomous( drive);
     }
  else {
       hood = new Hood(new HoodIOSim());
@@ -141,9 +141,9 @@ public class RobotContainer {
                         driveSimulation::setSimulationWorldPose);
       vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT, driveSimulation::getSimulatedDriveTrainPose),
                                       new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT, driveSimulation::getSimulatedDriveTrainPose));
-                                robotState = new RobotState(drive);
+      robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
-      autonomous = new Autonomous(instance, superstructure, drive);
+      autonomous = new Autonomous( drive);
      }
      resetSimulationField();
          configurePrimaryBindings();
@@ -189,9 +189,10 @@ public class RobotContainer {
     ));
 
   b.whileTrue(drive.setMinimumBumpVelocityCommand());
+  triggerLeft.whileTrue(superstructure.intakeCommand());
   a.whileTrue(autonomous.changePathOverideFeedbackCommand());
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
+  triggerRight.whileTrue(superstructure.shootCommand()); 
+  // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
             drive.setDefaultCommand(
       DriveCommands.joystickDrive(
@@ -279,8 +280,8 @@ public class RobotContainer {
   }
 
 
-  public Superstructure getSuperstructure() {
-    return superstructure;
+  public static Superstructure getSuperstructure() {
+    return Superstructure.getInstance();
   }
 
   public static RobotContainer getInstance(){

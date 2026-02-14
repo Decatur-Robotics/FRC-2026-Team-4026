@@ -65,7 +65,7 @@ public RobotState(Drive drive){
     busVoltage = PDH.getVoltage();
     intake = new Intake(new IntakeIOTalonFX());
     timer = new Timer();
-    autonomous = new Autonomous(robotContainer, robotContainer.getSuperstructure(), drive);
+    autonomous = new Autonomous( drive);
 }
 
 

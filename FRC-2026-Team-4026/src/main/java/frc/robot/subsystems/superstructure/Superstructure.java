@@ -43,9 +43,10 @@ public class Superstructure extends SubsystemBase {
 
     //This is for making out robot both harder to defend and makes the chance of robot damage lower
     private boolean defenseMode = false;
-    
+    private static Superstructure instance;
 
     public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, leds leds, RobotState robotState) {
+        instance = this;
         this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
@@ -168,6 +169,10 @@ public class Superstructure extends SubsystemBase {
 
  public Command shootFuelCommand(){
         return Commands.runOnce(()->shootFuel());
+ }
+
+ public static Superstructure getInstance(){
+    return instance;
  }
 
 }

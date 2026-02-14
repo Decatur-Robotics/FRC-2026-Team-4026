@@ -34,9 +34,9 @@ public class Autonomous {
     private Superstructure superstructure;
     private Drive swerve;
     private NetworkTables networkTables;
-    public Autonomous(RobotContainer robotContainer, Superstructure superstructure, Drive swerve) {
-        this.robotContainer = robotContainer;
-        this.superstructure = superstructure;
+    public Autonomous( Drive swerve) {
+        this.robotContainer = RobotContainer.getInstance();
+        this.superstructure = RobotContainer.getSuperstructure();
         this.swerve = swerve;
         networkTables = new NetworkTables();
         registerNamedCommands();
@@ -44,9 +44,9 @@ public class Autonomous {
 
 
     public void registerNamedCommands() {
-         Superstructure superstructure = robotContainer.getSuperstructure();
-         NamedCommands.registerCommand("Shoot", superstructure.shootCommand());
-         NamedCommands.registerCommand("Intake", superstructure.intakeCommand());
+        //Superstructure superstructure = robotContainer.getSuperstructure();
+        NamedCommands.registerCommand("Shoot", superstructure.shootCommand());
+        NamedCommands.registerCommand("Intake", superstructure.intakeCommand());
 
     }   
 

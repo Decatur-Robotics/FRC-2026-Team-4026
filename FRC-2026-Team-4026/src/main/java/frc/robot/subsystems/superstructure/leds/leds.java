@@ -188,7 +188,8 @@ public class leds extends SubsystemBase {
         } else if (mode == 2){
 
            stepAllPixels();
-           if(ledsToAdd.size() >0){
+
+           if(ledsToAdd.isEmpty() == false){
 
             buffer.setRGB(0,ledsToAdd.get(0).r,ledsToAdd.get(0).g,ledsToAdd.get(0).b);
             ledsToAdd.remove(0);
