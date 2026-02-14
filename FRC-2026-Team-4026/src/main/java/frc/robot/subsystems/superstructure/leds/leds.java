@@ -12,6 +12,8 @@ public class leds implements Subsystem {
 
     // an led strip
     private AddressableLED led;
+
+    private double m;
     // how many leds on the strip
     private int length;
     // a buffer with data on the led strip states
@@ -30,8 +32,9 @@ public class leds implements Subsystem {
     ArrayList<TeamColor> ledsToAdd = new ArrayList<TeamColor>();
     // different modes for leds.  1 = normal flashing   2 = pulsing
     private int mode;
+    
     public leds(){
-        led = new AddressableLED(Ports.ADDRESSABLE_LED);
+        this.led = new AddressableLED(Ports.ADDRESSABLE_LED);
 
         this.length = ledsConstants.LENGTH;
         buffer = new AddressableLEDBuffer(length);

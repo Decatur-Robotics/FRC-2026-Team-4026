@@ -1,13 +1,19 @@
 package frc.robot;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.ejml.equation.MatrixConstructor;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -29,12 +35,13 @@ import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.Vision.VisionConsumer;
 import lombok.Getter;
 
-public class RobotState 
-// implements VisionConsumer
+public class RobotState implements VisionConsumer
 {
+    private static RobotState instance;
     // add params for PDH object
     private double totalCurrentDraw;
     private int currentLimit = 180;
@@ -53,6 +60,7 @@ public class RobotState
       private Rotation2d gyroOffset = Rotation2d.kZero;
 
     private final TimeInterpolatableBuffer<Pose2d> poseBuffer = TimeInterpolatableBuffer.createBuffer(poseBufferTime);
+    private Matrix<N3, N1> visionMeasurementStdDevs;
 
     private final SwerveDriveKinematics kinematics;
     private SwerveModulePosition[] modulePositions = new SwerveModulePosition[]{
@@ -61,6 +69,8 @@ public class RobotState
         new SwerveModulePosition(),
         new SwerveModulePosition()
     };
+
+    private double visionTimestamp;
 
     private Drive drive;
     private Pose2d robotPose;
@@ -72,6 +82,7 @@ public class RobotState
     
 public RobotState(Drive drive){
     this.drive = drive;
+    instance = this;
     kinematics = new SwerveDriveKinematics(DriveConstants.moduleTranslations);
     robotPose = drive.getPose();
     targetAims = new InterpolatingDoubleTreeMap();
@@ -88,6 +99,7 @@ public RobotState(Drive drive){
     totalCurrentDraw = PDH.getTotalCurrent();
     busVoltage = PDH.getVoltage();
 }
+
 
 public void resetPose(Pose2d newPose){
     gyroOffset = newPose.getRotation().minus(drive.getRotation().minus(gyroOffset));
@@ -115,8 +127,44 @@ public void addOdometryPose(OdometryObservation observation){
     estimatedPose = estimatedPose.exp(finalTwist);
 }
 
-public void addVisionPose(VisionObservation observation){
-    
+public void addVisionPose(){
+    try{
+        if(poseBuffer.getInternalBuffer().lastKey() - poseBufferTime > visionTimestamp){
+            return;
+        }
+    }
+    catch(NoSuchElementException e){
+        return;}
+
+    var sample = poseBuffer.getSample(visionTimestamp);
+    if(sample.isEmpty()){
+        return;
+    }
+
+    var sampleToOdometryTransform = new Transform2d(sample.get(), odemetryPose);
+    var odometryToSampleTransform = new Transform2d(odemetryPose, sample.get());
+
+    Pose2d estimateAtTimestamp = estimatedPose.transformBy(odometryToSampleTransform);
+
+    Matrix<N3, N3> kalmanGain = new Matrix<>(Nat.N3(), Nat.N3());
+    for(int row = 0; row < 3; row++){
+        double stdDev = visionMeasurementStdDevs.get(row, 0);
+        if(stdDev == 0){
+            kalmanGain.set(row, row, 0);
+        }
+        else{
+            kalmanGain.set(row, row, stdDev/(stdDev + Math.sqrt(stdDev*visionMeasurementStdDevs.get(row,0))));
+        }
+    }
+
+    Transform2d poseTransform = new Transform2d(estimateAtTimestamp, visionPose);
+
+    var kalmanTransform = kalmanGain.times(VecBuilder.fill(poseTransform.getX(), poseTransform.getY(), poseTransform.getRotation().getRadians()));
+
+    Transform2d scaledTransform = new Transform2d(kalmanTransform.get(0, 0), kalmanTransform.get(1, 0), new Rotation2d(kalmanTransform.get(2, 0)));
+
+    estimatedPose = estimateAtTimestamp.plus(scaledTransform).plus(sampleToOdometryTransform);
+
 }
 
 
@@ -133,7 +181,7 @@ public void addVisionPose(VisionObservation observation){
             
             BATTERY_BROWNOUT_PROTECTION = true;
         }
-
+        getPose();
         
     }
 
@@ -161,7 +209,11 @@ public double getBrownoutVoltage() {
         return Math.atan((robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY())/(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX()));
     }
     public Translation2d getDrivePose(){
-        return new Translation2d(drive.getPose().getX(),drive.getPose().getY());
+        return estimatedPose.getTranslation();
+    }
+    @AutoLogOutput(key = "RobotState")
+    public Pose2d getPose(){
+        return estimatedPose;
     }
 
     public ChassisSpeeds getChassisSpeed(){
@@ -172,14 +224,18 @@ public double getBrownoutVoltage() {
         return drive.getRotation();
     }
 
-//  public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-//     }
+    @Override
+ public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
+    visionPose = visionRobotPoseMeters;
+    visionTimestamp = timestampSeconds;
+        this.visionMeasurementStdDevs = visionMeasurementStdDevs;
+    }
 
     public record OdometryObservation(double timestamp, SwerveModulePosition[] modulePositions, Optional<Rotation2d> gyroRotation){ 
 
     }
 
-    public record VisionObservation(Pose2d pose, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs){
-
+    public static RobotState getInstance(){
+        return instance;
     }
 }

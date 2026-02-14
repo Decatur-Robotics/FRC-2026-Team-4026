@@ -92,7 +92,7 @@ public class Vision extends SubsystemBase{
             }
 
             consumer.accept(observation.pose().toPose2d(),
-             cameraIndex, 
+                    observation.timeStamp(), 
              VecBuilder.fill(linearStDev, linearStDev, angularStDev));
         }
         // Log camera data

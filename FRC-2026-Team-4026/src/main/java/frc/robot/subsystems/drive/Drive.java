@@ -45,15 +45,20 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotState;
+import frc.robot.RobotState.OdometryObservation;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
+
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -77,6 +82,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
                     Math.hypot(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
                     Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
+                private final Timer lastPoseTimer = new Timer();
     // PathPlanner config constants
     private static final double ROBOT_MASS_KG = 74.088;
     private static final double ROBOT_MOI = 6.883;
@@ -198,6 +204,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
             Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
         }
 
+
         // Update odometry
         double[] sampleTimestamps = modules[0].getOdometryTimestamps(); // All signals are sampled together
         int sampleCount = sampleTimestamps.length;
@@ -226,6 +233,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
         }
+        RobotState.getInstance().addOdometryPose( new OdometryObservation(Timer.getTimestamp(), getModulePositions(), Optional.ofNullable(gyroInputs.connected ? rawGyroRotation : null)) );
 
         // Update gyro alert
         gyroDisconnectedAlert.set(!gyroInputs.connected && frc.robot.constants.Constants.currentMode != frc.robot.constants.Constants.Mode.SIM);
