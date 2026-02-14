@@ -44,22 +44,24 @@ public class IntakeIOTalonFX implements IntakeIO{
         .withKV(IntakeConstants.kV)
         .withKA(IntakeConstants.kA);
 
-        deployPosition = deployMotor.getPosition();
-        deployFollowPosition = deployFollowMotor.getPosition();
 
-        intakeCurrent = intakeMotor.getSupplyCurrent();
 
-        positionRequest = new MotionMagicVoltage(deployPosition.getValueAsDouble()).withEnableFOC(true);
+
+
+
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
-
+        intakeCurrent = intakeMotor.getSupplyCurrent();
         deployMotor = new TalonFX(Ports.DEPLOY_MOTOR_PORT);
         deployFollowMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
         deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Opposed));
-
+        deployCurrent = deployMotor.getStatorCurrent();
+        deployFollowCurrent = deployFollowMotor.getStatorCurrent();
+        deployPosition = deployMotor.getPosition();
+        deployFollowPosition = deployFollowMotor.getPosition();
         intakeVoltage = intakeMotor.getMotorVoltage();
         deployVoltage = deployMotor.getMotorVoltage();
         deployFollowVoltage = deployFollowMotor.getMotorVoltage();
-
+        positionRequest = new MotionMagicVoltage(deployPosition.getValueAsDouble()).withEnableFOC(true);
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
         BaseStatusSignal.setUpdateFrequencyForAll(40, intakeVoltage,deployVoltage);

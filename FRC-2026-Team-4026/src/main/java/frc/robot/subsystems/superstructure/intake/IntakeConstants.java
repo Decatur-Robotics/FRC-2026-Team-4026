@@ -35,5 +35,5 @@ public class IntakeConstants {
     public static final double DEPLOY_MAX_ANGLE=100;
     public static final double DEPLOY_MIN_ANGLE =0;
 
-
+    public static final double INTAKING_CURRENT_THRESHOLD = 0;
 }

@@ -6,12 +6,13 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Ports;
 import frc.robot.util.TeamColor;
-public class leds implements Subsystem {
+public class leds extends SubsystemBase {
 
     // an led strip
-    private AddressableLED led;
+    private AddressableLED  led = new AddressableLED(Ports.ADDRESSABLE_LED);
     // how many leds on the strip
     private int length;
     // a buffer with data on the led strip states
@@ -43,7 +44,7 @@ public class leds implements Subsystem {
     private final int blueFadeTop = 240;
     private final int fadeSpeed = 5;
     public leds(){
-        led = new AddressableLED(Ports.ADDRESSABLE_LED);
+       
 
         this.length = ledsConstants.LENGTH;
         buffer = new AddressableLEDBuffer(length);

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure.intake;
 
+import org.dyn4j.collision.Bounds;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -35,6 +36,14 @@ public class Intake extends SubsystemBase{
     public double getDeployPosition(){
 
         return inputs.intakeData.deployPosition();
+    }
+
+    public boolean isDeployed(){
+        return getDeployPosition() > IntakeConstants.DEPLOY_INTAKE_POSITION  - 5 && getDeployPosition() < IntakeConstants.DEPLOY_INTAKE_POSITION + 5;
+    }
+
+    public boolean isActuallyIntaking(){
+        return getIntakeCurrent() > IntakeConstants.INTAKING_CURRENT_THRESHOLD;
     }
 
     public double getDeployVoltage(){
@@ -79,4 +88,3 @@ public class Intake extends SubsystemBase{
     }
 
 }
-
