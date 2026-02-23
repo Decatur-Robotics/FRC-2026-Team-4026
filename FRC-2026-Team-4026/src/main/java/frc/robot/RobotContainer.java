@@ -51,8 +51,12 @@ import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -125,6 +129,7 @@ public class RobotContainer {
     
     }
  else {
+      autonomous = new Autonomous(this);
       hood = new Hood(new HoodIOSim());
       indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
@@ -148,8 +153,10 @@ public class RobotContainer {
                                       new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                 robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
-      autonomous = new Autonomous(this);
+
      }
+
+     NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
      resetSimulationField();
          configurePrimaryBindings();
     configureSecondaryBindings();
