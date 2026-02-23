@@ -14,4 +14,6 @@ public class DriveConstants {
         new Translation2d(-TRACK_WIDTH.in(Meters)/2, TRACK_WIDTH.in(Meters)/2), // Back Left
         new Translation2d(-TRACK_WIDTH.in(Meters)/2, -TRACK_WIDTH.in(Meters)/2) // Back Right
     };
+
+    public static final double MAX_ANGULAR_VELOCITY = 10;
 }

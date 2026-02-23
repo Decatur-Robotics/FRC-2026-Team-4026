@@ -12,7 +12,6 @@ import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveCommands;
-import frc.robot.subsystems.drive.DrivePathing;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
@@ -207,7 +206,7 @@ public class RobotContainer {
 
         y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
         triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        triggerLeft.whileTrue(Commands.run(() -> drive.driveToPose(() -> drive.getChassisSpeeds(),() -> new Pose2d(3, 2, new Rotation2d())), drive));
+        triggerLeft.whileTrue(Commands.run(() -> drive.driveToPose(() -> drive.getChassisSpeeds(),() -> new Pose2d(3, 3, new Rotation2d(Math.PI/2))), drive));
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
 
   }
