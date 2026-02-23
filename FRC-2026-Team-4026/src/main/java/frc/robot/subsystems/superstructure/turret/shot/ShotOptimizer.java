@@ -24,17 +24,10 @@ public class ShotOptimizer {
     private static double G = 9.80665;
     private Drive drive;
     private Pose2d robot;
+    private Translation3d target;
     
-    public static OptimalShot apply() {
-        //Translation2d localEstimate = RobotState.getInstance().getHubLocalizedRobotPose();
-        var robot = RobotState.getInstance().getEstimatedRobotPose();
-        var target = AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint);
-        var initialDistance = robot.getTranslation().getDistance(target.toTranslation2d());
-        //localestimate != null. Should this be in params?
-        //if (initialDistance > 0.4 && initialDistance < 3.0) {
-          //  robot = localEstimate.toPose2d();
-        //}
-    }   
+    public ShotOptimizer(){} 
+
     double robotVelocity = RobotState.getInstance().getChassisVelocity();
     ChassisSpeeds robotFieldVelocity = RobotState.getInstance().getFieldVelocity();
 
@@ -95,6 +88,20 @@ public class ShotOptimizer {
     // * Also obeys for funnel constraint by computing shot height at hub front-face
     //  horizontal displacement with chosen parameters and comparing to tunable clearance value
     //
+
+    public OptimalShot apply() {
+        //Translation2d localEstimate = RobotState.getInstance().getHubLocalizedRobotPose();
+        var robot = RobotState.getInstance().getEstimatedRobotPose();
+        var target = AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint);
+        var initialDistance = robot.getTranslation().getDistance(target.toTranslation2d());
+        //localestimate != null. Should this be in params?
+        //if (initialDistance > 0.4 && initialDistance < 3.0) {
+          //  robot = localEstimate.toPose2d();
+        //}
+        return shot; 
+       }  
+    
+    public void sampleTrajectory() {
     for (int i = 0; i < samples; i++) {
       double time = minTime + i * (maxTime - minTime) / (samples - 1);
 
@@ -127,13 +134,15 @@ public class ShotOptimizer {
         shot = new OptimalShot(new Rotation2d(relativeVelocityX, relativeVelocityY), new Rotation2d(pitchRadians), velocity);
       }
     }
+  }
+    
 
-    Logger.recordOutput("OptimalShot/horizontalDistance", funnelHorizontalDistance);
-    Logger.recordOutput("OptimalShot/velocity", shot.turretVel());
-    Logger.recordOutput("OptimalShot/pitch", shot.turretPitch());
-    Logger.recordOutput("OptimalShot/yaw", shot.turretYaw());
-    Logger.recordOutput("OptimalShot/clearanceInches", clearance);
-    return shot;
-  } 
+    // Logger.recordOutput("OptimalShot/horizontalDistance", funnelHorizontalDistance);
+    // Logger.recordOutput("OptimalShot/velocity", shot.turretVel());
+    // Logger.recordOutput("OptimalShot/pitch", shot.turretPitch());
+    // Logger.recordOutput("OptimalShot/yaw", shot.turretYaw());
+    // Logger.recordOutput("OptimalShot/clearanceInches", clearance);
+
+  }
 
 
