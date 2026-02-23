@@ -66,6 +66,8 @@ public class DrivePathing extends Command{
         this.targetPose = targetPose;
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        initialize();
+        execute();
 
     }
 
@@ -110,7 +112,7 @@ public class DrivePathing extends Command{
         double thetaFFScalar = MathUtil.clamp((thetaErrorAbs - thetaFFMinError.get())
         / (thetaFFMaxError.get() - thetaFFMinError.get()), 0.0, 1.0);
 
-        var direction = target.getTranslation().minus(lastSetpointTranslation).toVector();
+        var direction = targetPose.get().getTranslation().minus(lastSetpointTranslation).toVector();
         double targetVelocity = direction.norm() <= driveMinSpeed.get() 
         ? lastSetpointVelocity.getNorm() : lastSetpointVelocity.toVector().dot(direction)/direction.norm();
 
@@ -123,12 +125,12 @@ public class DrivePathing extends Command{
             driveVelocityScalar = 0.0;
         }
 
-        Rotation2d targetDeltaAngle = currentPose.getTranslation().minus(target.getTranslation()).getAngle();
+        Rotation2d targetDeltaAngle = currentPose.getTranslation().minus(targetPose.get().getTranslation()).getAngle();
         Translation2d driveVelocity = new Translation2d(driveVelocityScalar, targetDeltaAngle);
         lastSetpointTranslation = new Pose2d(target.getTranslation(), targetDeltaAngle).transformBy(GeometryUtil.toTransform2d(new Translation2d(setpoint.position, 0))).getTranslation();
         lastSetpointVelocity = new Translation2d(setpoint.velocity, targetDeltaAngle);
 
-        double thetaSetpointVelocity = Math.abs((target.getRotation().minus(lastTargetRotation)).getDegrees()) < 10 ? (target.getRotation().minus(lastTargetRotation)).getRadians() / (Timer.getTimestamp() - lastTime)
+        double thetaSetpointVelocity = Math.abs((targetPose.get().getRotation().minus(lastTargetRotation)).getDegrees()) < 10 ? (targetPose.get().getRotation().minus(lastTargetRotation)).getRadians() / (Timer.getTimestamp() - lastTime)
          : thetaController.getSetpoint().velocity;
 
         double thetaVelocity = thetaController.calculate(currentPose.getRotation().getRadians(), new State(target.getRotation().getRadians(), thetaSetpointVelocity)) + thetaFFScalar * thetaSetpointVelocity;
@@ -136,7 +138,7 @@ public class DrivePathing extends Command{
         if(thetaErrorAbs < thetaController.getPositionTolerance()){
             thetaVelocity = 0.0;
         }
-        lastTargetRotation = target.getRotation();
+        lastTargetRotation = targetPose.get().getRotation();
         lastTime = Timer.getTimestamp();
 
         if(drive != null){

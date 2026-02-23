@@ -2,6 +2,8 @@ package frc.robot.core;
 
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Robot;
@@ -13,18 +15,17 @@ public class Autonomous {
     private RobotContainer robotContainer;
     private Superstructure superstructure;
     private Drive swerve;
-    private Pose2d m;
-    public Autonomous(Drive swerve) {
-        // this.robotContainer = RobotContainer.getInstance();
-        // this.superstructure = robotContainer.getSuperstructure();
-        this.swerve = swerve;
+    public Autonomous(RobotContainer robotContainer) {
+        this.robotContainer = robotContainer;
+        superstructure = robotContainer.getSuperstructure();
+        this.swerve = robotContainer.getDrive();
         registerNamedCommands();
     }
 
 
     public void registerNamedCommands() {
-        // NamedCommands.registerCommand("Shoot", superstructure.shootCommand());
-        // NamedCommands.registerCommand("Intake", superstructure.intakeCommand());
-        // NamedCommands.registerCommand("Store", superstructure.storeCommand());
+        NamedCommands.registerCommand("Shoot", superstructure.shootCommand());
+        NamedCommands.registerCommand("Intake", superstructure.intakeCommand());
+        NamedCommands.registerCommand("Store", superstructure.storeCommand());
     }   
 }

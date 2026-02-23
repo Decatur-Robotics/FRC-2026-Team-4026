@@ -73,8 +73,8 @@ public void periodic () {
 public void updateInputs (ShooterIOInputs inputs){
     inputs.data = new ShooterIOData (
         motor.isConnected(),
-        motor.getSupplyVoltage().getValueAsDouble(),
         motor.getVelocity().getValueAsDouble(),
+        motor.getMotorVoltage().getValueAsDouble(),
         motor.getSupplyCurrent().getValueAsDouble(),
         motor.getDeviceTemp().getValueAsDouble()
         );

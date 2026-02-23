@@ -119,6 +119,9 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command shootCommand(){
+        if(!Robot.isReal()){
+            
+        }
         if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
             return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         }
@@ -131,6 +134,10 @@ public class Superstructure extends SubsystemBase {
         else {
             return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         }}
+    }
+
+    public Command testingShootCommand(){
+        return setState(new SuperstructureState(50, 0.2, 1, 12, 0.0));
     }
 
     public Command passCommand(){

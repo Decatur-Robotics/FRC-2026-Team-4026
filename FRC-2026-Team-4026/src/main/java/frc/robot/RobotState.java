@@ -21,6 +21,7 @@ import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -38,7 +39,7 @@ import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.Vision.VisionConsumer;
 
-public class RobotState implements VisionConsumer
+public class RobotState extends SubsystemBase
 {
     private static RobotState instance;
     // add params for PDH object
@@ -100,73 +101,72 @@ public RobotState(Drive drive){
 }
 
 
-public void resetPose(Pose2d newPose){
-    gyroOffset = newPose.getRotation().minus(drive.getRotation().minus(gyroOffset));
-    odemetryPose = newPose;
-    estimatedPose = newPose;
-    poseBuffer.clear();
-}
+// public void resetPose(Pose2d newPose){
+//     gyroOffset = newPose.getRotation().minus(drive.getRotation().minus(gyroOffset));
+//     odemetryPose = newPose;
+//     estimatedPose = newPose;
+//     poseBuffer.clear();
+// }
 
-public void addOdometryPose(OdometryObservation observation){
-    Twist2d twist = kinematics.toTwist2d(modulePositions, observation.modulePositions);
-    modulePositions = observation.modulePositions;
-    Pose2d lastOdometryPose = odemetryPose;
-    odemetryPose = odemetryPose.exp(twist);
+// public void addOdometryPose(OdometryObservation observation){
+//     Twist2d twist = kinematics.toTwist2d(modulePositions, observation.modulePositions);
+//     modulePositions = observation.modulePositions;
+//     Pose2d lastOdometryPose = odemetryPose;
+//     odemetryPose = odemetryPose.exp(twist);
 
-    observation.gyroRotation.ifPresent(
-        gyroRotation -> {
-            Rotation2d angle = gyroRotation.plus(gyroOffset);
-            odemetryPose = new Pose2d(odemetryPose.getTranslation(), angle);
-        }
-    );
+//     observation.gyroRotation.ifPresent(
+//         gyroRotation -> {
+//             Rotation2d angle = gyroRotation.plus(gyroOffset);
+//             odemetryPose = new Pose2d(odemetryPose.getTranslation(), angle);
+//         }
+//     );
 
-    poseBuffer.addSample(observation.timestamp, odemetryPose);
+//     poseBuffer.addSample(observation.timestamp, odemetryPose);
 
-    Twist2d finalTwist = lastOdometryPose.log(odemetryPose);
-    estimatedPose = estimatedPose.exp(finalTwist);
-}
+//     Twist2d finalTwist = lastOdometryPose.log(odemetryPose);
+//     estimatedPose = estimatedPose.exp(finalTwist);
+// }
 
-public void addVisionPose(){
-    try{
-        if(poseBuffer.getInternalBuffer().lastKey() - poseBufferTime > visionTimestamp){
-            return;
-        }
-    }
-    catch(NoSuchElementException e){
-        return;}
+// public void addVisionPose(){
+//     try{
+//         if(poseBuffer.getInternalBuffer().lastKey() - poseBufferTime > visionTimestamp){
+//             return;
+//         }
+//     }
+//     catch(NoSuchElementException e){
+//         return;}
 
-    var sample = poseBuffer.getSample(visionTimestamp);
-    if(sample.isEmpty()){
-        return;
-    }
+//     var sample = poseBuffer.getSample(visionTimestamp);
+//     if(sample.isEmpty()){
+//         return;
+//     }
 
-    var sampleToOdometryTransform = new Transform2d(sample.get(), odemetryPose);
-    var odometryToSampleTransform = new Transform2d(odemetryPose, sample.get());
+//     var sampleToOdometryTransform = new Transform2d(sample.get(), odemetryPose);
+//     var odometryToSampleTransform = new Transform2d(odemetryPose, sample.get());
 
-    Pose2d estimateAtTimestamp = estimatedPose.transformBy(odometryToSampleTransform);
+//     Pose2d estimateAtTimestamp = estimatedPose.transformBy(odometryToSampleTransform);
 
-    Matrix<N3, N3> kalmanGain = new Matrix<>(Nat.N3(), Nat.N3());
-    for(int row = 0; row < 3; row++){
-        double stdDev = visionMeasurementStdDevs.get(row, 0);
-        if(stdDev == 0){
-            kalmanGain.set(row, row, 0);
-        }
-        else{
-            kalmanGain.set(row, row, stdDev/(stdDev + Math.sqrt(stdDev*visionMeasurementStdDevs.get(row,0))));
-        }
-    }
+//     Matrix<N3, N3> kalmanGain = new Matrix<>(Nat.N3(), Nat.N3());
+//     for(int row = 0; row < 3; row++){
+//         double stdDev = visionMeasurementStdDevs.get(row, 0);
+//         if(stdDev == 0){
+//             kalmanGain.set(row, row, 0);
+//         }
+//         else{
+//             kalmanGain.set(row, row, stdDev/(stdDev + Math.sqrt(stdDev*visionMeasurementStdDevs.get(row,0))));
+//         }
+//     }
 
-    Transform2d poseTransform = new Transform2d(estimateAtTimestamp, visionPose);
+//     Transform2d poseTransform = new Transform2d(estimateAtTimestamp, visionPose);
 
-    var kalmanTransform = kalmanGain.times(VecBuilder.fill(poseTransform.getX(), poseTransform.getY(), poseTransform.getRotation().getRadians()));
+//     var kalmanTransform = kalmanGain.times(VecBuilder.fill(poseTransform.getX(), poseTransform.getY(), poseTransform.getRotation().getRadians()));
 
-    Transform2d scaledTransform = new Transform2d(kalmanTransform.get(0, 0), kalmanTransform.get(1, 0), new Rotation2d(kalmanTransform.get(2, 0)));
+//     Transform2d scaledTransform = new Transform2d(kalmanTransform.get(0, 0), kalmanTransform.get(1, 0), new Rotation2d(kalmanTransform.get(2, 0)));
 
-    estimatedPose = estimateAtTimestamp.plus(scaledTransform).plus(sampleToOdometryTransform);
+//     estimatedPose = estimateAtTimestamp.plus(scaledTransform).plus(sampleToOdometryTransform);
 
-}
-
-
+// }
+@Override
     public void periodic(){
         busVoltage = PDH.getVoltage();
         totalCurrentDraw = PDH.getTotalCurrent();
@@ -180,7 +180,8 @@ public void addVisionPose(){
             
             BATTERY_BROWNOUT_PROTECTION = true;
         }
-        getPose();
+        robotPose = drive.getPose();
+        robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
         
     }
 
@@ -203,16 +204,11 @@ public double getBrownoutVoltage() {
         return speedOffset;
     }
 
-
     public double getTurretRotation() {
         return Math.atan((robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY())/(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX()));
     }
     public Translation2d getDrivePose(){
         return estimatedPose.getTranslation();
-    }
-    @AutoLogOutput(key = "RobotState")
-    public Pose2d getPose(){
-        return estimatedPose;
     }
 
     public ChassisSpeeds getChassisSpeed(){
@@ -223,16 +219,16 @@ public double getBrownoutVoltage() {
         return drive.getRotation();
     }
 
-    @Override
- public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-    visionPose = visionRobotPoseMeters;
-    visionTimestamp = timestampSeconds;
-        this.visionMeasurementStdDevs = visionMeasurementStdDevs;
-    }
+//     @Override
+//  public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
+//     visionPose = visionRobotPoseMeters;
+//     visionTimestamp = timestampSeconds;
+//         this.visionMeasurementStdDevs = visionMeasurementStdDevs;
+//     }
 
-    public record OdometryObservation(double timestamp, SwerveModulePosition[] modulePositions, Optional<Rotation2d> gyroRotation){ 
+//     public record OdometryObservation(double timestamp, SwerveModulePosition[] modulePositions, Optional<Rotation2d> gyroRotation){ 
 
-    }
+//     }
 
     public static RobotState getInstance(){
         return instance;

@@ -27,6 +27,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -51,7 +52,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotState;
-import frc.robot.RobotState.OdometryObservation;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
@@ -62,12 +62,15 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO.TargetObservation;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer
 {
@@ -113,6 +116,11 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
                     Meters.of(TunerConstants.FrontLeft.WheelRadius),
                     KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
                     WHEEL_COF));
+
+    private Pose2d targetPose;
+
+    private PIDController translationalController = new PIDController(15, 0, 0);
+    private PIDController rotationalController = new PIDController(15, 0, 0);
 
     static final Lock odometryLock = new ReentrantLock();
     private final GyroIO gyroIO;
@@ -233,7 +241,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
         }
-        RobotState.getInstance().addOdometryPose( new OdometryObservation(Timer.getTimestamp(), getModulePositions(), Optional.ofNullable(gyroInputs.connected ? rawGyroRotation : null)) );
+        //RobotState.getInstance().addOdometryPose( new OdometryObservation(Timer.getTimestamp(), getModulePositions(), Optional.ofNullable(gyroInputs.connected ? rawGyroRotation : null)) );
 
         // Update gyro alert
         gyroDisconnectedAlert.set(!gyroInputs.connected && frc.robot.constants.Constants.currentMode != frc.robot.constants.Constants.Mode.SIM);
@@ -405,6 +413,32 @@ public void setRotation () {
     }
 public Command setRotationCommand () {
     return Commands.runOnce(() -> setRotation());
-}    
+}   
+
+public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
+    this.targetPose = targetPose.get();
+    double targetRotation = targetSpeeds.get().omegaRadiansPerSecond;
+
+    if(targetSpeeds.get().omegaRadiansPerSecond == 0){
+        targetRotation = rotationalController.calculate(getPose().getRotation().getRadians(), this.targetPose.getRotation().getRadians());
+    }
+
+    if(targetSpeeds.get().vxMetersPerSecond == 0 && targetSpeeds.get().vyMetersPerSecond == 0) {
+        double targetTranlslationX = translationalController.calculate(0, getPose().getX() - this.targetPose.getX());
+        double targetTranlslationY = translationalController.calculate(0, getPose().getY() - this.targetPose.getY());
+        Translation2d targetTranlslation = new Translation2d(targetTranlslationX, targetTranlslationY);
+        ChassisSpeeds speeds = new ChassisSpeeds(targetTranlslationX, targetTranlslationY, targetRotation);
+
+        Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();
+
+        this.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation().minus(travelRotation)));
+
+    }
+        else {
+            ChassisSpeeds speeds = new ChassisSpeeds(targetSpeeds.get().vxMetersPerSecond, targetSpeeds.get().vyMetersPerSecond, targetRotation);
+            this.runVelocity(speeds);
+        }
+
     
+}
 }

@@ -12,6 +12,7 @@ import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveCommands;
+import frc.robot.subsystems.drive.DrivePathing;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
@@ -57,6 +58,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,6 +67,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 
@@ -97,8 +100,8 @@ public class RobotContainer {
   private Autonomous autonomous;
   public RobotContainer() {
 
+      instance = this;
     // Configure the trigger bindings
-
 
      if(Constants.currentMode != Constants.Mode.SIM) {
       hood = new Hood( new HoodIOTalonFX());
@@ -119,7 +122,7 @@ public class RobotContainer {
                             new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT),
                             new VisionIOPhotonVision(VisionConstants.CAMERA_BACK_NAME, VisionConstants.ROBOT_TO_CAMERA_BACK));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
-      autonomous = new Autonomous(drive);
+      autonomous = new Autonomous(this);
     
     }
  else {
@@ -146,7 +149,7 @@ public class RobotContainer {
                                       new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                 robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
-      autonomous = new Autonomous(drive);
+      autonomous = new Autonomous(this);
      }
      resetSimulationField();
          configurePrimaryBindings();
@@ -203,8 +206,9 @@ public class RobotContainer {
     ));
 
         y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
-
-        a.whileTrue(superstructure.intakeCommand());
+        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerLeft.whileTrue(Commands.run(() -> drive.driveToPose(() -> drive.getChassisSpeeds(),() -> new Pose2d(3, 2, new Rotation2d())), drive));
+        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
 
   }
 
@@ -227,11 +231,11 @@ public class RobotContainer {
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        triggerRight.whileTrue(superstructure.shootCommand());
-        bumperLeft.whileTrue(superstructure.passCommand());
-        a.whileTrue(superstructure.intakeCommand());
+        //the bindnigs need to be like this
+        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         b.whileTrue(superstructure.dumpCommand());
-
         down.whileTrue(climber.climberDownCommand());
         up.whileTrue(climber.climberUpCommand());
         
@@ -284,6 +288,10 @@ public class RobotContainer {
 
   public Superstructure getSuperstructure() {
     return superstructure;
+  }
+
+  public Drive getDrive() {
+    return drive;
   }
 
   public static RobotContainer getInstance(){
