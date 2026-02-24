@@ -23,16 +23,16 @@ public class IntakeConstants {
 
     public static final double INTAKE_VOLTAGE = 0;  
     
-    public static final double DEPLOY_MOI = 1;
+    public static final double DEPLOY_MOI = .5;
 
-    public static final double ENCODER_DIST_PER_PULSE = 0;
-    public static final Distance INTAKE_WIDTH = Inches.of(0);
-    public static final Distance INTAKE_EXTEND_LENGTH = Inches.of(0);
+    public static final double ENCODER_DIST_PER_PULSE = .1757;
+    public static final Distance INTAKE_WIDTH = Inches.of(20.5);
+    public static final Distance INTAKE_EXTEND_LENGTH = Inches.of(8.5);
     public static final IntakeSide INTAKE_SIDE = IntakeSide.LEFT;
-    public static final int INTAKE_CAPACITY = 0;
+    public static final int INTAKE_CAPACITY = 30;
 
-    public static final double DEPLOY_LENGTH = 0;
-    public static final double DEPLOY_MAX_ANGLE=0;
+    public static final double DEPLOY_LENGTH = 9.5;
+    public static final double DEPLOY_MAX_ANGLE=100;
     public static final double DEPLOY_MIN_ANGLE =0;
 
 

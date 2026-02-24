@@ -4,8 +4,12 @@
 
 package frc.robot;
 
+import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveCommands;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -18,12 +22,14 @@ import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.hood.HoodIOSim;
 import frc.robot.subsystems.superstructure.hood.HoodIOTalonFX;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
+import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIO;
+import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -45,11 +51,17 @@ import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -58,6 +70,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 
@@ -77,43 +90,54 @@ public class RobotContainer {
   private final Indexer indexer;
   private final Intake intake;
   private final Shooter shooter;
-  //private final Hood hood;
-  private final RobotState robotState = new RobotState();
+  private final Hood hood;
+  private final RobotState robotState;
+  private final Climber climber;
   private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
   
-  private final Drive drive;
+  public final Drive drive;
   private final SwerveDriveSimulation driveSimulation;
   private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
-  private final Hood hood;
+  private Autonomous autonomous;
   public RobotContainer() {
 
+      instance = this;
     // Configure the trigger bindings
 
-
      if(Constants.currentMode != Constants.Mode.SIM) {
-driveSimulation = null;
-       this.drive = new Drive(
-                        new GyroIOPigeon2(),
+      hood = new Hood( new HoodIOTalonFX());
+      indexer = new Indexer(new IndexerIOTalonFX());
+      intake = new Intake(new IntakeIOTalonFX());
+      shooter = new Shooter(new ShooterIOTalonFX());
+      climber = new Climber(new ClimberTalonFX());
+      driveSimulation = null;
+      this.drive = new Drive(
+        new GyroIOPigeon2(),
                         new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
                         new ModuleIOTalonFXReal(TunerConstants.FrontRight),
                         new ModuleIOTalonFXReal(TunerConstants.BackLeft),
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
-            vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
-                            new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
-            shooter = new Shooter(new ShooterIOTalonFX());
-            hood = new Hood (new HoodIOTalonFX());
-            intake = new Intake (new IntakeIOTalonFX());
-            indexer = new Indexer (new IndexerIOTalonFX());
-            superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
-            
+      robotState = new RobotState(drive);
+      vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
+                            new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT),
+                            new VisionIOPhotonVision(VisionConstants.CAMERA_BACK_NAME, VisionConstants.ROBOT_TO_CAMERA_BACK));
+      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+      autonomous = new Autonomous(this);
+    
     }
  else {
-             driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
-                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-                drive = new Drive(
+      autonomous = new Autonomous(this);
+      hood = new Hood(new HoodIOSim());
+      indexer = new Indexer(new IndexerIOSim());
+      shooter = new Shooter(new ShooterIOSim());
+      driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+      intake = new Intake(new IntakeIOSim(driveSimulation));
+      SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+      climber = new Climber(new ClimberIOSim());
+      drive = new Drive(
                         new GyroIOSim(driveSimulation.getGyroSimulation()),
                         new ModuleIOTalonFXSim(
                                 TunerConstants.FrontLeft, driveSimulation.getModules()[0]),
@@ -124,15 +148,15 @@ driveSimulation = null;
                         new ModuleIOTalonFXSim(
                                 TunerConstants.BackRight, driveSimulation.getModules()[3]),
                         driveSimulation::setSimulationWorldPose);
-              vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT, driveSimulation::getSimulatedDriveTrainPose),
-                                      new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT, driveSimulation::getSimulatedDriveTrainPose));
-                                      shooter = new Shooter(new ShooterIOSim());
-                                      hood = new Hood (new HoodIOSim());
-                                      intake = new Intake (new IntakeIOSim(driveSimulation));
-                                      indexer = new Indexer (new IndexerIOSim());
-                                      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
-                
+      vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
+                                robotState = new RobotState(drive);
+      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+
      }
+
+     NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
      resetSimulationField();
          configurePrimaryBindings();
     configureSecondaryBindings();
@@ -179,6 +203,19 @@ driveSimulation = null;
   b.whileTrue(drive.setMinimumBumpVelocityCommand());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
+            drive.setDefaultCommand(
+      DriveCommands.joystickDrive(
+        drive,
+        ()-> joystick.getY(),
+        ()-> joystick.getX(),
+        ()-> joystick.getTwist()
+    ));
+
+        y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
+        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerLeft.whileTrue(Commands.run(() -> drive.driveToPose(() -> drive.getChassisSpeeds(),() -> new Pose2d(3, 3, new Rotation2d(Math.PI/2))), drive));
+        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+
   }
 
   private void configureSecondaryBindings() {
@@ -200,16 +237,20 @@ driveSimulation = null;
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        triggerRight.whileTrue(superstructure.shootCommand());
-        bumperLeft.whileTrue(superstructure.passCommand());
-        a.whileTrue(superstructure.intakeCommand());
+        //the bindnigs need to be like this
+        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         b.whileTrue(superstructure.dumpCommand());
+        down.whileTrue(climber.climberDownCommand());
+        up.whileTrue(climber.climberUpCommand());
         
 
         
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
+
 
   }
 
@@ -220,7 +261,7 @@ driveSimulation = null;
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-      return new PathPlannerAuto("Normal Auto drive");
+      return new PathPlannerAuto("Normal Auto");
   }
 
   public Command pathfinderToPose(Pose2d targetPose) {
@@ -250,11 +291,23 @@ driveSimulation = null;
     Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
   }
 
+
+  public Superstructure getSuperstructure() {
+    return superstructure;
+  }
+
+  public Drive getDrive() {
+    return drive;
+  }
+
   public static RobotContainer getInstance(){
     return instance;
   }
 
   public Drive getDrive() {
     return drive;
+  }
+  public Pose2d getDrivePose(){
+    return drive.getPose();
   }
 }
