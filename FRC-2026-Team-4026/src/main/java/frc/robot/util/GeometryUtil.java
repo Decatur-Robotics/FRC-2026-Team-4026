@@ -1,13 +1,23 @@
 package frc.robot.util;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class GeometryUtil {
-    public static Transform2d toTransform2d(Translation2d translation) {
-    return new Transform2d(translation, Rotation2d.kZero);
-  }
+public class GeometryUtil { 
+    public GeometryUtil (){}
+    
+    public static double getChassisTranslationSpeeds (ChassisSpeeds chassisSpeeds) {
+        double pythagoreumTheorem = Math.sqrt(Math.pow(chassisSpeeds.vxMetersPerSecond, 2) + Math.pow(chassisSpeeds.vyMetersPerSecond, 2));
+        return pythagoreumTheorem;
+        public static Transform2d toTransform2d(Translation2d translation) {
+        return new Transform2d(translation, Rotation2d.kZero);
+    }
+}
+
+
+
 
   /**
    * Creates a pure translating transform

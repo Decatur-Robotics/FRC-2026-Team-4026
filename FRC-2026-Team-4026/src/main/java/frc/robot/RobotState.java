@@ -7,6 +7,8 @@ import org.ejml.equation.MatrixConstructor;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.AutoLogOutput;
 
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
@@ -36,6 +38,7 @@ import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
+import frc.robot.util.GeometryUtil;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.Vision.VisionConsumer;
 
@@ -80,6 +83,10 @@ public class RobotState extends SubsystemBase
     private Double speedOffset;
       private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
     
+
+    private static RobotState instance;
+    private Translation2d hubToRobot = new Translation2d(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
+
 public RobotState(Drive drive){
     this.drive = drive;
     instance = this;
@@ -221,18 +228,27 @@ public double getBrownoutVoltage() {
         return drive.getRotation();
     }
 
-//     @Override
-//  public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-//     visionPose = visionRobotPoseMeters;
-//     visionTimestamp = timestampSeconds;
-//         this.visionMeasurementStdDevs = visionMeasurementStdDevs;
-//     }
-
-//     public record OdometryObservation(double timestamp, SwerveModulePosition[] modulePositions, Optional<Rotation2d> gyroRotation){ 
-
-//     }
-
-    public static RobotState getInstance(){
-        return instance;
+     
+    public static RobotState getInstance() {
+         return instance;
     }
+
+    public static Pose2d getEstimatedRobotPose(){
+        return instance.drive.getPose();
+    }
+
+    public double getChassisVelocity(){
+        return GeometryUtil.getChassisTranslationSpeeds(drive.getChassisSpeeds());
+
+    }
+
+    public ChassisSpeeds getFieldVelocity(){
+       return ChassisSpeeds.fromFieldRelativeSpeeds(drive.getChassisSpeeds(), drive.getRotation());
+
+}
+    public Translation2d getHubLocalizedRobotPose(){
+        return hubToRobot;
+    }
+
+
 }
