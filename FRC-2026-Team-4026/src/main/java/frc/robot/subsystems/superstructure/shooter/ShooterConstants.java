@@ -26,8 +26,6 @@ public class ShooterConstants {
     public static final double LOOK_AHEAD_SECONDS = 0.25;
     public static final Transform3d ROBOT_TO_TURRET = new Transform3d(0, 0, 0, new Rotation3d());
     public static final Angle OPTIMAL_PITCH = Radians.of(0);
-    public static final Matrix<N3, N1> TRAJECTORY_WEIGHTS = new Matrix<>(Nat.N3(), Nat.N1());
-
     public static final Distance hubFunnelClearance = Inches.of(0);
 }
 

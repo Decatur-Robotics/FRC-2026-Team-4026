@@ -14,6 +14,7 @@ import frc.robot.RobotState;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.shooter.ShooterConstants;
+import frc.robot.subsystems.superstructure.turret.TurretConstants;
 import frc.robot.util.AllianceFlipUtil;
 
 import org.littletonrobotics.junction.Logger;
@@ -122,9 +123,9 @@ public class ShotOptimizer {
       double timeCost = time;
 
       double cost =
-          (velocityCost * ShooterConstants.TRAJECTORY_WEIGHTS.get(0, 0))
-              + (pitchCost * ShooterConstants.TRAJECTORY_WEIGHTS.get(1, 0))
-              + (timeCost * ShooterConstants.TRAJECTORY_WEIGHTS.get(2, 0));
+          (velocityCost * TurretConstants.TRAJECTORY_WEIGHTS.get(0, 0))
+              + (pitchCost * TurretConstants.TRAJECTORY_WEIGHTS.get(1, 0))
+              + (timeCost * TurretConstants.TRAJECTORY_WEIGHTS.get(2, 0));
 
       double timeFunnel = funnelHorizontalDistance / Math.hypot(xFieldVelocity, yFieldVelocity);
       double funnelY = zFieldVelocity * timeFunnel - 0.5 * G * timeFunnel * timeFunnel;
