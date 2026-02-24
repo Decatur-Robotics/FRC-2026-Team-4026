@@ -12,6 +12,8 @@ public class leds implements Subsystem {
 
     // an led strip
     private AddressableLED led;
+
+    private double m;
     // how many leds on the strip
     private int length;
     // a buffer with data on the led strip states
@@ -43,7 +45,7 @@ public class leds implements Subsystem {
     private final int blueFadeTop = 240;
     private final int fadeSpeed = 5;
     public leds(){
-        led = new AddressableLED(Ports.ADDRESSABLE_LED);
+        this.led = new AddressableLED(Ports.ADDRESSABLE_LED);
 
         this.length = ledsConstants.LENGTH;
         buffer = new AddressableLEDBuffer(length);

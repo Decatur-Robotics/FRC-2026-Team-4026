@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
@@ -50,11 +51,17 @@ import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -63,6 +70,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 
@@ -92,10 +100,11 @@ public class RobotContainer {
   private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
+  private Autonomous autonomous;
   public RobotContainer() {
 
+      instance = this;
     // Configure the trigger bindings
-
 
      if(Constants.currentMode != Constants.Mode.SIM) {
       hood = new Hood( new HoodIOTalonFX());
@@ -113,11 +122,14 @@ public class RobotContainer {
                         (pose) -> {});
       robotState = new RobotState(drive);
       vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
-                            new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+                            new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT),
+                            new VisionIOPhotonVision(VisionConstants.CAMERA_BACK_NAME, VisionConstants.ROBOT_TO_CAMERA_BACK));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+      autonomous = new Autonomous(this);
     
     }
  else {
+      autonomous = new Autonomous(this);
       hood = new Hood(new HoodIOSim());
       indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
@@ -136,11 +148,15 @@ public class RobotContainer {
                         new ModuleIOTalonFXSim(
                                 TunerConstants.BackRight, driveSimulation.getModules()[3]),
                         driveSimulation::setSimulationWorldPose);
-      vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT, driveSimulation::getSimulatedDriveTrainPose),
-                                      new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT, driveSimulation::getSimulatedDriveTrainPose));
+      vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                 robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+
      }
+
+     NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
      resetSimulationField();
          configurePrimaryBindings();
     configureSecondaryBindings();
@@ -196,6 +212,9 @@ public class RobotContainer {
     ));
 
         y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
+        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerLeft.whileTrue(Commands.run(() -> drive.driveToPose(() -> drive.getChassisSpeeds(),() -> new Pose2d(3, 3, new Rotation2d(Math.PI/2))), drive));
+        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
 
   }
 
@@ -218,11 +237,11 @@ public class RobotContainer {
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        triggerRight.whileTrue(superstructure.shootCommand());
-        bumperLeft.whileTrue(superstructure.passCommand());
-        a.whileTrue(superstructure.intakeCommand());
+        //the bindnigs need to be like this
+        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         b.whileTrue(superstructure.dumpCommand());
-
         down.whileTrue(climber.climberDownCommand());
         up.whileTrue(climber.climberUpCommand());
         
@@ -275,6 +294,10 @@ public class RobotContainer {
 
   public Superstructure getSuperstructure() {
     return superstructure;
+  }
+
+  public Drive getDrive() {
+    return drive;
   }
 
   public static RobotContainer getInstance(){

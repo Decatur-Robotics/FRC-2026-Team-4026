@@ -1,8 +1,12 @@
 package frc.robot.core;
 
-import com.fasterxml.jackson.databind.util.Named;
-import com.pathplanner.lib.auto.NamedCommands;
 
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
+import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
@@ -12,19 +16,14 @@ public class Autonomous {
     private RobotContainer robotContainer;
     private Superstructure superstructure;
     private Drive swerve;
-    public Autonomous(RobotContainer robotContainer, Superstructure superstructure, Drive swerve) {
+    public Autonomous(RobotContainer robotContainer) {
         this.robotContainer = robotContainer;
-        this.superstructure = superstructure;
-        this.swerve = swerve;
-        registerNamedCommands();
+        superstructure = robotContainer.getSuperstructure();
+        this.swerve = robotContainer.getDrive();
+         eventTriggers();
     }
 
-
-    public void registerNamedCommands() {
-        final Superstructure superstructure = robotContainer.getSuperstructure();
-        NamedCommands.registerCommand("Shoot", superstructure.shootCommand());
-        NamedCommands.registerCommand("Intake", superstructure.intakeCommand());
-        NamedCommands.registerCommand("Store", superstructure.storeCommand());
-
-    }   
+    public void eventTriggers(){
+        new EventTrigger("Intake").whileTrue(superstructure.intakeCommand());
+    }
 }

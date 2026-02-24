@@ -80,6 +80,7 @@ public class HoodIOTalonFX implements HoodIO{
         motor.stopMotor();
     }
 
+    // This cant do anything, i'll fix later
     @Override
     public void setPID(HoodConstants constants){
         config.Slot0.kP = constants.kP;
