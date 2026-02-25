@@ -7,22 +7,23 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class NetworkTables {
     private Subscriber subcX;
     private Subscriber subcY;
-    private Subscriber subcount; 
+    private Subscriber subRotationOfGamePiece; 
 
     public NetworkTables(){
-    //Its not datatable i forget what it was it was something similar though. its in vison
+
     //Gets the default network table. I think this is always called no matter what
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    //gets the specific table from the network tables. it's cuirrently named datatable but that should be changed
-    NetworkTable table = inst.getTable("dataTable");
+    //gets the specific table from the network tables.
+    NetworkTable table = inst.getTable("datatable");
     //gets the topics (essentially subfiles) from the table
     DoubleTopic cY = table.getDoubleTopic("cY");
     DoubleTopic cX = table.getDoubleTopic("cX");
-    DoubleTopic count = table.getDoubleTopic("count");
+
+    DoubleTopic rotationOfGamePiece = table.getDoubleTopic("rotationOfGamePiece");
 //Makes a subscriber for eahc of the networktable topics that gets transmitted
     subcX = new Subscriber(cX);
     subcY = new Subscriber(cY);
-    subcount = new Subscriber(count);
+    subRotationOfGamePiece = new Subscriber(rotationOfGamePiece);
     }
     public double getCX(){
         //this is the method created in subscriber that returns the value of the topic that the subscriber is subscribed to
@@ -31,8 +32,8 @@ public class NetworkTables {
     public double getCY(){
         return subcY.getValue();
     }
-    public double getCount(){
-        return subcount.getValue();
+    public double getFuelRotation(){
+        return subRotationOfGamePiece.getValue();
     }
 
     

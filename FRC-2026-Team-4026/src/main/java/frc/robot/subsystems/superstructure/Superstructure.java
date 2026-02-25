@@ -86,6 +86,10 @@ public class Superstructure extends SubsystemBase {
         }
     }
 
+    public Command toggleDefenseModeCommand(){
+        return Commands.run(() -> toggleDefenseMode());
+    }
+    
     public SuperstructureState getCurrentState(){
         return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getMecanumVoltage(), intake.getIntakeVoltage());
     }

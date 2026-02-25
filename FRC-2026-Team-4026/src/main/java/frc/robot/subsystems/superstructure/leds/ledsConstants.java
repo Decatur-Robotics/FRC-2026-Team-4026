@@ -5,6 +5,7 @@ public class ledsConstants {
 	public static final int LENGTH = 0;
 
     public static final TeamColor RED = new TeamColor(255,0,0);
+	public static final TeamColor ORANGE = new TeamColor(255,69,0);
     public static final TeamColor GREEN = new TeamColor(0, 255, 0);
 	public static final TeamColor BLUE = new TeamColor(0, 0, 200);
 	public static final TeamColor YELLOW = new TeamColor(255, 127, 0);
