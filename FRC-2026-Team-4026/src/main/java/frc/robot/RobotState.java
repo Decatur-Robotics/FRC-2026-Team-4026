@@ -48,8 +48,8 @@ public class RobotState extends SubsystemBase
     private double busVoltage;
     public static boolean CURRENT_LIMITS_EXCEEDED;
     public static boolean BATTERY_BROWNOUT_PROTECTION;
-    private PowerDistribution PDH = new PowerDistribution();
-    private double brownoutProtectionVoltage = 1.432*Math.log10(PDH.getVoltage()-7);
+    //private PowerDistribution PDH = new PowerDistribution();
+   // private double brownoutProtectionVoltage = 1.432*Math.log10(PDH.getVoltage()-7);
 
     private static final double poseBufferTime = 2.0; // seconds
 
@@ -96,8 +96,8 @@ public RobotState(Drive drive){
       voltageToVelocity.put(0.0, 0.0);
     voltageToVelocity.put(6.0, 40.0);
     voltageToVelocity.put(12.0, 85.0);
-    totalCurrentDraw = PDH.getTotalCurrent();
-    busVoltage = PDH.getVoltage();
+   // totalCurrentDraw = PDH.getTotalCurrent();
+    //busVoltage = PDH.getVoltage();
 }
 
 
@@ -168,18 +168,18 @@ public RobotState(Drive drive){
 // }
 @Override
     public void periodic(){
-        busVoltage = PDH.getVoltage();
-        totalCurrentDraw = PDH.getTotalCurrent();
+       // busVoltage = PDH.getVoltage();
+       // totalCurrentDraw = PDH.getTotalCurrent();
 
-        if (totalCurrentDraw > currentLimit){
+        // if (totalCurrentDraw > currentLimit){
 
-            CURRENT_LIMITS_EXCEEDED = true;
+        //     CURRENT_LIMITS_EXCEEDED = true;
 
-        }
-        if (busVoltage < brownoutProtectionVoltage){
+        // }
+        // if (busVoltage < brownoutProtectionVoltage){
             
-            BATTERY_BROWNOUT_PROTECTION = true;
-        }
+        //     BATTERY_BROWNOUT_PROTECTION = true;
+        // }
         robotPose = drive.getPose();
         robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
         
@@ -189,9 +189,9 @@ public RobotState(Drive drive){
     return voltageToVelocity.get(voltage);
 }
 
-public double getBrownoutVoltage() {
-    return brownoutProtectionVoltage;
-}
+// public double getBrownoutVoltage() {
+//     return brownoutProtectionVoltage;
+// }
     public double getTargetAim(){
         return targetAims.get(robotDistance);
     }

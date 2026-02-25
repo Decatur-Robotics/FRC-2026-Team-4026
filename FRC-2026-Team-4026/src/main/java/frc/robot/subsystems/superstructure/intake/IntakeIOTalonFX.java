@@ -33,40 +33,35 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Voltage> deployVoltage;
     private StatusSignal<Voltage> deployFollowVoltage;
 
-    public TalonFXConfiguration config = new TalonFXConfiguration();
+    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS);
 
     public IntakeIOTalonFX(){
-        config.Slot0 = new Slot0Configs()
-        .withKA(IntakeConstants.kA)
-        .withKI(IntakeConstants.kI)
-        .withKD(IntakeConstants.kD)
-        .withKS(IntakeConstants.kS)
-        .withKV(IntakeConstants.kV)
-        .withKA(IntakeConstants.kA);
-
-        deployPosition = deployMotor.getPosition();
-        deployFollowPosition = deployFollowMotor.getPosition();
-
-        intakeCurrent = intakeMotor.getSupplyCurrent();
-
-        positionRequest = new MotionMagicVoltage(deployPosition.getValueAsDouble()).withEnableFOC(true);
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
 
         deployMotor = new TalonFX(Ports.DEPLOY_MOTOR_PORT);
         deployFollowMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
         deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Opposed));
 
+                deployPosition = deployMotor.getPosition();
+        deployFollowPosition = deployFollowMotor.getPosition();
+
+        intakeCurrent = intakeMotor.getSupplyCurrent();
+
+        positionRequest = new MotionMagicVoltage(0).withEnableFOC(true);
         intakeVoltage = intakeMotor.getMotorVoltage();
         deployVoltage = deployMotor.getMotorVoltage();
         deployFollowVoltage = deployFollowMotor.getMotorVoltage();
+        deployCurrent = deployMotor.getSupplyCurrent();
+        deployFollowCurrent = deployFollowMotor.getSupplyCurrent();
 
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
-        BaseStatusSignal.setUpdateFrequencyForAll(40, intakeVoltage,deployVoltage);
+       BaseStatusSignal.setUpdateFrequencyForAll(40, intakeVoltage,deployVoltage);
         tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeVoltage,deployVoltage,deployFollowVoltage, intakeCurrent, deployCurrent,deployFollowCurrent, deployPosition,deployFollowPosition));
         tryUntilOk(5, () -> intakeMotor.optimizeBusUtilization());
         tryUntilOk(5, () -> deployMotor.optimizeBusUtilization());
         tryUntilOk(5, () -> deployFollowMotor.optimizeBusUtilization());
+        deployFollowMotor.optimizeBusUtilization();
         PhoenixUtil.registerSignals(true, intakeVoltage, deployVoltage,deployFollowVoltage, intakeCurrent, deployCurrent,deployFollowCurrent, deployPosition,deployFollowPosition);
 
     }

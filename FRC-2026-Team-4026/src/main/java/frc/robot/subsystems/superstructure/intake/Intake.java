@@ -54,7 +54,7 @@ public class Intake extends SubsystemBase{
     }
 
     public Command deployIntakeCommand(double position){
-        return Commands.runOnce(() -> io.setDeployPosition(position));
+        return Commands.runOnce(() -> io.setDeployVoltage(position));
     }
 
     public Command retractIntakeCommand(double position){
