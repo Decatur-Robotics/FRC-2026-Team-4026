@@ -76,9 +76,7 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import frc.robot.subsystems.superstructure.turret.TurretIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO.TargetObservation;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer
 {
@@ -441,6 +439,8 @@ public void driveRobotRelative(ChassisSpeeds speeds){
     previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, 0.02);
     runVelocity(previousSetpoint.robotRelativeSpeeds());
 }
+
+
 
 public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
     this.targetPose = targetPose.get();

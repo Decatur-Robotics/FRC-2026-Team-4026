@@ -86,21 +86,21 @@ import frc.robot.constants.FieldConstants;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Superstructure superstructure;
+   private final Superstructure superstructure;
   private final Indexer indexer;
   private final Intake intake;
   private final Shooter shooter;
   private final Hood hood;
   private final RobotState robotState;
-  private final Climber climber;
+  //private final Climber climber;
   private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
   
   public final Drive drive;
   private final SwerveDriveSimulation driveSimulation;
-  private final Vision vision;
+ private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
-  private Autonomous autonomous;
+  //private Autonomous autonomous;
   public RobotContainer() {
 
       instance = this;
@@ -111,7 +111,7 @@ public class RobotContainer {
       indexer = new Indexer(new IndexerIOTalonFX());
       intake = new Intake(new IntakeIOTalonFX());
       shooter = new Shooter(new ShooterIOTalonFX());
-      climber = new Climber(new ClimberTalonFX());
+      // climber = new Climber(new ClimberTalonFX());
       driveSimulation = null;
       this.drive = new Drive(
         new GyroIOPigeon2(),
@@ -125,18 +125,18 @@ public class RobotContainer {
                             new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT),
                             new VisionIOPhotonVision(VisionConstants.CAMERA_BACK_NAME, VisionConstants.ROBOT_TO_CAMERA_BACK));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
-      autonomous = new Autonomous(this);
+    //  autonomous = new Autonomous(this);
     
     }
  else {
-      autonomous = new Autonomous(this);
+      //autonomous = new Autonomous(this);
       hood = new Hood(new HoodIOSim());
-      indexer = new Indexer(new IndexerIOSim());
+     indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
       driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
       intake = new Intake(new IntakeIOSim(driveSimulation));
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-      climber = new Climber(new ClimberIOSim());
+      //climber = new Climber(new ClimberIOSim());
       drive = new Drive(
                         new GyroIOSim(driveSimulation.getGyroSimulation()),
                         new ModuleIOTalonFXSim(
@@ -156,7 +156,7 @@ public class RobotContainer {
 
      }
 
-     NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
+     //NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
      resetSimulationField();
          configurePrimaryBindings();
     configureSecondaryBindings();
@@ -188,33 +188,38 @@ public class RobotContainer {
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
-        JoystickButton bumperRight = new JoystickButton(joystick, LogitechControllerButtons.bumperRight);
-
-
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
- drive.setDefaultCommand(
-      DriveCommands.joystickDrive(
-        drive,
-        ()-> joystick.getY(),
-        ()-> joystick.getX(),
-        ()-> joystick.getTwist()
-    ));
-
-  b.whileTrue(drive.setMinimumBumpVelocityCommand());
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-            drive.setDefaultCommand(
-      DriveCommands.joystickDrive(
-        drive,
-        ()-> joystick.getY(),
-        ()-> joystick.getX(),
-        ()-> joystick.getTwist()
-    ));
-
-        y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
-        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        triggerLeft.whileTrue(Commands.run(() -> drive.driveToPose(() -> drive.getChassisSpeeds(),() -> new Pose2d(3, 3, new Rotation2d(Math.PI/2))), drive));
-        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+        JoystickButton bumperRight = new JoystickButton(joystick,(LogitechControllerButtons.bumperRight));
+        
+        
+            // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+         drive.setDefaultCommand(
+              DriveCommands.joystickDrive(
+                drive,
+                ()-> joystick.getY(),
+                ()-> joystick.getX(),
+                ()-> joystick.getTwist()
+            ));
+        
+          b.whileTrue(drive.setMinimumBumpVelocityCommand());
+            // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
+            // cancelling on release.
+                    drive.setDefaultCommand(
+              DriveCommands.joystickDrive(
+                drive,
+                ()-> joystick.getY(),
+                ()-> joystick.getX(),
+                ()-> joystick.getTwist()
+            ));
+        
+                y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
+                // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+                triggerLeft.whileTrue(Commands.run(() -> drive.driveToPose(() -> drive.getChassisSpeeds(),() -> new Pose2d(3, 3, new Rotation2d(Math.PI/2))), drive));
+                a.whileTrue(Commands.parallel(indexer.setVoltageCommand(-6), shooter.setVoltageCommand(2))).onFalse(Commands.parallel(indexer.setVoltageCommand(0), shooter.setVoltageCommand(0)));
+        //b.whileTrue(shooter.setVelocityCommand(40));
+       // .onFalse(shooter.setVelocityCommand(0)
+      
+      ;
+      b.whileTrue(hood.setPositionCommand(0.5));
 
   }
 
@@ -238,12 +243,12 @@ public class RobotContainer {
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
         //the bindnigs need to be like this
-        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
-        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-        b.whileTrue(superstructure.dumpCommand());
-        down.whileTrue(climber.climberDownCommand());
-        up.whileTrue(climber.climberUpCommand());
+        // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+        // a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+        // b.whileTrue(superstructure.dumpCommand());
+       // down.whileTrue(climber.climberDownCommand());
+       // up.whileTrue(climber.climberUpCommand());
         
 
         
@@ -292,9 +297,7 @@ public class RobotContainer {
   }
 
 
-  public Superstructure getSuperstructure() {
-    return superstructure;
-  }
+
 
   public Drive getDrive() {
     return drive;

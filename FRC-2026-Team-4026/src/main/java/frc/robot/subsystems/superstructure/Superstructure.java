@@ -69,7 +69,9 @@ public class Superstructure extends SubsystemBase {
     public Command setState(SuperstructureState targetState){
 
         this.targetState = targetState.copyInstatnce();
-        return Commands.parallel(shooter.setVelocityCommand(targetState.shooterVelocity),
+        return Commands.parallel(
+            //shooter.setVelocityCommand(targetState.shooterVelocity),
+            shooter.setVoltageCommand(targetState.shooterVelocity),
         hood.setPositionCommand(targetState.hoodAngle),
         intake.deployIntakeCommand(targetState.intakeDeployed),
         intake.runIntakeCommand(targetState.intakeVoltage),
@@ -102,9 +104,9 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command intakeCommand(){
-        if (defenseMode){
-            return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 1.0, 0.0, 12*robotState.getBrownoutVoltage())), leds.pulseLedsCommand(ledsConstants.GREEN, 5));
-        }
+        // if (defenseMode){
+        //     return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 1.0, 0.0, 12*robotState.getBrownoutVoltage())), leds.pulseLedsCommand(ledsConstants.GREEN, 5));
+        // }
         return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulseLedsCommand(ledsConstants.GREEN, 5));
     }
 
@@ -130,33 +132,36 @@ public class Superstructure extends SubsystemBase {
             return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         }
         else{
-            if (RobotState.BATTERY_BROWNOUT_PROTECTION){
+            // if (RobotState.BATTERY_BROWNOUT_PROTECTION){
                 return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() < SuperstructureConstants.VELOCITY_BROWNOUT_LIMIT ? robotState.getTargetVelocity() : 0.0,  
                 robotState.getTargetAim(), 1.0, 6, 6)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
                 
-            }
-        else {
-            return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-        }}
+            // }
+           }
+
+
+        // else {
+        //     return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+        // }}
     }
 
     public Command testingShootCommand(){
-        return setState(new SuperstructureState(50, 0.2, 1, 12, 0.0));
+        return setState(new SuperstructureState(1, 0.0, 0, 12, 0.0));
     }
 
     public Command passCommand(){
-       if (defenseMode) {
-            if (robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())<robotState.getTargetVelocity()+10){
-                return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 0.0, 0.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-            }
-            else {
-                return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity()+10, robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim()+0.1,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+    //    if (defenseMode) {
+            // if (robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())<robotState.getTargetVelocity()+10){
+            //     return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 0.0, 0.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+            // }
+            // else {
+                // return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity()+10, robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim()+0.1,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
 
-            }
-       }
-       else {
+            // }
+    //    }
+    //    else {
             return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity()+10, robotState.getTargetAim()+0.1, 0.0, 12.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-        }
+        // }
         }
             
     
