@@ -307,6 +307,9 @@ public class RobotContainer {
     return instance;
   }
 
+  public Drive getDrive() {
+    return drive;
+  }
   public Pose2d getDrivePose(){
     return drive.getPose();
   }
