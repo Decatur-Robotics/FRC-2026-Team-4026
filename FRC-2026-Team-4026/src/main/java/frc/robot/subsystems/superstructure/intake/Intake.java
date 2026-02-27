@@ -22,6 +22,7 @@ public class Intake extends SubsystemBase{
         this.io = io;
     }
 
+    @Override
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Intake", inputs);
@@ -53,11 +54,11 @@ public class Intake extends SubsystemBase{
         return inputs.intakeData.intakeCurrent();
     }
 
-    public Command deployIntakeCommand(double position){
-        return Commands.runOnce(() -> io.setDeployPosition(position));
+    public Command slamIntakeCommand(double position){
+        return Commands.runOnce(() -> io.setDeployVoltage(position));
     }
 
-    public Command retractIntakeCommand(double position){
+    public Command deployIntakeCommand(double position){
         return Commands.runOnce(() -> io.setDeployPosition(position));
     }
     public Command runIntakeCommand(double voltage){

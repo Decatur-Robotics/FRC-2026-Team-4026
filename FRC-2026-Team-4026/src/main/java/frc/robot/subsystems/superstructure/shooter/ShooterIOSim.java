@@ -52,8 +52,8 @@ public class ShooterIOSim implements ShooterIO {
 
         inputs.data = new ShooterIOData (
             true,
-            voltage.in(Volts),
             shooterSim.getAngularVelocityRPM(),
+            voltage.in(Volts),
             getSupplyCurrent().in(Amps),
             0.0
             );

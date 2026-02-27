@@ -4,19 +4,22 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface HoodIO {
     @AutoLog
-    public class HoodIOInputs{
-        public HoodIOData hoodData = new HoodIOData(false, 0.0, 0.0, 0.0, 0.0,0.0);
+    public class HoodIOInputs {
+        public HoodIOData hoodData = new HoodIOData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0, 0.0);
     }
 
     public record HoodIOData(
         boolean motorConnected,
         double voltage,
         double position,
+        double velocity,
+        double encoderPosition,
         double supplyAmps,
         double torqueCurrent,
-        double temp
-
-    ){}
+        double temp,
+        double acceleration
+    ) {}
+    
     default void periodic(){}
 
     default void updateInputs(HoodIOInputs inputs){}

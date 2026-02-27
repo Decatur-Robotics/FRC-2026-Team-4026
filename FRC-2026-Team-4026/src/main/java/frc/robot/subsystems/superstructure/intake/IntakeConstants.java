@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Inches;
 
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
@@ -13,13 +15,21 @@ public class IntakeConstants {
     public static final double STORED_INTAKE_POSITION = 0;
 
 
-    public static final double kP = 0;
+    public static final double kP = 0.08;
     public static final double kI = 0;
     public static final double kD = 0;
 
-    public static final double kS = 0;
-    public static final double kV = 0;
-    public static final double kA = 0;
+    public static final double kS = 0.25;
+    public static final double kV = 8.0;
+    public static final double kA = 6.0;
+
+    public static final Slot0Configs SLOT0_CONFIGS = new Slot0Configs()
+    .withKP(kP)
+    .withKI(kI)
+    .withKD(kD)
+    .withKS(kS)
+    .withKV(kV)
+    .withKA(kA);
 
     public static final double INTAKE_VOLTAGE = 0;  
     
