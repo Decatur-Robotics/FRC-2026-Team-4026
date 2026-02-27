@@ -36,13 +36,8 @@ public class IntakeIOTalonFX implements IntakeIO{
     public TalonFXConfiguration config = new TalonFXConfiguration();
 
     public IntakeIOTalonFX(){
-        config.Slot0 = new Slot0Configs()
-        .withKA(IntakeConstants.kA)
-        .withKI(IntakeConstants.kI)
-        .withKD(IntakeConstants.kD)
-        .withKS(IntakeConstants.kS)
-        .withKV(IntakeConstants.kV)
-        .withKA(IntakeConstants.kA);
+
+         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
 
         deployPosition = deployMotor.getPosition();
         deployFollowPosition = deployFollowMotor.getPosition();
@@ -73,7 +68,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     @Override
     public void periodic(){
         if (intakeMotor.hasResetOccurred()){
-            intakeMotor.optimizeBusUtilization(40);
+          intakeMotor.optimizeBusUtilization(40);
         }
         if (deployMotor.hasResetOccurred()){
 

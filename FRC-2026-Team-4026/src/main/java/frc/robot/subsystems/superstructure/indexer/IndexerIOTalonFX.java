@@ -29,7 +29,7 @@ public class IndexerIOTalonFX implements IndexerIO{
 
     public IndexerIOTalonFX(){
         mecanumMotor = new TalonFX(Ports.INDEXER_MOTOR_MECANUM);
-        beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
+        // beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
         kickMotor = new TalonFX(Ports.INDEXER_MOTOR_KICK);
 
         //idk if alligned or opposed

@@ -20,8 +20,8 @@ public class VisionConstants {
         new Translation3d(0, 0, 0), 
         new Rotation3d(0, 0, 0));
 
-    public static final String CAMERA_FRONT_LEFT_NAME = "Front Left Camera 3"; // 3
-    public static final String CAMERA_FRONT_RIGHT_NAME = "Front Right Camera 1"; // 1
-    public static final String CAMERA_BACK_NAME = "Back Camera 2"; // 2
+    public static final String CAMERA_FRONT_LEFT_NAME = "Front_Left_Camera_3"; // 3
+    public static final String CAMERA_FRONT_RIGHT_NAME = "Front_Right_Camera_1"; // 1
+    public static final String CAMERA_BACK_NAME = "Back_Camera_2"; // 2
 
 }

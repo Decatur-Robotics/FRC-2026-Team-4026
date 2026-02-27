@@ -81,8 +81,9 @@ public class RobotContainer {
   private final Superstructure superstructure;
   private final Indexer indexer;
   private final Intake intake;
+
   private final Shooter shooter;
-  private final Hood hood;
+   private final Hood hood;
   private final RobotState robotState;
   private final Climber climber;
   private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
@@ -120,6 +121,8 @@ public class RobotContainer {
  else {
       hood = new Hood(new HoodIOSim());
       indexer = new Indexer(new IndexerIOSim());
+
+
       shooter = new Shooter(new ShooterIOSim());
       driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
       intake = new Intake(new IntakeIOSim(driveSimulation));
@@ -140,6 +143,7 @@ public class RobotContainer {
                                       new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT, driveSimulation::getSimulatedDriveTrainPose));
                                 robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+
      }
      resetSimulationField();
          configurePrimaryBindings();
