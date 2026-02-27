@@ -33,8 +33,8 @@ public class IndexerIOTalonFX implements IndexerIO{
         kickMotor = new TalonFX(Ports.INDEXER_MOTOR_KICK);
 
         //idk if alligned or opposed
-        beltMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Aligned));
-        kickMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Aligned));
+        beltMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Opposed));
+        kickMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Opposed));
 
         mecanumVoltage = mecanumMotor.getMotorVoltage();
         beltVoltage = beltMotor.getMotorVoltage();

@@ -6,6 +6,8 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -21,10 +23,10 @@ public class IntakeIOTalonFX implements IntakeIO{
 
     public TalonFX intakeMotor, deployMotor,deployFollowMotor;
 
-    private MotionMagicVoltage positionRequest;
+    private PositionDutyCycle positionRequest;
     private VoltageOut voltageRequest;
 
-    private StatusSignal<Angle> deployPosition;
+    private double deployPosition;
     private StatusSignal<Current> deployCurrent;
     private StatusSignal<Current> intakeCurrent;
     private StatusSignal<Voltage> intakeVoltage;
@@ -40,14 +42,14 @@ public class IntakeIOTalonFX implements IntakeIO{
 
         deployMotor = new TalonFX(Ports.DEPLOY_MOTOR_PORT);
         deployFollowMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
-        deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Opposed));
+        deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Aligned));
 
-                deployPosition = deployMotor.getPosition();
+                deployPosition = deployMotor.getPosition().getValueAsDouble();
         deployFollowPosition = deployFollowMotor.getPosition();
 
         intakeCurrent = intakeMotor.getSupplyCurrent();
 
-        positionRequest = new MotionMagicVoltage(0).withEnableFOC(true);
+        positionRequest = new PositionDutyCycle(deployPosition);
         intakeVoltage = intakeMotor.getMotorVoltage();
         deployVoltage = deployMotor.getMotorVoltage();
         deployFollowVoltage = deployFollowMotor.getMotorVoltage();
@@ -56,13 +58,12 @@ public class IntakeIOTalonFX implements IntakeIO{
 
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
-       BaseStatusSignal.setUpdateFrequencyForAll(40, intakeVoltage,deployVoltage);
-        tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeVoltage,deployVoltage,deployFollowVoltage, intakeCurrent, deployCurrent,deployFollowCurrent, deployPosition,deployFollowPosition));
+BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), deployMotor.getMotorVoltage(),deployFollowMotor.getMotorVoltage(), intakeMotor.getSupplyCurrent(), deployMotor.getSupplyCurrent(),deployFollowMotor.getSupplyCurrent(), deployMotor.getPosition(),deployFollowMotor.getPosition());
         tryUntilOk(5, () -> intakeMotor.optimizeBusUtilization());
         tryUntilOk(5, () -> deployMotor.optimizeBusUtilization());
         tryUntilOk(5, () -> deployFollowMotor.optimizeBusUtilization());
         deployFollowMotor.optimizeBusUtilization();
-        PhoenixUtil.registerSignals(true, intakeVoltage, deployVoltage,deployFollowVoltage, intakeCurrent, deployCurrent,deployFollowCurrent, deployPosition,deployFollowPosition);
+        PhoenixUtil.registerSignals(false, intakeMotor.getMotorVoltage(), deployMotor.getMotorVoltage(),deployFollowMotor.getMotorVoltage(), intakeMotor.getSupplyCurrent(), deployMotor.getSupplyCurrent(),deployFollowMotor.getSupplyCurrent(), deployMotor.getPosition(),deployFollowMotor.getPosition());
 
     }
     @Override
@@ -86,17 +87,19 @@ public class IntakeIOTalonFX implements IntakeIO{
         intakeMotor.isConnected(),
         deployMotor.isConnected(),
         deployFollowMotor.isConnected(),
-        intakeVoltage.getValueAsDouble(),
-        deployVoltage.getValueAsDouble(),
-        deployFollowVoltage.getValueAsDouble(),
+        intakeMotor.getMotorVoltage().getValueAsDouble(),
+        deployMotor.getMotorVoltage().getValueAsDouble(),
+        deployFollowMotor.getMotorVoltage().getValueAsDouble(),
         intakeCurrent.getValueAsDouble(),
         deployCurrent.getValueAsDouble(),
         deployFollowCurrent.getValueAsDouble(),
-        deployPosition.getValueAsDouble(),
-        deployFollowPosition.getValueAsDouble(),
+        deployMotor.getPosition().getValueAsDouble(),
+        deployFollowMotor.getPosition().getValueAsDouble(),
         intakeMotor.getDeviceTemp().getValueAsDouble(),
         deployMotor.getDeviceTemp().getValueAsDouble(),
-        deployMotor.getDeviceTemp().getValueAsDouble()
+        deployMotor.getDeviceTemp().getValueAsDouble(),
+        deployMotor.getVelocity().getValueAsDouble(),
+        deployMotor.getAcceleration().getValueAsDouble()
         );
     }
     @Override
@@ -109,8 +112,9 @@ public class IntakeIOTalonFX implements IntakeIO{
     }
 
     @Override
-    public void setDeployPosition(double position){
-        deployMotor.setControl(positionRequest.withPosition(position));
+    public void setDeployPosition(double posRot){
+        this.deployPosition = posRot;
+        deployMotor.setControl(positionRequest.withPosition(posRot));
     }
 
     @Override
@@ -123,6 +127,7 @@ public class IntakeIOTalonFX implements IntakeIO{
         voltageRequest = new VoltageOut(voltage);
         deployMotor.setControl(voltageRequest);
     }
+
 
 
 }

@@ -18,10 +18,10 @@ public class VisionConstants {
     //     new Rotation3d(0, -0.34, -Math.PI + 0.68));
      public static final Transform3d ROBOT_TO_CAMERA_FRONT_LEFT = new Transform3d(
         new Translation3d(0,0,0), 
-        new Rotation3d(0, 0,0));
+        new Rotation3d(0, -0.34,-Math.PI/4));
     public static final Transform3d ROBOT_TO_CAMERA_FRONT_RIGHT = new Transform3d(
         new Translation3d(0,0,0), 
-        new Rotation3d(0, 0,0));
+        new Rotation3d(0, -0.34,Math.PI/4));
     public static final Transform3d ROBOT_TO_CAMERA_BACK = new Transform3d(
         new Translation3d(0, 0, 0), 
         new Rotation3d(0, 0, 0));
