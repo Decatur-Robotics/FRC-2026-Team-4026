@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.constants.Ports;
+import frc.robot.util.PhoenixUtil;
 
 public class IndexerIOTalonFX implements IndexerIO{
     private TalonFX mecanumMotor, beltMotor, kickMotor;
@@ -44,7 +45,8 @@ public class IndexerIOTalonFX implements IndexerIO{
         beltCurrent = beltMotor.getSupplyCurrent();
         kickCurrent = kickMotor.getSupplyCurrent();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(40, mecanumVoltage, beltVoltage,kickVoltage);
+        BaseStatusSignal.setUpdateFrequencyForAll(40, mecanumVoltage, beltVoltage,kickVoltage, mechanumCurrent, beltCurrent, kickCurrent);
+        PhoenixUtil.registerSignals(false, mecanumVoltage, mechanumCurrent, kickVoltage, kickCurrent, beltVoltage, beltCurrent);
     }
 
     @Override
