@@ -114,7 +114,7 @@ BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), d
     @Override
     public void setDeployPosition(double posRot){
         this.deployPosition = posRot;
-        deployMotor.setControl(positionRequest.withPosition(posRot));
+        deployMotor.setControl(positionRequest.withPosition(posRot).withVelocity(0.05));
     }
 
     @Override

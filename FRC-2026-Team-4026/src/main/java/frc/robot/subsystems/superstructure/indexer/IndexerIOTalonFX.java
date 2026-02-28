@@ -30,7 +30,7 @@ public class IndexerIOTalonFX implements IndexerIO{
 
     public IndexerIOTalonFX(){
         mecanumMotor = new TalonFX(Ports.INDEXER_MOTOR_MECANUM);
-        // beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
+         beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
         kickMotor = new TalonFX(Ports.INDEXER_MOTOR_KICK);
 
         beltMotor= new TalonFX(Ports.INDEXER_MOTOR_BELT);
@@ -86,10 +86,14 @@ public class IndexerIOTalonFX implements IndexerIO{
     @Override
     public void setVoltage(double voltage){
         voltageRequest = new VoltageOut(voltage);
+
+        beltMotor.setControl(voltageRequest);
+        kickMotor.setControl(voltageRequest);
+
+        voltageRequest = new VoltageOut(voltage*-1);
         mecanumMotor.setControl(voltageRequest);
-       // beltMotor.setControl(voltageRequest);
-        //kickMotor.setControl(voltageRequest);
     }
+
 
     @Override
     public void stop(){

@@ -76,9 +76,9 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConsumer;
 
-public class Drive extends SubsystemBase implements Vision.VisionConsumer
+public class Drive extends SubsystemBase implements VisionConsumer
 {
     // TunerConstants doesn't include these constants, so they are declared locally
     static final double ODOMETRY_FREQUENCY =

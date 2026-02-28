@@ -149,6 +149,13 @@ public class Superstructure extends SubsystemBase {
         return setState(new SuperstructureState(1, 0.0, 0, 12, 0.0));
     }
 
+    public Command testShootCommand(){
+        return Commands.parallel(indexer.setVoltageCommand(4),shooter.setVelocityCommand(75));
+    }
+
+    public Command noTestShootCommand(){
+        return Commands.parallel(indexer.setVoltageCommand(0), shooter.setVoltageCommand(0));
+    }
     public Command passCommand(){
     //    if (defenseMode) {
             // if (robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())<robotState.getTargetVelocity()+10){

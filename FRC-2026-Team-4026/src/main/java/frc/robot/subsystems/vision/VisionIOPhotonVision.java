@@ -114,12 +114,12 @@ public class VisionIOPhotonVision implements VisionIO {
             aprilTagIDArray[i++] = id;
             }
 
-        inputs.visionData = new VisionIOData(
-            camera.isConnected(),
-            targetObservation,
-            poseObservationArray,
-            aprilTagIDArray
-        );
+        // inputs.visionData = new VisionIOData(
+        //     camera.isConnected(),
+        //     targetObservation,
+        //     poseObservationArray,
+        //     aprilTagIDArray
+        // );
 
         }
 }
