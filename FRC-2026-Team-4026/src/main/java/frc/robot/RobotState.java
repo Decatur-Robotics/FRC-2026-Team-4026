@@ -51,8 +51,8 @@ public class RobotState extends SubsystemBase
     private double busVoltage;
     public static boolean CURRENT_LIMITS_EXCEEDED;
     public static boolean BATTERY_BROWNOUT_PROTECTION;
-   // private PowerDistribution PDH = new PowerDistribution();
-   // private double brownoutProtectionVoltage = 1.432*Math.log10(PDH.getVoltage()-7);
+   private PowerDistribution PDH = new PowerDistribution();
+   private double brownoutProtectionVoltage = 1.432*Math.log10(PDH.getVoltage()-7);
 
     private static final double poseBufferTime = 2.0; // seconds
 
@@ -103,90 +103,90 @@ public RobotState(Drive drive){
     voltageToVelocity.put(8.0, 64.0);
 
     voltageToVelocity.put(12.0, 85.0);
-   // totalCurrentDraw = PDH.getTotalCurrent();
-    //busVoltage = PDH.getVoltage();
+   totalCurrentDraw = PDH.getTotalCurrent();
+    busVoltage = PDH.getVoltage();
 }
 
 
-// public void resetPose(Pose2d newPose){
-//     gyroOffset = newPose.getRotation().minus(drive.getRotation().minus(gyroOffset));
-//     odemetryPose = newPose;
-//     estimatedPose = newPose;
-//     poseBuffer.clear();
-// }
+public void resetPose(Pose2d newPose){
+    gyroOffset = newPose.getRotation().minus(drive.getRotation().minus(gyroOffset));
+    odemetryPose = newPose;
+    estimatedPose = newPose;
+    poseBuffer.clear();
+}
 
-// public void addOdometryPose(OdometryObservation observation){
-//     Twist2d twist = kinematics.toTwist2d(modulePositions, observation.modulePositions);
-//     modulePositions = observation.modulePositions;
-//     Pose2d lastOdometryPose = odemetryPose;
-//     odemetryPose = odemetryPose.exp(twist);
+public void addOdometryPose(OdometryObservation observation){
+    Twist2d twist = kinematics.toTwist2d(modulePositions, observation.modulePositions);
+    modulePositions = observation.modulePositions;
+    Pose2d lastOdometryPose = odemetryPose;
+    odemetryPose = odemetryPose.exp(twist);
 
-//     observation.gyroRotation.ifPresent(
-//         gyroRotation -> {
-//             Rotation2d angle = gyroRotation.plus(gyroOffset);
-//             odemetryPose = new Pose2d(odemetryPose.getTranslation(), angle);
-//         }
-//     );
+    observation.gyroRotation.ifPresent(
+        gyroRotation -> {
+            Rotation2d angle = gyroRotation.plus(gyroOffset);
+            odemetryPose = new Pose2d(odemetryPose.getTranslation(), angle);
+        }
+    );
 
-//     poseBuffer.addSample(observation.timestamp, odemetryPose);
+    poseBuffer.addSample(observation.timestamp, odemetryPose);
 
-//     Twist2d finalTwist = lastOdometryPose.log(odemetryPose);
-//     estimatedPose = estimatedPose.exp(finalTwist);
-// }
+    Twist2d finalTwist = lastOdometryPose.log(odemetryPose);
+    estimatedPose = estimatedPose.exp(finalTwist);
+}
 
-// public void addVisionPose(){
-//     try{
-//         if(poseBuffer.getInternalBuffer().lastKey() - poseBufferTime > visionTimestamp){
-//             return;
-//         }
-//     }
-//     catch(NoSuchElementException e){
-//         return;}
+public void addVisionPose(){
+    try{
+        if(poseBuffer.getInternalBuffer().lastKey() - poseBufferTime > visionTimestamp){
+            return;
+        }
+    }
+    catch(NoSuchElementException e){
+        return;}
 
-//     var sample = poseBuffer.getSample(visionTimestamp);
-//     if(sample.isEmpty()){
-//         return;
-//     }
+    var sample = poseBuffer.getSample(visionTimestamp);
+    if(sample.isEmpty()){
+        return;
+    }
 
-//     var sampleToOdometryTransform = new Transform2d(sample.get(), odemetryPose);
-//     var odometryToSampleTransform = new Transform2d(odemetryPose, sample.get());
+    var sampleToOdometryTransform = new Transform2d(sample.get(), odemetryPose);
+    var odometryToSampleTransform = new Transform2d(odemetryPose, sample.get());
 
-//     Pose2d estimateAtTimestamp = estimatedPose.transformBy(odometryToSampleTransform);
+    Pose2d estimateAtTimestamp = estimatedPose.transformBy(odometryToSampleTransform);
 
-//     Matrix<N3, N3> kalmanGain = new Matrix<>(Nat.N3(), Nat.N3());
-//     for(int row = 0; row < 3; row++){
-//         double stdDev = visionMeasurementStdDevs.get(row, 0);
-//         if(stdDev == 0){
-//             kalmanGain.set(row, row, 0);
-//         }
-//         else{
-//             kalmanGain.set(row, row, stdDev/(stdDev + Math.sqrt(stdDev*visionMeasurementStdDevs.get(row,0))));
-//         }
-//     }
+    Matrix<N3, N3> kalmanGain = new Matrix<>(Nat.N3(), Nat.N3());
+    for(int row = 0; row < 3; row++){
+        double stdDev = visionMeasurementStdDevs.get(row, 0);
+        if(stdDev == 0){
+            kalmanGain.set(row, row, 0);
+        }
+        else{
+            kalmanGain.set(row, row, stdDev/(stdDev + Math.sqrt(stdDev*visionMeasurementStdDevs.get(row,0))));
+        }
+    }
 
-//     Transform2d poseTransform = new Transform2d(estimateAtTimestamp, visionPose);
+    Transform2d poseTransform = new Transform2d(estimateAtTimestamp, visionPose);
 
-//     var kalmanTransform = kalmanGain.times(VecBuilder.fill(poseTransform.getX(), poseTransform.getY(), poseTransform.getRotation().getRadians()));
+    var kalmanTransform = kalmanGain.times(VecBuilder.fill(poseTransform.getX(), poseTransform.getY(), poseTransform.getRotation().getRadians()));
 
-//     Transform2d scaledTransform = new Transform2d(kalmanTransform.get(0, 0), kalmanTransform.get(1, 0), new Rotation2d(kalmanTransform.get(2, 0)));
+    Transform2d scaledTransform = new Transform2d(kalmanTransform.get(0, 0), kalmanTransform.get(1, 0), new Rotation2d(kalmanTransform.get(2, 0)));
 
-//     estimatedPose = estimateAtTimestamp.plus(scaledTransform).plus(sampleToOdometryTransform);
+    estimatedPose = estimateAtTimestamp.plus(scaledTransform).plus(sampleToOdometryTransform);
 
-// }
+}
 @Override
     public void periodic(){
-       // busVoltage = PDH.getVoltage();
-       // totalCurrentDraw = PDH.getTotalCurrent();
+       busVoltage = PDH.getVoltage();
+       totalCurrentDraw = PDH.getTotalCurrent();
 
-        // if (totalCurrentDraw > currentLimit){
+        if (totalCurrentDraw > currentLimit){
 
-        //     CURRENT_LIMITS_EXCEEDED = true;
+            CURRENT_LIMITS_EXCEEDED = true;
 
-        // }
-        // if (busVoltage < brownoutProtectionVoltage){
+        }
+        if (busVoltage < brownoutProtectionVoltage){
             
-        //     BATTERY_BROWNOUT_PROTECTION = true;
-        // }
+            BATTERY_BROWNOUT_PROTECTION = true;
+        }
         robotPose = drive.getPose();
         robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
         
@@ -196,9 +196,9 @@ public RobotState(Drive drive){
     return voltageToVelocity.get(voltage);
 }
 
-// public double getBrownoutVoltage() {
-//     return brownoutProtectionVoltage;
-// }
+public double getBrownoutVoltage() {
+    return brownoutProtectionVoltage;
+}
     public double getTargetAim(){
         return targetAims.get(robotDistance);
     }

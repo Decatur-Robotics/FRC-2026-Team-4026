@@ -193,30 +193,30 @@ public class RobotContainer {
         
         
             // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-         drive.setDefaultCommand(
-              DriveCommands.joystickDrive(
-                drive,
-                ()-> joystick.getY(),
-                ()-> joystick.getX(),
-                ()-> joystick.getTwist()
-            ));
+        //  drive.setDefaultCommand(
+        //       DriveCommands.joystickDrive(
+        //         drive,
+        //         ()-> joystick.getY(),
+        //         ()-> joystick.getX(),
+        //         ()-> joystick.getTwist()
+        //     ));
         
-          b.whileTrue(drive.setMinimumBumpVelocityCommand());
-            // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-            // cancelling on release.
-                    drive.setDefaultCommand(
-              DriveCommands.joystickDrive(
-                drive,
-                ()-> joystick.getY(),
-                ()-> joystick.getX(),
-                ()-> joystick.getTwist()
-            ));
+        //   b.whileTrue(drive.setMinimumBumpVelocityCommand());
+        //     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
+        //     // cancelling on release.
+        //             drive.setDefaultCommand(
+        //       DriveCommands.joystickDrive(
+        //         drive,
+        //         ()-> joystick.getY(),
+        //         ()-> joystick.getX(),
+        //         ()-> joystick.getTwist()
+        //     ));
         
-                y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
-                // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-                triggerLeft.whileTrue(Commands.run(() -> drive.driveToPose(() -> drive.getChassisSpeeds(),() -> new Pose2d(3, 3, new Rotation2d(Math.PI/2))), drive));
-                a.whileTrue(Commands.parallel(indexer.setVoltageCommand(-6), shooter.setVoltageCommand(2))).onFalse(Commands.parallel(indexer.setVoltageCommand(0), shooter.setVoltageCommand(0)));
-        //b.whileTrue(shooter.setVelocityCommand(40));
+        //         y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3,3,new Rotation2d()))));
+        //         // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        //         triggerLeft.whileTrue(Commands.run(() -> drive.driveToPose(() -> drive.getChassisSpeeds(),() -> new Pose2d(3, 3, new Rotation2d(Math.PI/2))), drive));
+        //         a.whileTrue(Commands.parallel(indexer.setVoltageCommand(-6), shooter.setVoltageCommand(2))).onFalse(Commands.parallel(indexer.setVoltageCommand(0), shooter.setVoltageCommand(0)));
+        // b.whileTrue(shooter.setVelocityCommand(40));
        // .onFalse(shooter.setVelocityCommand(0)
       
       ;
@@ -251,6 +251,7 @@ public class RobotContainer {
        // down.whileTrue(climber.climberDownCommand());
        // up.whileTrue(climber.climberUpCommand());
         
+       a.whileTrue(intake.runIntakeCommand(2));
 
         
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
