@@ -44,7 +44,6 @@ import frc.robot.subsystems.vision.Vision.VisionConsumer;
 
 public class RobotState extends SubsystemBase
 {
-    private static RobotState instance;
     // add params for PDH object
     private double totalCurrentDraw;
     private int currentLimit = 180;
