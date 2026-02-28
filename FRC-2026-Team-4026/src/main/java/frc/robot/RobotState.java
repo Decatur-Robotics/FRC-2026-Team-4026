@@ -83,8 +83,6 @@ public class RobotState extends SubsystemBase
     private Double speedOffset;
       private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
     
-
-    private static RobotState instance;
     private Translation2d hubToRobot = new Translation2d(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
 
 public RobotState(Drive drive){
