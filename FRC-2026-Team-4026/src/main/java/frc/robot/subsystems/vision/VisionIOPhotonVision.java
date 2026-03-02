@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.Resistance;
 
 
 public class VisionIOPhotonVision implements VisionIO {
@@ -81,7 +82,7 @@ public class VisionIOPhotonVision implements VisionIO {
 
                 var tagPose = VisionConstants.aprilTagLayout.getTagPose(target.fiducialId);
                 if(tagPose.isPresent()){
-                    Transform3d tagToCamera = target.bestCameraToTarget;
+                    Transform3d tagToCamera = target.getBestCameraToTarget();
                     Transform3d fieldToTag = new Transform3d(
                         tagPose.get().getTranslation(),
                         tagPose.get().getRotation()

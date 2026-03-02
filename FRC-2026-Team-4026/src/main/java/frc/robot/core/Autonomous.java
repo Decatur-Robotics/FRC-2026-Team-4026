@@ -9,8 +9,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -26,9 +28,8 @@ public class Autonomous {
     }
 
     public void eventTriggers() {
-       NamedCommands.registerCommand("Intake", Commands.runOnce(() -> Commands.sequence(superstructure.intakeCommand(), Commands.waitTime(Seconds.of(4))).finallyDo(() -> superstructure.storeCommand()), superstructure));
-       NamedCommands.registerCommand("Shoot", Commands.runOnce(() -> superstructure.testShootCommand()).finallyDo(() -> superstructure.noTestShootCommand()));
-       NamedCommands.registerCommand("Store", Commands.runOnce(() -> superstructure.storeCommand(), superstructure));
+       NamedCommands.registerCommand("Intake", Commands.runOnce(() -> Commands.sequence(superstructure.intakeCommand(), Commands.waitSeconds(4)).finallyDo(() -> superstructure.storeCommand())));
+       NamedCommands.registerCommand("Shoot", superstructure.testShootCommand().until(() -> !RobotState.isAutonomous()));
     }
 
 }

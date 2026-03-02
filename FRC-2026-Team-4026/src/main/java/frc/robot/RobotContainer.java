@@ -277,8 +277,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-      //return new PathPlannerAuto("Center Rush");
-     return superstructure.testShootCommand().finallyDo(() -> superstructure.noTestShootCommand());
+      return new PathPlannerAuto("Center Rush");
+    //  return superstructure.testShootCommand().finallyDo(() -> superstructure.noTestShootCommand());
   }
 
   public Command pathfinderToPose(Pose2d targetPose) {

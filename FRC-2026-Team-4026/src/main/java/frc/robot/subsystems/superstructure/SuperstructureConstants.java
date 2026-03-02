@@ -20,7 +20,7 @@ public class SuperstructureConstants {
         0.0,    // hoodAngle
         IntakeConstants.DEPLOY_INTAKE_POSITION,    // intakeDeployed
         0.0,    // indexerVoltage
-        12.0    // intakeVoltage
+        10.0    // intakeVoltage
     );
 
     public static final SuperstructureState STORING_STATE = new SuperstructureState(
