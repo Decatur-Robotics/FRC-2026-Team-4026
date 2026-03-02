@@ -19,6 +19,7 @@ import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
+import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.util.SuperstructureState;
 import frc.robot.subsystems.superstructure.leds.leds;
@@ -71,7 +72,7 @@ public class Superstructure extends SubsystemBase {
         this.targetState = targetState.copyInstatnce();
         return Commands.parallel(
             //shooter.setVelocityCommand(targetState.shooterVelocity),
-            shooter.setVoltageCommand(targetState.shooterVelocity),
+            shooter.setVelocityCommand(targetState.shooterVelocity),
         hood.setPositionCommand(targetState.hoodAngle),
         intake.deployIntakeCommand(targetState.intakeDeployed),
         intake.runIntakeCommand(targetState.intakeVoltage),
@@ -125,24 +126,25 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command shootCommand(){
-        if(!Robot.isReal()){
+        // if(!Robot.isReal()){
             
-        }
-        if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
-            return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-        }
-        else{
-            // if (RobotState.BATTERY_BROWNOUT_PROTECTION){
-                return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() < SuperstructureConstants.VELOCITY_BROWNOUT_LIMIT ? robotState.getTargetVelocity() : 0.0,  
-                robotState.getTargetAim(), 1.0, 6, 6)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
+        // }
+        // if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
+        //     return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+        // }
+        // else{
+        //     // if (RobotState.BATTERY_BROWNOUT_PROTECTION){
+        //         return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() < SuperstructureConstants.VELOCITY_BROWNOUT_LIMIT ? robotState.getTargetVelocity() : 0.0,  
+        //         robotState.getTargetAim(), 1.0, 6, 6)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
                 
-            // }
-           }
+        //     // }
+        //    }
 
 
         // else {
         //     return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         // }}
+        return setState(new SuperstructureState(robotState.getTargetVelocity(), 0, IntakeConstants.DEPLOY_INTAKE_POSITION, 12, 12));
     }
 
     public Command testingShootCommand(){
@@ -150,7 +152,11 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command testShootCommand(){
-        return Commands.parallel(indexer.setVoltageCommand(4),shooter.setVelocityCommand(75));
+        return Commands.parallel(indexer.setVoltageCommand(8),shooter.setVelocityCommand(50), intake.runIntakeCommand(-4));
+    }
+    
+    public Command testShootAutoCommand(){
+        return Commands.parallel(indexer.setVoltageCommand(8),shooter.setVelocityCommand(45), intake.runIntakeCommand(-4));
     }
 
     public Command noTestShootCommand(){

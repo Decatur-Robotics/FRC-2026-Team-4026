@@ -40,5 +40,7 @@ public interface IntakeIO {
     default void periodic(){}
 
     default void setDeployVoltage(double voltage){}
+
+    default void coast(){}
     
 }

@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface VisionIO {
     @AutoLog
     public class VisionIOInputs {
-// VisionIOData visionData = new VisionIOData(false,
-//          new TargetObservation(new Rotation2d(), new Rotation2d()), new PoseObservation[0], new int[0]);
+VisionIOData visionData = new VisionIOData(false,
+         new TargetObservation(new Rotation2d(), new Rotation2d()), new PoseObservation[0], new int[0]);
     }
     public record VisionIOData(
         boolean cameraConnected,

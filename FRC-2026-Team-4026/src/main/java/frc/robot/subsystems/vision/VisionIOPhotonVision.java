@@ -6,22 +6,28 @@ import java.util.List;
 import java.util.Set;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.StructPublisher;
 
 
 public class VisionIOPhotonVision implements VisionIO {
     protected final PhotonCamera camera;
     protected final Transform3d cameraToRobot;
     protected TargetObservation targetObservation;
+    protected PhotonPoseEstimator poseEstimator;
 
     public VisionIOPhotonVision(String cameraName, Transform3d cameraToRobot) {
         camera = new PhotonCamera(cameraName);
         this.cameraToRobot = cameraToRobot;
+
     }
 
     @Override
@@ -49,7 +55,7 @@ public class VisionIOPhotonVision implements VisionIO {
                 Transform3d fieldToRobot = fieldToCamera.plus(cameraToRobot);
 
                 Pose3d robotPose = new Pose3d(
-                    fieldToRobot.getTranslation(),
+                   fieldToRobot.getTranslation(),
                     fieldToRobot.getRotation()
                 );
 
@@ -75,7 +81,7 @@ public class VisionIOPhotonVision implements VisionIO {
 
                 var tagPose = VisionConstants.aprilTagLayout.getTagPose(target.fiducialId);
                 if(tagPose.isPresent()){
-                    Transform3d tagToCamera = target.getBestCameraToTarget();
+                    Transform3d tagToCamera = target.bestCameraToTarget;
                     Transform3d fieldToTag = new Transform3d(
                         tagPose.get().getTranslation(),
                         tagPose.get().getRotation()
@@ -114,12 +120,12 @@ public class VisionIOPhotonVision implements VisionIO {
             aprilTagIDArray[i++] = id;
             }
 
-        // inputs.visionData = new VisionIOData(
-        //     camera.isConnected(),
-        //     targetObservation,
-        //     poseObservationArray,
-        //     aprilTagIDArray
-        // );
+        inputs.visionData = new VisionIOData(
+            camera.isConnected(),
+            targetObservation,
+            poseObservationArray,
+            aprilTagIDArray
+        );
 
         }
 }

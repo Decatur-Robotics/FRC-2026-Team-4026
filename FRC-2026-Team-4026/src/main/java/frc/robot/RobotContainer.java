@@ -35,7 +35,7 @@ import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
-
+import frc.robot.subsystems.vision.VisionIOSim;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -99,10 +99,10 @@ public class RobotContainer {
   
   public final Drive drive;
   private final SwerveDriveSimulation driveSimulation;
-//  private final Vision vision;
+ private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
-  //private Autonomous autonomous;
+  private Autonomous autonomous;
   public RobotContainer() {
 
       instance = this;
@@ -123,15 +123,13 @@ public class RobotContainer {
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
       robotState = new RobotState(drive);
-      // vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
-      //                       new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT),
-      //                       new VisionIOPhotonVision(VisionConstants.CAMERA_BACK_NAME, VisionConstants.ROBOT_TO_CAMERA_BACK));
+      vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
-    //  autonomous = new Autonomous(this);
+      autonomous = new Autonomous(superstructure);
     
     }
  else {
-      //autonomous = new Autonomous(this);
+
       hood = new Hood(new HoodIOSim());
       indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
@@ -150,11 +148,12 @@ public class RobotContainer {
                         new ModuleIOTalonFXSim(
                                 TunerConstants.BackRight, driveSimulation.getModules()[3]),
                         driveSimulation::setSimulationWorldPose);
-      // vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-      //                                 new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-      //                                 new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
+      vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                 robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+            autonomous = new Autonomous(superstructure);
 
      }
 
@@ -194,13 +193,15 @@ public class RobotContainer {
         
         
             // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-        //  drive.setDefaultCommand(
-        //       DriveCommands.joystickDrive(
-        //         drive,
-        //         ()-> joystick.getY(),
-        //         ()-> joystick.getX(),
-        //         ()-> joystick.getTwist()
-        //     ));
+         drive.setDefaultCommand(
+              DriveCommands.joystickDrive(
+                drive,
+                ()-> joystick.getY(),
+                ()-> joystick.getX(),
+                ()-> -joystick.getTwist()
+            ));
+
+          y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
         
         //   b.whileTrue(drive.setMinimumBumpVelocityCommand());
         //     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
@@ -220,8 +221,8 @@ public class RobotContainer {
         // b.whileTrue(shooter.setVelocityCommand(40));
        // .onFalse(shooter.setVelocityCommand(0)
       
-      ;
-      b.whileTrue(hood.setPositionCommand(0.5));
+     // ;
+      //b.whileTrue(hood.setPositionCommand(0.5));
 
   }
 
@@ -247,11 +248,10 @@ public class RobotContainer {
         //the bindnigs need to be like this
         // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
-        // a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-        // b.whileTrue(superstructure.dumpCommand());
-       // down.whileTrue(climber.climberDownCommand());
-       // up.whileTrue(climber.climberUpCommand());
-        
+        a.whileTrue(intake.runIntakeCommand(-12));
+       // b.whileTrue(superstructure.dumpCommand());
+       x.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
+        y.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
 
 
         // triggerLeft.whileTrue(intake.runIntakeCommand(-12));
@@ -277,7 +277,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-      return new PathPlannerAuto("Normal Auto");
+      //return new PathPlannerAuto("Center Rush");
+     return superstructure.testShootCommand().finallyDo(() -> superstructure.noTestShootCommand());
   }
 
   public Command pathfinderToPose(Pose2d targetPose) {

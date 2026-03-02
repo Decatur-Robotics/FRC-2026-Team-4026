@@ -2,8 +2,11 @@ package frc.robot.subsystems.superstructure.intake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -35,7 +38,8 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Voltage> deployVoltage;
     private StatusSignal<Voltage> deployFollowVoltage;
 
-    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS);
+    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3));
+    public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(60));
 
     public IntakeIOTalonFX(){
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
@@ -56,14 +60,19 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployCurrent = deployMotor.getSupplyCurrent();
         deployFollowCurrent = deployFollowMotor.getSupplyCurrent();
 
+        deployMotor.setPosition(0);
+        deployFollowMotor.setPosition(0);
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
+        intakeMotor.getConfigurator().apply(intakeConfig);
 BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), deployMotor.getMotorVoltage(),deployFollowMotor.getMotorVoltage(), intakeMotor.getSupplyCurrent(), deployMotor.getSupplyCurrent(),deployFollowMotor.getSupplyCurrent(), deployMotor.getPosition(),deployFollowMotor.getPosition());
         tryUntilOk(5, () -> intakeMotor.optimizeBusUtilization());
         tryUntilOk(5, () -> deployMotor.optimizeBusUtilization());
         tryUntilOk(5, () -> deployFollowMotor.optimizeBusUtilization());
         deployFollowMotor.optimizeBusUtilization();
-        PhoenixUtil.registerSignals(false, intakeMotor.getMotorVoltage(), deployMotor.getMotorVoltage(),deployFollowMotor.getMotorVoltage(), intakeMotor.getSupplyCurrent(), deployMotor.getSupplyCurrent(),deployFollowMotor.getSupplyCurrent(), deployMotor.getPosition(),deployFollowMotor.getPosition());
+        PhoenixUtil.registerSignals(false, intakeMotor.getMotorVoltage(), deployMotor.getMotorVoltage(),deployFollowMotor.getMotorVoltage(), intakeMotor.getSupplyCurrent(), deployMotor.getSupplyCurrent(),deployFollowMotor.getSupplyCurrent(), deployMotor.getPosition(),deployFollowMotor.getPosition(), intakeMotor.getSupplyCurrent());
+
+
 
     }
     @Override
@@ -90,7 +99,7 @@ BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), d
         intakeMotor.getMotorVoltage().getValueAsDouble(),
         deployMotor.getMotorVoltage().getValueAsDouble(),
         deployFollowMotor.getMotorVoltage().getValueAsDouble(),
-        intakeCurrent.getValueAsDouble(),
+        intakeMotor.getSupplyCurrent().getValueAsDouble(),
         deployCurrent.getValueAsDouble(),
         deployFollowCurrent.getValueAsDouble(),
         deployMotor.getPosition().getValueAsDouble(),
@@ -125,7 +134,12 @@ BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), d
     @Override
     public void setDeployVoltage(double voltage){
         voltageRequest = new VoltageOut(voltage);
-        deployMotor.setControl(voltageRequest);
+        deployMotor.setVoltage(voltage);
+    }
+
+    @Override
+    public void coast(){
+        deployMotor.setControl(new CoastOut());
     }
 
 
