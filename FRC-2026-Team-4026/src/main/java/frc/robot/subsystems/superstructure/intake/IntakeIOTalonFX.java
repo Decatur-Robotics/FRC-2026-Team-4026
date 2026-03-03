@@ -7,6 +7,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.DynamicMotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -27,6 +28,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     public TalonFX intakeMotor, deployMotor,deployFollowMotor;
 
     private PositionDutyCycle positionRequest;
+    private DynamicMotionMagicExpoVoltage alternatePositionRequest;
     private VoltageOut voltageRequest;
 
     private double deployPosition;
@@ -54,6 +56,8 @@ public class IntakeIOTalonFX implements IntakeIO{
         intakeCurrent = intakeMotor.getSupplyCurrent();
 
         positionRequest = new PositionDutyCycle(deployPosition);
+        alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
+
         intakeVoltage = intakeMotor.getMotorVoltage();
         deployVoltage = deployMotor.getMotorVoltage();
         deployFollowVoltage = deployFollowMotor.getMotorVoltage();
@@ -71,9 +75,6 @@ BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), d
         tryUntilOk(5, () -> deployFollowMotor.optimizeBusUtilization());
         deployFollowMotor.optimizeBusUtilization();
         PhoenixUtil.registerSignals(false, intakeMotor.getMotorVoltage(), deployMotor.getMotorVoltage(),deployFollowMotor.getMotorVoltage(), intakeMotor.getSupplyCurrent(), deployMotor.getSupplyCurrent(),deployFollowMotor.getSupplyCurrent(), deployMotor.getPosition(),deployFollowMotor.getPosition(), intakeMotor.getSupplyCurrent());
-
-
-
     }
     @Override
     public void periodic(){

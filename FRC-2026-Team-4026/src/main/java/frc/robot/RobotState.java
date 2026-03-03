@@ -137,45 +137,45 @@ public void resetPose(Pose2d newPose){
 //     estimatedPose = estimatedPose.exp(finalTwist);
 // }
 
-public void addVisionPose(){
-    try{
-        if(poseBuffer.getInternalBuffer().lastKey() - poseBufferTime > visionTimestamp){
-            return;
-        }
-    }
-    catch(NoSuchElementException e){
-        return;}
+// public void addVisionPose(){
+//     try{
+//         if(poseBuffer.getInternalBuffer().lastKey() - poseBufferTime > visionTimestamp){
+//             return;
+//         }
+//     }
+//     catch(NoSuchElementException e){
+//         return;}
 
-    var sample = poseBuffer.getSample(visionTimestamp);
-    if(sample.isEmpty()){
-        return;
-    }
+//     var sample = poseBuffer.getSample(visionTimestamp);
+//     if(sample.isEmpty()){
+//         return;
+//     }
 
-    var sampleToOdometryTransform = new Transform2d(sample.get(), odemetryPose);
-    var odometryToSampleTransform = new Transform2d(odemetryPose, sample.get());
+//     var sampleToOdometryTransform = new Transform2d(sample.get(), odemetryPose);
+//     var odometryToSampleTransform = new Transform2d(odemetryPose, sample.get());
 
-    Pose2d estimateAtTimestamp = estimatedPose.transformBy(odometryToSampleTransform);
+//     Pose2d estimateAtTimestamp = estimatedPose.transformBy(odometryToSampleTransform);
 
-    Matrix<N3, N3> kalmanGain = new Matrix<>(Nat.N3(), Nat.N3());
-    for(int row = 0; row < 3; row++){
-        double stdDev = visionMeasurementStdDevs.get(row, 0);
-        if(stdDev == 0){
-            kalmanGain.set(row, row, 0);
-        }
-        else{
-            kalmanGain.set(row, row, stdDev/(stdDev + Math.sqrt(stdDev*visionMeasurementStdDevs.get(row,0))));
-        }
-    }
+//     Matrix<N3, N3> kalmanGain = new Matrix<>(Nat.N3(), Nat.N3());
+//     for(int row = 0; row < 3; row++){
+//         double stdDev = visionMeasurementStdDevs.get(row, 0);
+//         if(stdDev == 0){
+//             kalmanGain.set(row, row, 0);
+//         }
+//         else{
+//             kalmanGain.set(row, row, stdDev/(stdDev + Math.sqrt(stdDev*visionMeasurementStdDevs.get(row,0))));
+//         }
+//     }
 
-    Transform2d poseTransform = new Transform2d(estimateAtTimestamp, visionPose);
+//     Transform2d poseTransform = new Transform2d(estimateAtTimestamp, visionPose);
 
-    var kalmanTransform = kalmanGain.times(VecBuilder.fill(poseTransform.getX(), poseTransform.getY(), poseTransform.getRotation().getRadians()));
+//     var kalmanTransform = kalmanGain.times(VecBuilder.fill(poseTransform.getX(), poseTransform.getY(), poseTransform.getRotation().getRadians()));
 
-    Transform2d scaledTransform = new Transform2d(kalmanTransform.get(0, 0), kalmanTransform.get(1, 0), new Rotation2d(kalmanTransform.get(2, 0)));
+//     Transform2d scaledTransform = new Transform2d(kalmanTransform.get(0, 0), kalmanTransform.get(1, 0), new Rotation2d(kalmanTransform.get(2, 0)));
 
-    estimatedPose = estimateAtTimestamp.plus(scaledTransform).plus(sampleToOdometryTransform);
+//     estimatedPose = estimateAtTimestamp.plus(scaledTransform).plus(sampleToOdometryTransform);
 
-}
+// }
 
 @Override
     public void periodic(){
@@ -192,7 +192,7 @@ public void addVisionPose(){
     //         BATTERY_BROWNOUT_PROTECTION = true;
     //     }
         robotPose = drive.getPose();
-        robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
+        robotDistance = Math.hypot(drive.getPose().getX() - FieldConstants.Hub.topCenterPoint.getX(), drive.getPose().getY() - FieldConstants.Hub.topCenterPoint.getY());
         
     }
 
@@ -216,7 +216,7 @@ public void addVisionPose(){
     }
 
     public double getTurretRotation() {
-        return Math.atan((robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY())/(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX()));
+        return Math.atan((drive.getPose().getY() - FieldConstants.Hub.topCenterPoint.getY())/(drive.getPose().getX() - FieldConstants.Hub.topCenterPoint.getX()));
     }
     public Translation2d getDrivePose(){
         return estimatedPose.getTranslation();

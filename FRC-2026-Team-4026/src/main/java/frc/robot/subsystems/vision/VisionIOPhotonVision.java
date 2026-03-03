@@ -3,8 +3,10 @@ package frc.robot.subsystems.vision;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -28,7 +30,7 @@ public class VisionIOPhotonVision implements VisionIO {
     public VisionIOPhotonVision(String cameraName, Transform3d cameraToRobot) {
         camera = new PhotonCamera(cameraName);
         this.cameraToRobot = cameraToRobot;
-
+        
     }
 
     @Override
@@ -55,10 +57,10 @@ public class VisionIOPhotonVision implements VisionIO {
                 Transform3d fieldToCamera = multiTagResult.estimatedPose.best;
                 Transform3d fieldToRobot = fieldToCamera.plus(cameraToRobot);
 
-                Pose3d robotPose = new Pose3d(
-                   fieldToRobot.getTranslation(),
-                    fieldToRobot.getRotation()
-                );
+                PhotonPoseEstimator robotPoseEstimate = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, cameraToRobot);
+                Pose3d robotPose = 
+                   robotPoseEstimate.estimateCoprocMultiTagPose(result).get().estimatedPose;
+               
 
                 double totalTagDistance = 0.0;
                 for(var target : result.getTargets()){
@@ -91,10 +93,14 @@ public class VisionIOPhotonVision implements VisionIO {
                     Transform3d fieldToCamera = fieldToTag.plus(cameraToTag);
                     Transform3d fieldToRobot = fieldToCamera.plus(cameraToRobot.inverse());
 
-                    Pose3d robotPose = new Pose3d(
-                        fieldToRobot.getTranslation(),
-                        fieldToRobot.getRotation()
-                    );
+                    PhotonPoseEstimator robotPoseEstimate = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, cameraToRobot);
+                    Optional<EstimatedRobotPose> robotPoseEst = robotPoseEstimate.estimateClosestToCameraHeightPose(result);
+                    Pose3d robotPose;
+                    if(robotPoseEst.isEmpty()){
+                        robotPose = new Pose3d();
+                    } else{
+                        robotPose = robotPoseEst.get().estimatedPose;
+                    }
 
                     aprilTagIDs.add((short)target.fiducialId);
 

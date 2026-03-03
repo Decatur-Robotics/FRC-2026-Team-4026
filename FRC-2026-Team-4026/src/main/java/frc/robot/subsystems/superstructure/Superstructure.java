@@ -33,14 +33,9 @@ public class Superstructure extends SubsystemBase {
     private leds leds;
     private RobotState robotState;
 
-  //private double turretRotation = Math.atan((robotPose.getY() - FieldConstants.HUB_POSE_BLUE.getY())/(robotPose.getX() - FieldConstants.HUB_POSE_BLUE.getX()));
-
     private boolean isSimulation = Robot.isSimulation();
 
     private SuperstructureState targetState;
-
-    private double shooterVelocity;
-    private double hoodAngle;
 
     //This is for making out robot both harder to defend and makes the chance of robot damage lower
     private boolean defenseMode = false;
@@ -55,24 +50,16 @@ public class Superstructure extends SubsystemBase {
 
         this.robotState = robotState;
         
-
-        this.shooterVelocity = 0.0;
-        this.hoodAngle = 0.0;
-        
         leds.setAllLedsCommand(ledsConstants.BLUE);
 
         this.targetState = SuperstructureConstants.STARTING_STATE;
-
-        // setDefaultCommand(storeCommand());
-
     }
 
     public Command setState(SuperstructureState targetState){
 
         this.targetState = targetState.copyInstatnce();
         return Commands.parallel(
-            //shooter.setVelocityCommand(targetState.shooterVelocity),
-            shooter.setVelocityCommand(targetState.shooterVelocity),
+        shooter.setVelocityCommand(targetState.shooterVelocity),
         hood.setPositionCommand(targetState.hoodAngle),
         intake.deployIntakeCommand(targetState.intakeDeployed),
         intake.runIntakeCommand(targetState.intakeVoltage),
@@ -90,39 +77,38 @@ public class Superstructure extends SubsystemBase {
     public Command toggleDefenseModeCommand(){
         return Commands.run(() -> toggleDefenseMode());
     }
+
+    public boolean getDefenseMode(){
+        return defenseMode;
+    }
     
     public SuperstructureState getCurrentState(){
         return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getMecanumVoltage(), intake.getIntakeVoltage());
     }
 
-    public boolean isHoodAtTarget(){
-        return (hood.getPosition() < targetState.hoodAngle + SuperstructureConstants.HOOD_DEADBAND) && (hood.getPosition() > targetState.hoodAngle - SuperstructureConstants.HOOD_DEADBAND);
-    }
+    // public boolean isHoodAtTarget(){
+    //     return (hood.getPosition() < targetState.hoodAngle + SuperstructureConstants.HOOD_DEADBAND) && (hood.getPosition() > targetState.hoodAngle - SuperstructureConstants.HOOD_DEADBAND);
+    // }
 
 
     public Command startingCommand(){
-        return Commands.parallel(setState(SuperstructureConstants.STARTING_STATE), leds.setAllLedsCommand(ledsConstants.BLUE));
+        return Commands.parallel(setState(SuperstructureConstants.STARTING_STATE));
     }
 
     public Command intakeCommand(){
-        // if (defenseMode){
-        //     return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 1.0, 0.0, 12*robotState.getBrownoutVoltage())), leds.pulseLedsCommand(ledsConstants.GREEN, 5));
-        // }
-        return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulseLedsCommand(ledsConstants.GREEN, 5));
+        return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE));
     }
 
     public Command storeCommand(){
-        if(defenseMode){
-            return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 0.0, 0.0, 0.0)), leds.setAllLedsCommand(ledsConstants.BLUE));
-        }
-
-        else{
-            return Commands.parallel(setState(SuperstructureConstants.STORING_STATE), leds.setAllLedsCommand(ledsConstants.BLUE));
+        if(getDefenseMode()){
+            return setState(SuperstructureConstants.CONTAINING_STATE);
+        } else {
+            return Commands.parallel(setState(SuperstructureConstants.STORING_STATE));
         }
     }
 
     public Command dumpCommand(){
-        return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE), leds.pulseLedsCommand(ledsConstants.RED, 5));
+        return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE));
     }
 
     public Command shootCommand(){
@@ -144,7 +130,7 @@ public class Superstructure extends SubsystemBase {
         // else {
         //     return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         // }}
-        return setState(new SuperstructureState(robotState.getTargetVelocity(), 0, IntakeConstants.DEPLOY_INTAKE_POSITION, 12, 12));
+        return setState(new SuperstructureState(robotState.getTargetVelocity(), 0, 8));
     }
 
     public Command testingShootCommand(){
@@ -169,11 +155,10 @@ public class Superstructure extends SubsystemBase {
             // }
             // else {
                 // return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity()+10, robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim()+0.1,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-
             // }
     //    }
     //    else {
-            return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity()+10, robotState.getTargetAim()+0.1, 0.0, 12.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+            return setState(new SuperstructureState(robotState.getTargetVelocity()+10, 0, 8.0));
         // }
         }
             

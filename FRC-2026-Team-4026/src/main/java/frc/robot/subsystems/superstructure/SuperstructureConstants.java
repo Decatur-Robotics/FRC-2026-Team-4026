@@ -16,22 +16,16 @@ public class SuperstructureConstants {
     );
 
     public static final SuperstructureState INTAKE_STATE = new SuperstructureState(
-        0.0,    // shooterVelocity
-        0.0,    // hoodAngle
         IntakeConstants.DEPLOY_INTAKE_POSITION,    // intakeDeployed
-        0.0,    // indexerVoltage
         10.0    // intakeVoltage
     );
 
     public static final SuperstructureState STORING_STATE = new SuperstructureState(
-        0.0,    // shooterVelocity
-        0.0,    // hoodAngle
-        IntakeConstants.DEPLOY_INTAKE_POSITION,    // intakeDeployed
-        0.0,    // indexerVoltage
-        0.0     // intakeVoltage
+        IntakeConstants.DEPLOY_INTAKE_POSITION,  // intakeDeployed
+        0.0   // intakeVoltage
     );
 
-    public static final SuperstructureState SHOOT_CONTAINED_STATE = new SuperstructureState(0, 0, IntakeConstants.STORED_INTAKE_POSITION, 12, 0);
+    public static final SuperstructureState CONTAINING_STATE = new SuperstructureState(IntakeConstants.STORED_INTAKE_POSITION, 0);
 
     public static final SuperstructureState DUMPING_STATE = new SuperstructureState(
         0.0,    // shooterVelocity

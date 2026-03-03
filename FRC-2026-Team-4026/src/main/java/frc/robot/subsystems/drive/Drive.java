@@ -76,9 +76,11 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import frc.robot.subsystems.vision.TestVision;
 import frc.robot.subsystems.vision.Vision;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer
+//implements TestVision.VisionConsumer
 {
     // TunerConstants doesn't include these constants, so they are declared locally
     static final double ODOMETRY_FREQUENCY =
@@ -424,15 +426,15 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
             new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
         };
     }
-public void setRotation () {
-       ProfiledPIDController angleController = new ProfiledPIDController(
-                5.0, 0.0, 0.4, new TrapezoidProfile.Constraints(8.0, 20.0));
-       angleController.setGoal(0.4);
-    double targetRotation = Math.atan((getPose().getY()-FieldConstants.Hub.topCenterPoint.getY())/(getPose().getX()-FieldConstants.Hub.topCenterPoint.getX()));
-       angleController.setGoal(targetRotation);
+public void setRotationX () {
+        modules[0].setRotation(new Rotation2d(0.787));
+        modules[1].setRotation(new Rotation2d(2.355));
+        modules[2].setRotation(new Rotation2d(0.787));
+        modules[3].setRotation(new Rotation2d(2.355));
     }
-public Command setRotationCommand () {
-    return Commands.runOnce(() -> setRotation());
+
+public Command setRotationXCommand () {
+    return Commands.runOnce(() -> setRotationX());
 }
 
 public void driveRobotRelative(ChassisSpeeds speeds){

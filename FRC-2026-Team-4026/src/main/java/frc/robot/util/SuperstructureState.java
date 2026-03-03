@@ -15,6 +15,13 @@ public class SuperstructureState {
         this.intakeVoltage = intakeVoltage;
     }
 
+    public SuperstructureState(double shooterVelocity, double hoodAngle, double indexerRunning, double intakeVoltage){
+        this.shooterVelocity = shooterVelocity;
+        this.hoodAngle = hoodAngle;
+        this.indexerVoltage = indexerRunning;
+        this.intakeVoltage = intakeVoltage;
+    }
+
     public SuperstructureState(double shooterVelocity, double hoodAngle, double indxerRunning){
         this.shooterVelocity = shooterVelocity;
         this.hoodAngle = hoodAngle;
