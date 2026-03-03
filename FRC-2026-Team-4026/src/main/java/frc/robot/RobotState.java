@@ -23,7 +23,7 @@ import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SubsystemBase; 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -81,10 +81,9 @@ public class RobotState extends SubsystemBase
     private InterpolatingDoubleTreeMap targetVelocities;
     private Double robotDistance;
     private Double speedOffset;
-      private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
+    private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
     
 
-    private static RobotState instance;
     private Translation2d hubToRobot = new Translation2d(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
 
 public RobotState(Drive drive){

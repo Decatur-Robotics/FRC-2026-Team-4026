@@ -241,9 +241,12 @@ public class RobotContainer {
         triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-        b.whileTrue(superstructure.dumpCommand());
+        b.onFalse(superstructure.storeCommand()).whileTrue(superstructure.retractIntakeCommand());
+        y.whileTrue(superstructure.deployIntakeCommand()).onFalse(superstructure.storeCommand());
+        x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
         down.whileTrue(climber.climberDownCommand());
         up.whileTrue(climber.climberUpCommand());
+
         
 
         
@@ -304,9 +307,9 @@ public class RobotContainer {
     return instance;
   }
 
-  public Drive getDrive() {
-    return drive;
-  }
+  // public Drive getDrive() {
+  //   return drive;
+  // }
   public Pose2d getDrivePose(){
     return drive.getPose();
   }
