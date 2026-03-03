@@ -11,11 +11,12 @@ public class GeometryUtil {
     public static double getChassisTranslationSpeeds (ChassisSpeeds chassisSpeeds) {
         double pythagoreumTheorem = Math.sqrt(Math.pow(chassisSpeeds.vxMetersPerSecond, 2) + Math.pow(chassisSpeeds.vyMetersPerSecond, 2));
         return pythagoreumTheorem;
-        
-}
-public static Transform2d toTransform2d(Translation2d translation) {
+    }
+    public static Transform2d toTransform2d(Translation2d translation) {
         return new Transform2d(translation, Rotation2d.kZero);
     }
+
+
 
 
 

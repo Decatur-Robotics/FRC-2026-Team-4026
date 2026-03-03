@@ -20,6 +20,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -116,6 +119,10 @@ public class Module {
     /** Returns the module positions received this cycle. */
     public SwerveModulePosition[] getOdometryPositions() {
         return odometryPositions;
+    }
+
+    public Command setRotation(Rotation2d rotation){
+        return Commands.runOnce(() -> io.setTurnPosition(rotation));
     }
 
     /** Returns the timestamps of the samples received this cycle. */

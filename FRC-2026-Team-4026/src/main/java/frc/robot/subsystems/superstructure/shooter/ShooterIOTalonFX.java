@@ -6,11 +6,15 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -25,35 +29,40 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     private VoltageOut voltageRequest;
 
-    private MotionMagicVelocityDutyCycle velocityRequest;
+    private VelocityVoltage velocityRequest;
 
-    private StatusSignal<AngularVelocity> velocity;
+    private double velocity;
 
 
 
     public ShooterIOTalonFX () {
         motor = new TalonFX(Ports.SHOOTER_MOTOR);
         
-        config = new TalonFXConfiguration ();
-
+        config = new TalonFXConfiguration().withSlot0(ShooterConstants.SLOT_0_CONFIGS);
+    motor.getConfigurator().apply(config);
         voltage = motor.getMotorVoltage();
-    
+            velocity = motor.getVelocity().getValueAsDouble();
         voltageRequest = new VoltageOut(voltage.getValueAsDouble());
         
-        velocityRequest = new MotionMagicVelocityDutyCycle(velocity.getValueAsDouble());
+        velocityRequest = new VelocityVoltage(velocity);
 
-        motor.getConfigurator().apply(config);
-        motor.getConfigurator().apply(config);
-        velocity = motor.getVelocity();
+         
 
-        tryUntilOk(5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, velocity));
+      
+
+       
+
+
+        tryUntilOk(5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, motor.getVelocity()));
         tryUntilOk(5, () -> motor.optimizeBusUtilization());
-        PhoenixUtil.registerSignals(true, velocity,voltage);    
+        PhoenixUtil.registerSignals(true,voltage);    
     }
 
 @Override
 public void setVelocity (double velocity){
-    motor.setControl(velocityRequest.withVelocity(velocity)); 
+    this.velocity = velocity;
+     motor.setControl(velocityRequest.withVelocity(velocity)); 
+    Logger.recordOutput("Target Velocity", velocity);
 }
 
 @Override

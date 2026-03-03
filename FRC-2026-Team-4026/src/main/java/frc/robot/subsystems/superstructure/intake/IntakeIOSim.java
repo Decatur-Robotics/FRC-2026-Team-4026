@@ -110,6 +110,8 @@ public class IntakeIOSim implements IntakeIO{
         deploySim.getAngleRads(),
         0.0,
         0.0,
+        0.0,
+        0.0,
         0.0
         );
     }

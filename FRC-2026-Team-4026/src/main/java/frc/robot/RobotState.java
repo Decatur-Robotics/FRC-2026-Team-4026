@@ -23,12 +23,14 @@ import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj2.command.SubsystemBase; 
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
@@ -40,19 +42,18 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.util.GeometryUtil;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.Vision.VisionConsumer;
+
 
 public class RobotState extends SubsystemBase
 {
-    private static RobotState instance;
     // add params for PDH object
     private double totalCurrentDraw;
     private int currentLimit = 180;
     private double busVoltage;
     public static boolean CURRENT_LIMITS_EXCEEDED;
     public static boolean BATTERY_BROWNOUT_PROTECTION;
-    private PowerDistribution PDH = new PowerDistribution();
-    private double brownoutProtectionVoltage = 1.432*Math.log10(PDH.getVoltage()-7);
+   private PowerDistribution PDH = new PowerDistribution();
+//    private double brownoutProtectionVoltage = 1.432*Math.log10(PDH.getVoltage()-7);
 
     private static final double poseBufferTime = 2.0; // seconds
 
@@ -83,9 +84,8 @@ public class RobotState extends SubsystemBase
     private Double speedOffset;
     private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
     
-
-    private Translation2d hubToRobot = new Translation2d(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
-
+    private Translation2d hubToRobot;
+    private static RobotState instance;
 public RobotState(Drive drive){
     this.drive = drive;
     instance = this;
@@ -96,25 +96,28 @@ public RobotState(Drive drive){
     robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
     speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
     targetAims.put(0.1, 0.0);
-    targetVelocities.put(1.0, 30.0);
-    targetAims.put(1.0, 0.1);
-    targetVelocities.put(2.0, 40.0);
+    targetVelocities.put(2.235, 40.0);
+    targetVelocities.put(Units.inchesToMeters(117), 50.0);
+    targetVelocities.put(Units.inchesToMeters(154), 60.0);
+    targetVelocities.put(Units.inchesToMeters(204), 75.0);
+    targetAims.put(1.0, 0.0);
       voltageToVelocity.put(0.0, 0.0);
     voltageToVelocity.put(6.0, 40.0);
     voltageToVelocity.put(8.0, 64.0);
 
     voltageToVelocity.put(12.0, 85.0);
-    totalCurrentDraw = PDH.getTotalCurrent();
-    busVoltage = PDH.getVoltage();
+//    totalCurrentDraw = PDH.getTotalCurrent();
+    // busVoltage = PDH.getVoltage();
+    hubToRobot = new Translation2d(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
 }
 
 
-// public void resetPose(Pose2d newPose){
-//     gyroOffset = newPose.getRotation().minus(drive.getRotation().minus(gyroOffset));
-//     odemetryPose = newPose;
-//     estimatedPose = newPose;
-//     poseBuffer.clear();
-// }
+public void resetPose(Pose2d newPose){
+    gyroOffset = newPose.getRotation().minus(drive.getRotation().minus(gyroOffset));
+    odemetryPose = newPose;
+    estimatedPose = newPose;
+    poseBuffer.clear();
+}
 
 // public void addOdometryPose(OdometryObservation observation){
 //     Twist2d twist = kinematics.toTwist2d(modulePositions, observation.modulePositions);
@@ -174,32 +177,33 @@ public RobotState(Drive drive){
 //     estimatedPose = estimateAtTimestamp.plus(scaledTransform).plus(sampleToOdometryTransform);
 
 // }
+
 @Override
     public void periodic(){
-        busVoltage = PDH.getVoltage();
-        totalCurrentDraw = PDH.getTotalCurrent();
+    //    busVoltage = PDH.getVoltage();
+    //    totalCurrentDraw = PDH.getTotalCurrent();
 
-        if (totalCurrentDraw > currentLimit){
+    //     if (totalCurrentDraw > currentLimit){
 
-            CURRENT_LIMITS_EXCEEDED = true;
+    //         CURRENT_LIMITS_EXCEEDED = true;
 
-        }
-        if (busVoltage < brownoutProtectionVoltage){
+    //     }
+    //     if (busVoltage < brownoutProtectionVoltage){
             
-            BATTERY_BROWNOUT_PROTECTION = true;
-        }
+    //         BATTERY_BROWNOUT_PROTECTION = true;
+    //     }
         robotPose = drive.getPose();
-        robotDistance = Math.hypot(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
+        robotDistance = Math.hypot(drive.getPose().getX() - FieldConstants.Hub.topCenterPoint.getX(), drive.getPose().getY() - FieldConstants.Hub.topCenterPoint.getY());
         
     }
 
     public double getVoltageToVelocity(double voltage){
-    return voltageToVelocity.get(voltage);
-}
+        return voltageToVelocity.get(voltage);
+    }
 
-public double getBrownoutVoltage() {
-    return brownoutProtectionVoltage;
-}
+// public double getBrownoutVoltage() {
+//     return brownoutProtectionVoltage;
+// }
     public double getTargetAim(){
         return targetAims.get(robotDistance);
     }
@@ -213,7 +217,7 @@ public double getBrownoutVoltage() {
     }
 
     public double getTurretRotation() {
-        return Math.atan((robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY())/(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX()));
+        return Math.atan((drive.getPose().getY() - FieldConstants.Hub.topCenterPoint.getY())/(drive.getPose().getX() - FieldConstants.Hub.topCenterPoint.getX()));
     }
     public Translation2d getDrivePose(){
         return estimatedPose.getTranslation();

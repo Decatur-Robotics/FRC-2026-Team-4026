@@ -41,9 +41,10 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("FRC-2026-Team-4026", "Set this to something else"); // Set a metadata value
 
 if (isReal()) {
-    Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+    //Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
     Logger.addDataReceiver(new NT4Publisher());
      // Publish data to NetworkTables
+     
 } else {
     // setUseTiming(false); // Run as fast as possible
     // String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)

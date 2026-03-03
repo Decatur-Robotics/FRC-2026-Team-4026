@@ -40,6 +40,9 @@ public class Indexer extends SubsystemBase{
         });
     }
 
+
+
+
     public double getMecanumCurrent(){
         return inputs.indexerData.mecanumCurrent();
     }

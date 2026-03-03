@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.constants.Ports;
+import frc.robot.util.PhoenixUtil;
 
 public class IndexerIOTalonFX implements IndexerIO{
     private TalonFX mecanumMotor, beltMotor, kickMotor;
@@ -29,12 +30,14 @@ public class IndexerIOTalonFX implements IndexerIO{
 
     public IndexerIOTalonFX(){
         mecanumMotor = new TalonFX(Ports.INDEXER_MOTOR_MECANUM);
-        beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
+         beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
         kickMotor = new TalonFX(Ports.INDEXER_MOTOR_KICK);
 
+        beltMotor= new TalonFX(Ports.INDEXER_MOTOR_BELT);
+
         //idk if alligned or opposed
-        beltMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Aligned));
-        kickMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Aligned));
+        beltMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Opposed));
+        kickMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Opposed));
 
         mecanumVoltage = mecanumMotor.getMotorVoltage();
         beltVoltage = beltMotor.getMotorVoltage();
@@ -44,7 +47,8 @@ public class IndexerIOTalonFX implements IndexerIO{
         beltCurrent = beltMotor.getSupplyCurrent();
         kickCurrent = kickMotor.getSupplyCurrent();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(40, mecanumVoltage, beltVoltage,kickVoltage);
+        BaseStatusSignal.setUpdateFrequencyForAll(40, mecanumVoltage, beltVoltage,kickVoltage, mechanumCurrent, beltCurrent, kickCurrent);
+        PhoenixUtil.registerSignals(false, mecanumVoltage, mechanumCurrent, kickVoltage, kickCurrent, beltVoltage, beltCurrent);
     }
 
     @Override
@@ -82,10 +86,14 @@ public class IndexerIOTalonFX implements IndexerIO{
     @Override
     public void setVoltage(double voltage){
         voltageRequest = new VoltageOut(voltage);
-        mecanumMotor.setControl(voltageRequest);
+
         beltMotor.setControl(voltageRequest);
         kickMotor.setControl(voltageRequest);
+
+        voltageRequest = new VoltageOut(voltage*-1);
+        mecanumMotor.setControl(voltageRequest);
     }
+
 
     @Override
     public void stop(){

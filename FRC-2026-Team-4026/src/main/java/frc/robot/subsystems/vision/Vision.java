@@ -62,7 +62,7 @@ public class Vision extends SubsystemBase{
         for(var observation: inputs[cameraIndex].visionData.poseObservation()){
             boolean rejectPose = observation.tagCount() == 0
             || (observation.tagCount() == 1 && observation.ambiguity() > VisionConstants.MAX_POSE_AMBIGUITY)
-            || Math.abs(observation.pose().getZ()) > 0.75
+            ||observation.pose().getZ() > 0.25
             //Field boundaries
             ||observation.pose().getX() < 0.0
             ||observation.pose().getX() > VisionConstants.aprilTagLayout.getFieldLength()
