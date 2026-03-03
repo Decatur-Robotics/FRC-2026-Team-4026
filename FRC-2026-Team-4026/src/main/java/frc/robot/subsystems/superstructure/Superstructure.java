@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.constants.FieldConstants;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
@@ -32,6 +33,7 @@ public class Superstructure extends SubsystemBase {
     private Hood hood;
     private leds leds;
     private RobotState robotState;
+    private Drive drive;
 
     private boolean isSimulation = Robot.isSimulation();
 
@@ -41,12 +43,13 @@ public class Superstructure extends SubsystemBase {
     private boolean defenseMode = false;
     
 
-    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, leds leds, RobotState robotState) {
+    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, leds leds, RobotState robotState, Drive drive) {
         this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
         this.hood = hood;
         this.leds = leds;
+        this.drive = drive;
 
         this.robotState = robotState;
         
@@ -130,7 +133,11 @@ public class Superstructure extends SubsystemBase {
         // else {
         //     return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         // }}
+        if(getDefenseMode()){
+            return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity(), 0, 8)), drive.setRotationXCommand());
+        } else {
         return setState(new SuperstructureState(robotState.getTargetVelocity(), 0, 8));
+        }
     }
 
     public Command testingShootCommand(){

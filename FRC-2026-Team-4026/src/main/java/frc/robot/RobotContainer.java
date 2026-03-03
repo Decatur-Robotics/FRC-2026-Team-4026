@@ -127,7 +127,7 @@ public class RobotContainer {
       robotState = new RobotState(drive);
       //      vision = new TestVision(drive);
             vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
-      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
       autonomous = new Autonomous(superstructure);
     
     }
@@ -156,7 +156,7 @@ public class RobotContainer {
                                       new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
                                       new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                 robotState = new RobotState(drive);
-      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState);
+      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
             autonomous = new Autonomous(superstructure);
 
      }
