@@ -191,4 +191,11 @@ public class Superstructure extends SubsystemBase {
         return Commands.runOnce(()->shootFuel());
  }
 
+ public Command retractIntakeCommand(){
+    return Commands.runOnce(()-> intake.deployIntakeCommand(0.0));
+ }
+
+ public Command deployIntakeCommand(){
+    return Commands.runOnce(()-> intake.deployIntakeCommand(1.0));
+ }
 }
