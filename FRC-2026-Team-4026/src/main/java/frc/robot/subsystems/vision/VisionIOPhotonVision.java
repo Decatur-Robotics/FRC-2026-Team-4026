@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -67,6 +68,7 @@ public class VisionIOPhotonVision implements VisionIO {
                     totalTagDistance += 
                         target.getBestCameraToTarget().getTranslation().getNorm();
                 }
+                //Logger.recordOutput("Vision Distance", result.getTargets().get(0).getBestCameraToTarget().getTranslation().getNorm());
 
                 aprilTagIDs.addAll(multiTagResult.fiducialIDsUsed);
 

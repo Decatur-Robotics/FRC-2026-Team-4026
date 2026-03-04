@@ -33,10 +33,10 @@ import frc.robot.subsystems.superstructure.shooter.ShooterIO;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.TestVision;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionConstants;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
-import frc.robot.subsystems.vision.VisionIOSim;
+import frc.robot.subsystems.vision.template.Vision;
+import frc.robot.subsystems.vision.template.VisionConstants;
+import frc.robot.subsystems.vision.template.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.template.VisionIOPhotonVisionSim;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -100,8 +100,8 @@ public class RobotContainer {
   
   public final Drive drive;
   private final SwerveDriveSimulation driveSimulation;
- //private final TestVision vision;
- private final Vision vision;
+//  private final TestVision vision;
+   private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private Autonomous autonomous;
@@ -125,8 +125,8 @@ public class RobotContainer {
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
       robotState = new RobotState(drive);
-      //      vision = new TestVision(drive);
-            vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+      //    vision = new TestVision(drive);
+              vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
       autonomous = new Autonomous(superstructure);
     
@@ -151,11 +151,12 @@ public class RobotContainer {
                         new ModuleIOTalonFXSim(
                                 TunerConstants.BackRight, driveSimulation.getModules()[3]),
                         driveSimulation::setSimulationWorldPose);
-      //vision = new TestVision(drive);
-      vision = new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-                                      new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-                                      new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
-                                robotState = new RobotState(drive);
+      // vision = new TestVision(drive);
+      vision = null;
+      // new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+      //                                 new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+      //                                 new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
+                                 robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
             autonomous = new Autonomous(superstructure);
 
