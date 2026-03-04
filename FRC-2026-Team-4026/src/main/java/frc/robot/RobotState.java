@@ -82,7 +82,7 @@ public class RobotState extends SubsystemBase
     private InterpolatingDoubleTreeMap targetVelocities;
     private Double robotDistance;
     private Double speedOffset;
-      private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
+    private InterpolatingDoubleTreeMap voltageToVelocity = new InterpolatingDoubleTreeMap();
     
     private Translation2d hubToRobot;
     private static RobotState instance;

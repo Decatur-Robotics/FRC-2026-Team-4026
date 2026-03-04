@@ -232,12 +232,16 @@ public class RobotContainer {
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
         //the bindnigs need to be like this
-        // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
-        a.whileTrue(intake.runIntakeCommand(-12));
-       // b.whileTrue(superstructure.dumpCommand());
-       x.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
-        y.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
+        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+        b.onFalse(superstructure.storeCommand()).whileTrue(superstructure.retractIntakeCommand());
+        y.whileTrue(superstructure.deployIntakeCommand()).onFalse(superstructure.storeCommand());
+        x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
+        down.whileTrue(climber.climberDownCommand());
+        up.whileTrue(climber.climberUpCommand());
+
+        
 
 
         // triggerLeft.whileTrue(intake.runIntakeCommand(-12));
