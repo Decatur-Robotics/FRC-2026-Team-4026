@@ -145,7 +145,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command testShootCommand(){
-        return Commands.parallel(indexer.setVoltageCommand(8),shooter.setVelocityCommand(50), intake.runIntakeCommand(-4));
+        return Commands.parallel(indexer.setVoltageCommand(8),shooter.setVelocityCommand(robotState.getTargetVelocity()), intake.runIntakeCommand(-4));
     }
     
     public Command testShootAutoCommand(){
