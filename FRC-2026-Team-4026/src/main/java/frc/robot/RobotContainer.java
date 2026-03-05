@@ -104,7 +104,8 @@ public class RobotContainer {
    private final Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
-  private Autonomous autonomous;
+  private PathPlannerAuto auto;
+  // private Autonomous autonomous;
   public RobotContainer() {
 
       instance = this;
@@ -129,7 +130,7 @@ public class RobotContainer {
       //    vision = new TestVision(drive);
               vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
-      autonomous = new Autonomous(superstructure);
+      // autonomous = new Autonomous(superstructure);
     
     }
  else {
@@ -159,10 +160,14 @@ public class RobotContainer {
       //                                 new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                  robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
-            autonomous = new Autonomous(superstructure);
+            // autonomous = new Autonomous(superstructure);
 
      }
 
+      auto = new PathPlannerAuto("Center Rush");
+
+      auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand(() -> 45));
      //NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
      resetSimulationField();
          configurePrimaryBindings();
@@ -266,7 +271,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-      return new PathPlannerAuto("Center Rush");
+      return auto;
     //  return superstructure.testShootCommand().finallyDo(() -> superstructure.noTestShootCommand());
   }
 

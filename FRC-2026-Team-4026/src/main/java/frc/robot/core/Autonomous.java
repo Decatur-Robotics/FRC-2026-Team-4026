@@ -22,14 +22,18 @@ import frc.robot.subsystems.superstructure.shooter.Shooter;
 
 public class Autonomous {
       private Superstructure superstructure;
+      private PathPlannerAuto auto;
     public Autonomous(Superstructure superstructure) {
         this.superstructure = superstructure;
-        eventTriggers();
+        auto = new PathPlannerAuto("Center Rush");
+        eventTriggersCenterRush();
     }
 
-    public void eventTriggers() {
+    public void eventTriggersCenterRush() {
        NamedCommands.registerCommand("Intake", Commands.runOnce(() -> Commands.sequence(superstructure.intakeCommand(), Commands.waitSeconds(4)).finallyDo(() -> superstructure.storeCommand())));
-       NamedCommands.registerCommand("Shoot", superstructure.testShootCommand().until(() -> !RobotState.isAutonomous()));
+       NamedCommands.registerCommand("Shoot", superstructure.shootCommand(() -> 45).until(() -> !RobotState.isAutonomous()));
+
+       auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
     }
 
 }
