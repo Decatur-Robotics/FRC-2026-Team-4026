@@ -97,7 +97,7 @@ public class RobotContainer {
   private final RobotState robotState;
   //private final Climber climber;
   private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
-  
+      private Double robotDistance;
   public final Drive drive;
   private final SwerveDriveSimulation driveSimulation;
 //  private final TestVision vision;
@@ -108,6 +108,7 @@ public class RobotContainer {
   public RobotContainer() {
 
       instance = this;
+      robotDistance = 2.0;
     // Configure the trigger bindings
 
      if(Constants.currentMode != Constants.Mode.SIM) {
@@ -207,7 +208,7 @@ public class RobotContainer {
             ));
 
           y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
-        
+          b.whileTrue(superstructure.toggleDefenseModeCommand());
           bumperRight.whileTrue(drive.runOnce(() -> drive.driveToPose(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation(), 0)))));
 
   }
@@ -232,7 +233,7 @@ public class RobotContainer {
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
         //the bindnigs need to be like this
-        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.noTestShootCommand());
+        triggerRight.whileTrue(superstructure.shootCommand(() -> getTargetVelocity())).onFalse(superstructure.noTestShootCommand());
         bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         b.onFalse(superstructure.storeCommand()).whileTrue(superstructure.retractIntakeCommand());
@@ -276,6 +277,7 @@ public class RobotContainer {
     return pathfinderCommand;
   }
 
+
   // public Superstructure getSuperStructure() {
   //   return superstructure;
   // }
@@ -296,8 +298,17 @@ public class RobotContainer {
     Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
   }
 
+  public void distanceUpdate(){
+        robotDistance = FieldConstants.Hub.innerCenterPoint.toTranslation2d().getDistance(drive.getPose().getTranslation());
+        Logger.recordOutput("Superstructure/Distance", robotDistance);
+        Logger.recordOutput("Superstructure/targetVelocity", getTargetVelocity());
+        configureSecondaryBindings();
+  }
 
-
+  
+ public double getTargetVelocity(){
+    return 10.07*robotDistance+18.98;
+ }
 
   public Drive getDrive() {
     return drive;

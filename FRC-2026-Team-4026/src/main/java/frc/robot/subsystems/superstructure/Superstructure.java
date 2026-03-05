@@ -4,8 +4,12 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -43,6 +47,7 @@ public class Superstructure extends SubsystemBase {
     private boolean defenseMode = false;
     
 
+
     public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, leds leds, RobotState robotState, Drive drive) {
         this.intake = intake;
         this.indexer = indexer;
@@ -50,6 +55,7 @@ public class Superstructure extends SubsystemBase {
         this.hood = hood;
         this.leds = leds;
         this.drive = drive;
+
 
         this.robotState = robotState;
         
@@ -67,6 +73,11 @@ public class Superstructure extends SubsystemBase {
         intake.deployIntakeCommand(targetState.intakeDeployed),
         intake.runIntakeCommand(targetState.intakeVoltage),
         indexer.setVoltageCommand(targetState.indexerVoltage));
+    }
+
+    @Override
+    public void periodic(){
+
     }
 
     public void toggleDefenseMode(){
@@ -136,8 +147,12 @@ public class Superstructure extends SubsystemBase {
         if(getDefenseMode()){
             return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity(), 0, 8)), drive.setRotationXCommand());
         } else {
-        return setState(new SuperstructureState(robotState.getTargetVelocity(), 0, 8));
+            return shootCommand(() -> 50);
         }
+    }
+
+    public Command shootCommand(DoubleSupplier velocitySupplier){
+        return setState(new SuperstructureState(velocitySupplier.getAsDouble(), 0, 8));
     }
 
     public Command testingShootCommand(){
@@ -198,4 +213,5 @@ public class Superstructure extends SubsystemBase {
  public Command deployIntakeCommand(){
     return Commands.runOnce(()-> intake.deployIntakeCommand(1.0));
  }
+
 }

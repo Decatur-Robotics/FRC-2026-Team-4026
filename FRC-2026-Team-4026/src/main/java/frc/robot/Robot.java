@@ -92,7 +92,9 @@ Logger.start();
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    m_robotContainer.distanceUpdate();
+  }
 
   @Override
   public void teleopInit() {
@@ -107,7 +109,9 @@ Logger.start();
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    m_robotContainer.distanceUpdate();
+  }
 
   @Override
   public void testInit() {
