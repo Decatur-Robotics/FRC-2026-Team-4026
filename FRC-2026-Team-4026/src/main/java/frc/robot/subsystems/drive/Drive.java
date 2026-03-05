@@ -480,6 +480,10 @@ public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> t
     
 }
 
+public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose){
+    return Commands.run(() -> driveToPose(targetSpeeds, targetPose)).finallyDo(() -> this.targetPose = null);
+}
+
 public boolean atTargetPose() {
     if (targetPose == null) {
         return false;

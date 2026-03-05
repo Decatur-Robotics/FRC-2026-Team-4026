@@ -232,7 +232,11 @@ return 10.07*robotDistance+18.98;
     }
 
     public double getTurretRotation() {
-        return Math.atan((drive.getPose().getY() - FieldConstants.Hub.topCenterPoint.getY())/(drive.getPose().getX() - FieldConstants.Hub.topCenterPoint.getX()));
+        if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+            return Math.atan((drive.getPose().getY() - FieldConstants.Hub.topCenterPoint.getY())/(drive.getPose().getX() - FieldConstants.Hub.topCenterPoint.getX()));
+        } else {
+            return Math.atan((drive.getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()))/(drive.getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())));
+        }
     }
     public Translation2d getDrivePose(){
         return estimatedPose.getTranslation();

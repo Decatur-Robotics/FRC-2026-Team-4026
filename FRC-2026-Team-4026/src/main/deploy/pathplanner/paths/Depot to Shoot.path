@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.9497124831865384,
+        "x": 0.9497124831865383,
         "y": 6.091957561609447
       },
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": -24.14554196042166
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 91.19348942398203

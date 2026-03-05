@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.0075444839857655,
-        "y": 5.923238434163701
+        "x": 7.7535587188612105,
+        "y": 2.5233333333333325
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.18029655990503,
-        "y": 7.386488730725542
+        "x": 7.054211150652432,
+        "y": 1.4581731909845792
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.633392645314355,
-        "y": 7.494080664294188
+        "x": 4.385931198102018,
+        "y": 0.7695848161328582
       },
       "prevControl": {
-        "x": 3.4052945476532424,
-        "y": 7.475040383710295
-      },
-      "nextControl": {
-        "x": 6.0213285883748515,
-        "y": 7.515599051008303
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.785836298932313,
-        "y": 5.50362989324037
-      },
-      "prevControl": {
-        "x": 7.990260972721796,
-        "y": 7.859893238436101
+        "x": 7.4307829181494665,
+        "y": 0.4360498220640569
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 89.18154453831146
+    "rotation": 89.80577776253018
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Center Rush",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -26.56505117707792
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

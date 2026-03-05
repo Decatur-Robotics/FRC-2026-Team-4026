@@ -142,8 +142,8 @@ private enum AutoSide{
     autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
     autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
-    autoTab.add(autoSide);
-    autoTab.add(autoType);
+    autoTab.add("Side", autoSide);
+    autoTab.add("Type", autoType);
 
     
       instance = this;
@@ -223,8 +223,33 @@ private enum AutoSide{
         }
         
       case Center:
+        switch (autoType.getSelected()) {
+          case Depot:
+            auto = new PathPlannerAuto("Center Depot Auto");
+            auto.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+            auto.activePath("Center Depot Shoot").onFalse(superstructure.shootCommand());
+            break;
+        
+          default:
+            break;
+        }
 
       case Right:
+        switch (autoType.getSelected()) {
+          case CenterRush:
+            auto = new PathPlannerAuto("Center Rush Right");
+            auto.activePath("Center Rush Right").whileTrue(superstructure.intakeCommand());
+            auto.activePath("Center Rush Right Shoot").onFalse(superstructure.shootCommand(() -> robotState.getTargetVelocity()));
+
+          case Depot:
+            auto = new PathPlannerAuto("HP Auto Right");
+            auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
+            auto.activePath("HP Shoot").onFalse(superstructure.shootCommand(() -> robotState.getTargetVelocity()));
+            break;
+        
+          default:
+            break;
+        }
 
         break;
     
@@ -279,8 +304,8 @@ private enum AutoSide{
             ));
 
           y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
-          b.whileTrue(superstructure.toggleDefenseModeCommand());
-          bumperRight.whileTrue(drive.runOnce(() -> drive.driveToPose(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation(), 0)))));
+          x.whileTrue(superstructure.toggleDefenseModeCommand());
+          b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation()))));
   }
 
   private void configureSecondaryBindings() {
