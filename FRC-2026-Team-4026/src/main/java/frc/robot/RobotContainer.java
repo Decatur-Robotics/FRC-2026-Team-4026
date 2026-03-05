@@ -37,6 +37,7 @@ import frc.robot.subsystems.vision.template.Vision;
 import frc.robot.subsystems.vision.template.VisionConstants;
 import frc.robot.subsystems.vision.template.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.template.VisionIOPhotonVisionSim;
+import frc.robot.util.AllianceFlipUtil;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -65,7 +66,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -88,26 +93,59 @@ import frc.robot.constants.FieldConstants;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-   private final Superstructure superstructure;
-  private final Indexer indexer;
-  private final Intake intake;
-
-  private final Shooter shooter;
-   private final Hood hood;
-  private final RobotState robotState;
+   private Superstructure superstructure;
+  private Indexer indexer;
+  private Intake intake;
+  private Shooter shooter;
+   private Hood hood;
+  private RobotState robotState;
   //private final Climber climber;
-  private final frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
+  private  frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
       private Double robotDistance;
-  public final Drive drive;
-  private final SwerveDriveSimulation driveSimulation;
+  public Drive drive;
+  private SwerveDriveSimulation driveSimulation;
 //  private final TestVision vision;
-   private final Vision vision;
+   private Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private PathPlannerAuto auto;
+
+private enum AutoType{
+  CenterRush("Center Rush"), Depot("Depot"), Preload("Preload");
+
+  private String autoName;
+  private AutoType(String autoName){
+    this.autoName = autoName;
+  }
+}
+
+private enum AutoSide{
+  Left("Left"), Center("Center"), Right("Right");
+
+  private String autoName;
+  private AutoSide(String autoName){
+    this.autoName = autoName;
+  }
+}
+  private SendableChooser<AutoSide> autoSide;
+  private SendableChooser<AutoType> autoType;
   // private Autonomous autonomous;
   public RobotContainer() {
 
+    autoSide = new SendableChooser<>();
+    autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
+    autoSide.addOption(AutoSide.Center.autoName, AutoSide.Center);
+    autoSide.addOption(AutoSide.Right.autoName, AutoSide.Right);
+
+    autoType = new SendableChooser<>();
+    autoType.setDefaultOption(AutoType.CenterRush.autoName, AutoType.CenterRush);
+    autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
+    autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
+    ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
+    autoTab.add(autoSide);
+    autoTab.add(autoType);
+
+    
       instance = this;
       robotDistance = 2.0;
     // Configure the trigger bindings
@@ -164,10 +202,38 @@ public class RobotContainer {
 
      }
 
-      auto = new PathPlannerAuto("Center Rush");
+     switch (autoSide.getSelected()) {
+      case Left:
+        switch (autoType.getSelected()) {
+          case CenterRush:
+            auto = new PathPlannerAuto("Center Rush");
+            auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+            auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand(() -> 45));
+          case Depot:
+            auto = new PathPlannerAuto("Depot Auto");
+            auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+            auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand(() -> 50));
+          case Preload:
+            auto = new PathPlannerAuto("Sad Auto");
+            auto.activePath("Sad Path").onFalse(superstructure.shootCommand(() -> 40));
+            break;
+        
+          default:
+            break;
+        }
+        
+      case Center:
 
-      auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand(() -> 45));
+      case Right:
+
+        break;
+    
+      default:
+
+        break;
+    }
+
+      
      //NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
      resetSimulationField();
          configurePrimaryBindings();
@@ -215,7 +281,6 @@ public class RobotContainer {
           y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           b.whileTrue(superstructure.toggleDefenseModeCommand());
           bumperRight.whileTrue(drive.runOnce(() -> drive.driveToPose(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation(), 0)))));
-
   }
 
   private void configureSecondaryBindings() {
@@ -238,7 +303,7 @@ public class RobotContainer {
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
         //the bindnigs need to be like this
-        triggerRight.whileTrue(superstructure.shootCommand(() -> getTargetVelocity())).onFalse(superstructure.noTestShootCommand());
+        triggerRight.whileTrue(superstructure.shootCommand(() -> robotState.getTargetVelocity())).onFalse(superstructure.noTestShootCommand());
         bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         b.onFalse(superstructure.storeCommand()).whileTrue(superstructure.retractIntakeCommand());
@@ -302,18 +367,6 @@ public class RobotContainer {
     Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
     Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
   }
-
-  public void distanceUpdate(){
-        robotDistance = FieldConstants.Hub.innerCenterPoint.toTranslation2d().getDistance(drive.getPose().getTranslation());
-        Logger.recordOutput("Superstructure/Distance", robotDistance);
-        Logger.recordOutput("Superstructure/targetVelocity", getTargetVelocity());
-        configureSecondaryBindings();
-  }
-
-  
- public double getTargetVelocity(){
-    return 10.07*robotDistance+18.98;
- }
 
   public Drive getDrive() {
     return drive;
