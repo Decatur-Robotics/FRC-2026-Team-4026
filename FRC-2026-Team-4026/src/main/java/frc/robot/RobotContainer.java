@@ -68,6 +68,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -202,61 +203,12 @@ private enum AutoSide{
 
      }
 
-     switch (autoSide.getSelected()) {
-      case Left:
-        switch (autoType.getSelected()) {
-          case CenterRush:
-            auto = new PathPlannerAuto("Center Rush");
-            auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-            auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand(() -> 45));
-          case Depot:
-            auto = new PathPlannerAuto("Depot Auto");
-            auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-            auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand(() -> 50));
-          case Preload:
-            auto = new PathPlannerAuto("Sad Auto");
-            auto.activePath("Sad Path").onFalse(superstructure.shootCommand(() -> 40));
-            break;
-        
-          default:
-            break;
-        }
-        
-      case Center:
-        switch (autoType.getSelected()) {
-          case Depot:
-            auto = new PathPlannerAuto("Center Depot Auto");
-            auto.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-            auto.activePath("Center Depot Shoot").onFalse(superstructure.shootCommand());
-            break;
-        
-          default:
-            break;
-        }
 
-      case Right:
-        switch (autoType.getSelected()) {
-          case CenterRush:
-            auto = new PathPlannerAuto("Center Rush Right");
-            auto.activePath("Center Rush Right").whileTrue(superstructure.intakeCommand());
-            auto.activePath("Center Rush Right Shoot").onFalse(superstructure.shootCommand(() -> robotState.getTargetVelocity()));
+     
 
-          case Depot:
-            auto = new PathPlannerAuto("HP Auto Right");
-            auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
-            auto.activePath("HP Shoot").onFalse(superstructure.shootCommand(() -> robotState.getTargetVelocity()));
-            break;
-        
-          default:
-            break;
-        }
 
-        break;
     
-      default:
 
-        break;
-    }
 
       
      //NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
@@ -305,7 +257,12 @@ private enum AutoSide{
 
           y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           x.whileTrue(superstructure.toggleDefenseModeCommand());
-          b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation()))));
+          bumperRight.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation()))));
+          triggerLeft.whileTrue(DriveCommands.joystickDrive(
+                drive,
+                ()-> joystick.getY()*0.25,
+                ()-> joystick.getX()*0.25,
+                ()-> -joystick.getTwist()*0.25));
   }
 
   private void configureSecondaryBindings() {
@@ -328,10 +285,10 @@ private enum AutoSide{
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
         //the bindnigs need to be like this
-        triggerRight.whileTrue(superstructure.shootCommand(() -> robotState.getTargetVelocity())).onFalse(superstructure.noTestShootCommand());
+        b.whileTrue(superstructure.shootCommand(() -> getTargetVelocity())).onFalse(superstructure.storeCommand());
         bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-        b.onFalse(superstructure.storeCommand()).whileTrue(superstructure.retractIntakeCommand());
+        //b.onFalse(superstructure.storeCommand()).whileTrue(superstructure.retractIntakeCommand());
         y.whileTrue(superstructure.deployIntakeCommand()).onFalse(superstructure.storeCommand());
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
 
@@ -359,6 +316,36 @@ private enum AutoSide{
    *
    * @return the command to run in autonomous
    */
+  public void chooseAuto(){
+     if(autoSide.getSelected() == AutoSide.Left){
+      if(autoType.getSelected() == AutoType.CenterRush){
+            auto = new PathPlannerAuto("Center Rush");
+            auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+            auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand(() -> getTargetVelocity()));
+      } else if(autoType.getSelected() == AutoType.Depot){
+          auto = new PathPlannerAuto("Depot Auto");
+            auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+            auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand(() -> getTargetVelocity()));
+      } else if(autoType.getSelected() == AutoType.Preload){
+            auto = new PathPlannerAuto("Sad Auto");
+            auto.activePath("Sad Path").onFalse(superstructure.shootCommand(() -> getTargetVelocity()));
+      }
+     } else if(autoSide.getSelected() == AutoSide.Center){
+                  auto = new PathPlannerAuto("Center Depot Auto");
+            auto.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+            auto.activePath("Center Depot Shoot").onFalse(superstructure.shootCommand(() -> getTargetVelocity()));
+     } else if(autoSide.getSelected() == AutoSide.Right){
+      if(autoType.getSelected() == AutoType.CenterRush){
+        auto = new PathPlannerAuto("Center Rush Right");
+      auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      auto.activePath("Center Rush Right shoot").onFalse(superstructure.shootCommand(() -> getTargetVelocity()));
+      } else if(autoType.getSelected() == AutoType.Depot){
+         auto = new PathPlannerAuto("HP Auto Right");
+            auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
+            auto.activePath("HP Shoot").onFalse(superstructure.shootCommand(() -> getTargetVelocity()));
+      }
+     }
+  }
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
       return auto;
@@ -397,6 +384,22 @@ private enum AutoSide{
     return drive;
   }
 
+    public void distanceUpdate(){
+      if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+        robotDistance = FieldConstants.Hub.innerCenterPoint.toTranslation2d().getDistance(drive.getPose().getTranslation());
+      } else { 
+        robotDistance = drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));
+      }
+        
+        Logger.recordOutput("Superstructure/Distance", robotDistance);
+        Logger.recordOutput("Superstructure/targetVelocity", getTargetVelocity());
+        configureSecondaryBindings();
+  }
+
+   public double getTargetVelocity(){
+    return 10.07*robotDistance+18.98;
+ }
+ 
   public static RobotContainer getInstance(){
     return instance;
   }

@@ -3,16 +3,17 @@ package frc.robot.subsystems.vision.template;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
      public static final String CAMERA_FRONT_LEFT_NAME = "Front_Left_Camera_3"; // 3
     public static final String CAMERA_FRONT_RIGHT_NAME = "Front_Right_Camera_1"; // 1
 
          public static final Transform3d ROBOT_TO_CAMERA_FRONT_LEFT = new Transform3d(
-        new Translation3d(0,0,0), 
+        new Translation3d(Units.inchesToMeters(12),Units.inchesToMeters(12),0.24), 
         new Rotation3d(0, -0.34,Math.PI/4));
     public static final Transform3d ROBOT_TO_CAMERA_FRONT_RIGHT = new Transform3d(
-        new Translation3d(0,0,0), 
+        new Translation3d(Units.inchesToMeters(12),-Units.inchesToMeters(12),0.24), 
         new Rotation3d(0, -0.34,-Math.PI/4));
       // Basic filtering thresholds
     public static double maxAmbiguity = 0.3;

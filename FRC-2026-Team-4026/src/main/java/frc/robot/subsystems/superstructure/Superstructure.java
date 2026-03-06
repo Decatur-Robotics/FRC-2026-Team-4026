@@ -114,11 +114,11 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command storeCommand(){
-        if(getDefenseMode()){
-            return setState(SuperstructureConstants.CONTAINING_STATE);
-        } else {
-            return Commands.parallel(setState(SuperstructureConstants.STORING_STATE));
-        }
+        // if(getDefenseMode()){
+            // return setState(SuperstructureConstants.CONTAINING_STATE);
+        // } else {
+            return setState(SuperstructureConstants.STORING_STATE);
+        // }
     }
 
     public Command dumpCommand(){
@@ -152,7 +152,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command shootCommand(DoubleSupplier velocitySupplier){
-        return setState(new SuperstructureState(velocitySupplier.getAsDouble(), 0, 8));
+        return Commands.parallel(shooter.setVelocityCommand(velocitySupplier.getAsDouble()), indexer.setVoltageCommand(10));
     }
 
     public Command testingShootCommand(){
