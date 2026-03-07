@@ -47,7 +47,7 @@ public class IndexerIOTalonFX implements IndexerIO{
         beltCurrent = beltMotor.getSupplyCurrent();
         kickCurrent = kickMotor.getSupplyCurrent();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(40, mecanumVoltage, beltVoltage,kickVoltage, mechanumCurrent, beltCurrent, kickCurrent);
+        BaseStatusSignal.setUpdateFrequencyForAll(40, mecanumVoltage, beltVoltage,kickVoltage, mechanumCurrent, beltCurrent, kickCurrent, beltMotor.getSupplyCurrent());
         PhoenixUtil.registerSignals(false, mecanumVoltage, mechanumCurrent, kickVoltage, kickCurrent, beltVoltage, beltCurrent);
     }
 
@@ -69,7 +69,7 @@ public class IndexerIOTalonFX implements IndexerIO{
             beltMotor.isConnected(),
             kickMotor.isConnected(),
             mechanumCurrent.getValueAsDouble(),
-            beltCurrent.getValueAsDouble(),
+            beltMotor.getSupplyCurrent().getValueAsDouble(),
             kickCurrent.getValueAsDouble(),
             mecanumVoltage.getValueAsDouble(),
             beltVoltage.getValueAsDouble(),

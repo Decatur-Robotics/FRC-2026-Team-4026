@@ -81,7 +81,7 @@ import frc.robot.subsystems.vision.template.Vision;
 import frc.robot.subsystems.vision.TestVision;
 
 public class Drive extends SubsystemBase 
-implements Vision.VisionConsumer
+// implements Vision.VisionConsumer
 // implements TestVision.EstimateConsumer
 {
     // TunerConstants doesn't include these constants, so they are declared locally
@@ -141,7 +141,7 @@ implements Vision.VisionConsumer
     private Pose2d targetPose;
     private SwerveSetpoint previousSetpoint;
     private PIDController translationalController = new PIDController(1, 0, 0);
-    private PIDController rotationalController = new PIDController(5, 0, 0);
+    private PIDController rotationalController = new PIDController(3, 0, 0);
     private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
 
     static final Lock odometryLock = new ReentrantLock();
@@ -192,7 +192,7 @@ implements Vision.VisionConsumer
                 this::setPose,
                 this::getChassisSpeeds,
                 this::runVelocity,
-                new PPHolonomicDriveController(new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+                new PPHolonomicDriveController(new PIDConstants(5, 0.0, 0.0), new PIDConstants(5, 0.0, 0.1)),
                 PP_CONFIG,
                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                 this);
@@ -402,10 +402,10 @@ implements Vision.VisionConsumer
 
 
     /** Adds a new timestamped vision measurement. */
-     @Override
-     public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-         poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-     }
+    //  @Override
+    //  public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
+    //      poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    //  }
 
     /** Returns the maximum linear speed in meters per sec. */
     public double getMaxLinearSpeedMetersPerSec() {
@@ -459,12 +459,12 @@ public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> t
         double targetTranlslationY = translationalController.calculate(0, Math.abs(getPose().getY() - this.targetPose.getY()));
         double distance = translationalController.calculate(0, getPose().getTranslation().getDistance(targetPose.get().getTranslation()));
         Translation2d targetTranlslation = new Translation2d(targetTranlslationX, targetTranlslationY);
-        ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : targetTranlslationX,
-             isAligned() ? 0 : targetTranlslationY,
-             isAligned() ? 0 : targetRotation);
-        // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
-        //      0,
+        // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : targetTranlslationX,
+        //      isAligned() ? 0 : targetTranlslationY,
         //      isAligned() ? 0 : targetRotation);
+        ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
+             0,
+             isAligned() ? 0 : targetRotation);
 
 
         Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();

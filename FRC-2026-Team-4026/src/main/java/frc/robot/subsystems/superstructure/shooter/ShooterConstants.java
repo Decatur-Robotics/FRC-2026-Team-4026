@@ -32,7 +32,7 @@ public class ShooterConstants {
     public static final double kA = 1.0;
 
       public static final Slot0Configs SLOT_0_CONFIGS = new Slot0Configs()
-        .withKP(0.5) // 0.5
+        .withKP(0.3) // 0.5
         .withKI(0)
         .withKD(0)
         .withKS(0.19) // 0.19

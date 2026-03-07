@@ -147,12 +147,12 @@ public class Superstructure extends SubsystemBase {
         if(getDefenseMode()){
             return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity(), 0, 8)), drive.setRotationXCommand());
         } else {
-            return shootCommand(() -> 50);
+            return Commands.parallel(shooter.setVelocityCommand(robotState.getTargetVelocity()), indexer.setVoltageCommand(10));
         }
     }
 
     public Command shootCommand(DoubleSupplier velocitySupplier){
-        return Commands.parallel(shooter.setVelocityCommand(velocitySupplier.getAsDouble()), indexer.setVoltageCommand(10));
+        return Commands.parallel(shooter.setVelocityCommand(velocitySupplier.getAsDouble()), indexer.setVoltageCommand(10), intake.runIntakeCommand(-2));
     }
 
     public Command testingShootCommand(){
@@ -207,11 +207,11 @@ public class Superstructure extends SubsystemBase {
  }
 
  public Command retractIntakeCommand(){
-    return Commands.runOnce(()-> intake.deployIntakeCommand(0.0));
+    return Commands.runOnce(()-> intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
  }
 
  public Command deployIntakeCommand(){
-    return Commands.runOnce(()-> intake.deployIntakeCommand(1.0));
+    return Commands.runOnce(()-> intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
  }
 
 }
