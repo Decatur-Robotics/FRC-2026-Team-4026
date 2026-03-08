@@ -140,9 +140,9 @@ public class Drive extends SubsystemBase
 
     private Pose2d targetPose;
     private SwerveSetpoint previousSetpoint;
-    private PIDController translationalController = new PIDController(1, 0, 0);
-    private PIDController rotationalController = new PIDController(3, 0, 0);
-    private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
+    private PIDController translationalController = new PIDController(4.5, 0, 0.1);
+    private PIDController rotationalController = new PIDController(0.5, 0, 0);
+private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
 
     static final Lock odometryLock = new ReentrantLock();
     private final GyroIO gyroIO;
@@ -192,7 +192,7 @@ public class Drive extends SubsystemBase
                 this::setPose,
                 this::getChassisSpeeds,
                 this::runVelocity,
-                new PPHolonomicDriveController(new PIDConstants(5, 0.0, 0.0), new PIDConstants(5, 0.0, 0.1)),
+                new PPHolonomicDriveController(new PIDConstants(2, 0.0, 0.2), new PIDConstants(1, 0.0, 0.1)),
                 PP_CONFIG,
                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                 this);
@@ -444,6 +444,10 @@ public void driveRobotRelative(ChassisSpeeds speeds){
     runVelocity(previousSetpoint.robotRelativeSpeeds());
 }
 
+public Command driveToPoseAuto(Supplier<Pose2d> targetPose){
+    return Commands.run(() -> driveToPose(() -> new ChassisSpeeds(0,0,0), targetPose));
+}
+
 
 
 public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
@@ -470,11 +474,13 @@ public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> t
         Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();
 
         this.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation().minus(travelRotation)));
+        // driveRobotRelative(speeds);
 
     }
         else {
             ChassisSpeeds speeds = new ChassisSpeeds(targetSpeeds.get().vxMetersPerSecond, targetSpeeds.get().vyMetersPerSecond, targetRotation);
             this.runVelocity(speeds);
+            // driveRobotRelative(speeds);
         }
 
     

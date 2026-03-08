@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure.indexer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -16,7 +17,7 @@ import frc.robot.util.PhoenixUtil;
 public class IndexerIOTalonFX implements IndexerIO{
     private TalonFX mecanumMotor, beltMotor, kickMotor;
     
-    private TalonFXConfiguration config = new TalonFXConfiguration();
+    private TalonFXConfiguration config = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(60));
 
     private VoltageOut voltageRequest;
 

@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.DistanceEstimator;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberTalonFX;
@@ -84,6 +85,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
+import frc.robot.subsystems.vision.template.VisionIOSim;
 
 
 /**
@@ -110,10 +112,11 @@ public class RobotContainer {
   public Drive drive;
   private SwerveDriveSimulation driveSimulation;
 //  private final TestVision vision;
-  //  private Vision vision;
+   private Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private PathPlannerAuto auto;
+  private DistanceEstimator distanceEstimator;
 
 private enum AutoType{
   CenterRush("Center Rush"), Depot("Depot"), Preload("Preload");
@@ -169,9 +172,11 @@ private enum AutoSide{
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
       robotState = new RobotState(drive);
+            // distanceEstimator = new DistanceEstimator();
       //    vision = new TestVision(drive);
-              // vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+              // vision = new Vision(distanceEstimator, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
+
       // autonomous = new Autonomous(superstructure);
     
     }
@@ -180,7 +185,7 @@ private enum AutoSide{
       hood = new Hood(new HoodIOSim());
       indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
-      driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+      driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3.6, 6, new Rotation2d()));
       intake = new Intake(new IntakeIOSim(driveSimulation));
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
       //climber = new Climber(new ClimberIOSim());
@@ -197,9 +202,10 @@ private enum AutoSide{
                         driveSimulation::setSimulationWorldPose);
       // vision = new TestVision(drive);
       // vision = null;
-      // new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-      //                                 new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-      //                                 new VisionIOSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
+      // distanceEstimator = new DistanceEstimator();
+      // new Vision(distanceEstimator, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+      //                                 new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
+      vision = null;
                                  robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
             // autonomous = new Autonomous(superstructure);
@@ -260,15 +266,17 @@ private enum AutoSide{
                 ()-> -joystick.getTwist()
             ));
 
-          y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
+          y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
+          a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           x.whileTrue(drive.setRotationXCommand());
-          // bumperRight.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation()))));
+          //b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation()))));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
-                ()-> joystick.getY()*0.3,
-                ()-> joystick.getX()*0.3,
-                ()-> -joystick.getTwist()*0.3));
-           b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 0.6,  6, new Rotation2d(0,0))));
+                ()-> joystick.getY()*0.6,
+                ()-> joystick.getX()*0.6,
+                ()-> -joystick.getTwist()*0.6));
+           b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
+          // a.whileTrue()
   }
 
   private void configureSecondaryBindings() {
@@ -290,7 +298,7 @@ private enum AutoSide{
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        // triggerLeft.whileTrue(superstructure.shootCommand(() -> targetVelocities.get(distanceEstimator.getDistance()))).onFalse(superstructure.storeCommand());
         triggerRight.whileTrue(superstructure.shootCommand(() -> 42)).onFalse(superstructure.storeCommand());
         bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
@@ -354,6 +362,11 @@ private enum AutoSide{
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
       return superstructure.shootCommand(() -> 42);
+      // return Commands.sequence(Commands.run(() -> drive.setPose(new Pose2d(3.56, 6, new Rotation2d()))),
+      //  Commands.parallel(drive.driveToPoseAuto(() -> new Pose2d(0.6,6,new Rotation2d()))),
+      //  superstructure.intakeCommand().until(() -> drive.isAligned()).andThen(superstructure.storeCommand()),
+      //   drive.driveToPoseAuto(() ->  new Pose2d(0.8, 6, new Rotation2d(Units.degreesToRadians(-27)))), superstructure.shootCommand(() -> 55));
+      // return new PathPlannerAuto("New Auto");
     //  return superstructure.testShootCommand().finallyDo(() -> superstructure.noTestShootCommand());
   }
 
@@ -372,7 +385,7 @@ private enum AutoSide{
   public void resetSimulationField() {
         if (Constants.currentMode != Constants.Mode.SIM) return;
 
-        driveSimulation.setSimulationWorldPose(new Pose2d(3, 3, new Rotation2d()));
+        driveSimulation.setSimulationWorldPose(new Pose2d(3.55, 6, new Rotation2d()));
         SimulatedArena.getInstance().resetFieldForAuto();
     }
 

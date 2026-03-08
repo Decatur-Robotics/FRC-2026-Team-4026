@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Radians;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.dyn4j.collision.narrowphase.DistanceDetector;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.constants.FieldConstants;
+import frc.robot.subsystems.DistanceEstimator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
@@ -38,6 +40,7 @@ public class Superstructure extends SubsystemBase {
     private leds leds;
     private RobotState robotState;
     private Drive drive;
+    private DistanceEstimator distanceEstimator;
 
     private boolean isSimulation = Robot.isSimulation();
 
@@ -55,6 +58,7 @@ public class Superstructure extends SubsystemBase {
         this.hood = hood;
         this.leds = leds;
         this.drive = drive;
+        distanceEstimator = new DistanceEstimator();
 
 
         this.robotState = robotState;
