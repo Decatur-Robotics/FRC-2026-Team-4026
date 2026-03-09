@@ -40,7 +40,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Voltage> deployVoltage;
     private StatusSignal<Voltage> deployFollowVoltage;
 
-    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3));
+    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3)).withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(60));
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(70));
 
     public IntakeIOTalonFX(){
