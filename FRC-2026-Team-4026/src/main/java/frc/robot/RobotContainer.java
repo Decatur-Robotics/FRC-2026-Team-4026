@@ -300,15 +300,6 @@ private enum AutoSide{
       left.whileTrue(intake.deployIntakeCommand(7));
 
 
-        // triggerLeft.whileTrue(intake.runIntakeCommand(-12));
-        //triggerRight.whileTrue(superstructure.testShootCommand()).onFalse(superstructure.noTestShootCommand());
-        // x.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
-        // a.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
-       
-
-        // b.whileTrue(hood.setPositionCommand(0.5));
-
-        // x.whileTrue(intake.se)
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
@@ -364,10 +355,6 @@ private enum AutoSide{
     return pathfinderCommand;
   }
 
-
-  // public Superstructure getSuperStructure() {
-  //   return superstructure;
-  // }
 
   public void resetSimulationField() {
         if (Constants.currentMode != Constants.Mode.SIM) return;

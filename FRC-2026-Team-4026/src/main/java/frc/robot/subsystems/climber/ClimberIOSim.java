@@ -25,7 +25,6 @@ public class ClimberIOSim implements ClimberIO{
     public void updateInputs(ClimberIOInputs inputs){
         inputs.climberData = new ClimberIOData(
             true,
-            true,
             climberSim.getAngularPosition().magnitude()*gearingRatio,
             climberSim.getInputVoltage(),
             getSupplyCurrent().in(Amps),
