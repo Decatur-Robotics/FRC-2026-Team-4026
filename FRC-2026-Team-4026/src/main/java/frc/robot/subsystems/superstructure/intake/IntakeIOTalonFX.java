@@ -16,6 +16,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -42,7 +43,6 @@ public class IntakeIOTalonFX implements IntakeIO{
 
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3)).withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(60));
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(70));
-
     public IntakeIOTalonFX(){
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
 
@@ -124,7 +124,11 @@ BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), d
     @Override
     public void setDeployPosition(double posRot){
         this.deployPosition = posRot;
-        deployMotor.setControl(positionRequest.withPosition(posRot).withVelocity(0.05));
+        deployMotor.setControl(positionRequest.withPosition(posRot));
+    }
+
+    public void setAltDeployPosition(double posRot){
+        deployMotor.setControl(alternatePositionRequest.withPosition(posRot).withVelocity(0.05));
     }
 
     @Override

@@ -7,7 +7,6 @@ package frc.robot;
 import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.DistanceEstimator;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberTalonFX;
@@ -34,6 +33,8 @@ import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIO;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
+import frc.robot.subsystems.superstructure.turret.shot.ShotOptimizer;
 import frc.robot.subsystems.vision.TestVision;
 import frc.robot.subsystems.vision.template.Vision;
 import frc.robot.subsystems.vision.template.VisionConstants;
@@ -110,13 +111,13 @@ public class RobotContainer {
   private  frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
       private Double robotDistance;
   public Drive drive;
+  public static Drive driveInstance;
   private SwerveDriveSimulation driveSimulation;
 //  private final TestVision vision;
    private Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private PathPlannerAuto auto;
-  private DistanceEstimator distanceEstimator;
 
 private enum AutoType{
   CenterRush("Center Rush"), Depot("Depot"), Preload("Preload");
@@ -155,6 +156,7 @@ private enum AutoSide{
 
     
       instance = this;
+      driveInstance = drive;
     // Configure the trigger bindings
 
      if(Constants.currentMode != Constants.Mode.SIM) {
@@ -174,9 +176,10 @@ private enum AutoSide{
       robotState = new RobotState(drive);
             // distanceEstimator = new DistanceEstimator();
       //    vision = new TestVision(drive);
-              // vision = new Vision(distanceEstimator, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+              vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
 
+      
       // autonomous = new Autonomous(superstructure);
     
     }
@@ -203,11 +206,12 @@ private enum AutoSide{
       // vision = new TestVision(drive);
       // vision = null;
       // distanceEstimator = new DistanceEstimator();
-      // new Vision(distanceEstimator, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-      //                                 new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
+      new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
       vision = null;
                                  robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
+            driveInstance = drive;
             // autonomous = new Autonomous(superstructure);
 
      }
@@ -299,14 +303,15 @@ private enum AutoSide{
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> targetVelocities.get(distanceEstimator.getDistance()))).onFalse(superstructure.storeCommand());
-        triggerRight.whileTrue(superstructure.shootCommand(() -> 42)).onFalse(superstructure.storeCommand());
+        triggerRight.whileTrue(superstructure.shootCommand(() -> ShotEstimator.getInstance().getTargetVelocity())).onFalse(superstructure.storeCommand());
         bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
       left.whileTrue(intake.deployIntakeCommand(7));
-
+      up.whileTrue(intake.altDeployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
+      down.whileTrue(intake.altDeployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
 
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
@@ -385,10 +390,6 @@ private enum AutoSide{
     Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
   }
 
-  public Drive getDrive() {
-    return drive;
-  }
-
     public void distanceUpdate(){
         configureSecondaryBindings();
   }
@@ -399,6 +400,10 @@ private enum AutoSide{
  
   public static RobotContainer getInstance(){
     return instance;
+  }
+
+  public static Drive getDrive(){
+    return driveInstance;
   }
 
   public Pose2d getDrivePose(){
