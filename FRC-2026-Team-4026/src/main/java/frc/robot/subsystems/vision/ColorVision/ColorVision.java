@@ -2,6 +2,8 @@ package frc.robot.subsystems.vision.ColorVision;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class ColorVision {
     private ColorVisionIO io;
     private final ColorVisionIOInputsAutoLogged inputs = new ColorVisionIOInputsAutoLogged();
@@ -18,8 +20,8 @@ public class ColorVision {
         Logger.recordOutput("averageYaw",getAverageYaw());
 
     }
-    public float getAverageYaw(){
+    public Rotation2d getAverageYaw(){
 
-        return inputs.colorVisionData.averageYaw();
+        return Rotation2d.fromDegrees(inputs.colorVisionData.averageYaw());
     }
 }
