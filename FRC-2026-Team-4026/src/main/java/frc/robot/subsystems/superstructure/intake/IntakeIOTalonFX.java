@@ -29,7 +29,6 @@ public class IntakeIOTalonFX implements IntakeIO{
     public TalonFX intakeMotor, deployMotor,deployFollowMotor;
 
     private PositionDutyCycle positionRequest;
-    private PositionVoltage trapezoidPositionRequest;
     private DynamicMotionMagicExpoVoltage alternatePositionRequest;
     private VoltageOut voltageRequest;
 
@@ -41,9 +40,12 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Current> deployFollowCurrent;
     private StatusSignal<Voltage> deployVoltage;
     private StatusSignal<Voltage> deployFollowVoltage;
+
     private TrapezoidProfile trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(IntakeConstants.DEPLOY_MAX_VELOCITY, IntakeConstants.DEPLOY_MAX_ACCELERATION));
     private TrapezoidProfile.State trapezoidProfileGoalState = new TrapezoidProfile.State();
     private TrapezoidProfile.State trapezoidProfileSetState = new TrapezoidProfile.State(200,0);
+    private PositionVoltage trapezoidPositionRequest;
+
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3)).withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(60));
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(70));
 
@@ -92,6 +94,7 @@ BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), d
         if(deployFollowMotor.hasResetOccurred()){
             deployFollowMotor.optimizeBusUtilization(40);
         }
+
     
     }
     @Override
@@ -120,18 +123,25 @@ BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), d
     public void setIntakeVoltage(double voltage){
 
         voltageRequest = new VoltageOut(voltage);
-
         intakeMotor.setControl(voltageRequest);
 
     }
 
     @Override
     public void setDeployPosition(double posRot){
-        //this.deployPosition = posRot;
-        //deployMotor.setControl(positionRequest.withPosition(posRot).withVelocity(0.05));
-
-        trapezoidProfileSetState = trapezoidProfile.calculate(0.02, trapezoidProfileSetState, trapezoidProfileGoalState);
+        this.deployPosition = posRot;
+        deployMotor.setControl(positionRequest.withPosition(posRot).withVelocity(0.05));
     }
+
+    @Override
+    public void setDeployPositionAgitate(double position){
+        trapezoidProfileGoalState = new TrapezoidProfile.State(position, 0);
+        trapezoidProfileSetState = trapezoidProfile.calculate(0.02, trapezoidProfileSetState, trapezoidProfileGoalState);
+        trapezoidPositionRequest.Position = trapezoidProfileSetState.position;
+        trapezoidPositionRequest.Velocity = trapezoidProfileSetState.velocity;
+        deployMotor.setControl(trapezoidPositionRequest);
+    }
+
 
     @Override
     public void stopIntake(){
