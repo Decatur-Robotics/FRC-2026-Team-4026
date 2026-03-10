@@ -16,6 +16,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -28,6 +29,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     public TalonFX intakeMotor, deployMotor,deployFollowMotor;
 
     private PositionDutyCycle positionRequest;
+    private PositionVoltage trapezoidPositionRequest;
     private DynamicMotionMagicExpoVoltage alternatePositionRequest;
     private VoltageOut voltageRequest;
 
@@ -39,7 +41,9 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Current> deployFollowCurrent;
     private StatusSignal<Voltage> deployVoltage;
     private StatusSignal<Voltage> deployFollowVoltage;
-
+    private TrapezoidProfile trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(IntakeConstants.DEPLOY_MAX_VELOCITY, IntakeConstants.DEPLOY_MAX_ACCELERATION));
+    private TrapezoidProfile.State trapezoidProfileGoalState = new TrapezoidProfile.State();
+    private TrapezoidProfile.State trapezoidProfileSetState = new TrapezoidProfile.State(200,0);
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3)).withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(60));
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(70));
 
@@ -50,13 +54,13 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployFollowMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
         deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Aligned));
 
-                deployPosition = deployMotor.getPosition().getValueAsDouble();
+        deployPosition = deployMotor.getPosition().getValueAsDouble();
         deployFollowPosition = deployFollowMotor.getPosition();
 
         intakeCurrent = intakeMotor.getSupplyCurrent();
 
         positionRequest = new PositionDutyCycle(deployPosition);
-        alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
+        trapezoidPositionRequest = new PositionVoltage(0).withSlot(0);
 
         intakeVoltage = intakeMotor.getMotorVoltage();
         deployVoltage = deployMotor.getMotorVoltage();
@@ -123,8 +127,10 @@ BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), d
 
     @Override
     public void setDeployPosition(double posRot){
-        this.deployPosition = posRot;
-        deployMotor.setControl(positionRequest.withPosition(posRot).withVelocity(0.05));
+        //this.deployPosition = posRot;
+        //deployMotor.setControl(positionRequest.withPosition(posRot).withVelocity(0.05));
+
+        trapezoidProfileSetState = trapezoidProfile.calculate(0.02, trapezoidProfileSetState, trapezoidProfileGoalState);
     }
 
     @Override

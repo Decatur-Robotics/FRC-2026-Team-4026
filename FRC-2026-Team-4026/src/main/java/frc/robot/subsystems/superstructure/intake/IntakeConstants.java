@@ -46,4 +46,6 @@ public class IntakeConstants {
     public static final double DEPLOY_MIN_ANGLE =0;
 
 
+    public static final double DEPLOY_MAX_VELOCITY = 50.0;
+    public static final double DEPLOY_MAX_ACCELERATION = 120;
 }
