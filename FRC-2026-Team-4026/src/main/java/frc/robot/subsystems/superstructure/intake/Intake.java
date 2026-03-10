@@ -53,6 +53,7 @@ public class Intake extends SubsystemBase{
     }
 
 
+    
     public double getDeployPosition(){
 
         return inputs.intakeData.deployPosition();
@@ -74,6 +75,10 @@ public class Intake extends SubsystemBase{
         return inputs.intakeData.intakeCurrent();
     }
 
+
+    public Command osillatingIntakeCommand(){
+        return Commands.runOnce(()->osillatingIntake());
+    }
     public Command slamIntakeCommand(double position){
         return Commands.runOnce(() -> io.setDeployVoltage(position));
     }
