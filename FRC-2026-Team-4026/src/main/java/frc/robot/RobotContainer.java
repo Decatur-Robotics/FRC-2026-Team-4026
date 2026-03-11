@@ -73,7 +73,7 @@ public class RobotContainer {
   private Intake intake;
   private Shooter shooter;
    private Hood hood;
-   public ShotEstimator shotEstimator;
+  //  public ShotEstimator shotEstimator;
   private RobotState robotState;
       private InterpolatingDoubleTreeMap targetVelocities;
   //private final Climber climber;
@@ -225,9 +225,9 @@ public class RobotContainer {
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        triggerLeft.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        // triggerLeft.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+        // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));

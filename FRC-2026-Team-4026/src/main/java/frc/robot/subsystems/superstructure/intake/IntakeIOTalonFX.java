@@ -38,7 +38,8 @@ public class IntakeIOTalonFX implements IntakeIO{
 
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
     .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3))
-    .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.DEPLOY_CURRENT_LIMIT));
+    // .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.DEPLOY_CURRENT_LIMIT));
+;
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
     .withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT));
 
@@ -60,20 +61,20 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
         intakeMotor.getConfigurator().apply(intakeConfig);
-BaseStatusSignal.setUpdateFrequencyForAll(40.0, 
-        intakeMotor.getMotorVoltage(),
-        deployMotor.getMotorVoltage(),
-        deployFollowMotor.getMotorVoltage(),
-        intakeMotor.getSupplyCurrent(),
-        deployCurrent,
-        deployFollowCurrent,
-        deployMotor.getPosition(),
-        deployFollowMotor.getPosition(),
-        intakeMotor.getDeviceTemp(),
-        deployMotor.getDeviceTemp(),
-        deployMotor.getDeviceTemp(),
-        deployMotor.getVelocity(),
-        deployMotor.getAcceleration());
+// BaseStatusSignal.setUpdateFrequencyForAll(40.0, 
+//         intakeMotor.getMotorVoltage(),
+//         deployMotor.getMotorVoltage(),
+//         deployFollowMotor.getMotorVoltage(),
+//         intakeMotor.getSupplyCurrent(),
+//         deployCurrent,
+//         deployFollowCurrent,
+//         deployMotor.getPosition(),
+//         deployFollowMotor.getPosition(),
+//         intakeMotor.getDeviceTemp(),
+//         deployMotor.getDeviceTemp(),
+//         deployMotor.getDeviceTemp(),
+//         deployMotor.getVelocity(),
+//         deployMotor.getAcceleration());
 
         tryUntilOk(5, () -> intakeMotor.optimizeBusUtilization());
         tryUntilOk(5, () -> deployMotor.optimizeBusUtilization());
@@ -116,8 +117,8 @@ BaseStatusSignal.setUpdateFrequencyForAll(40.0,
         deployMotor.getMotorVoltage().getValueAsDouble(),
         deployFollowMotor.getMotorVoltage().getValueAsDouble(),
         intakeMotor.getSupplyCurrent().getValueAsDouble(),
-        deployCurrent.getValueAsDouble(),
-        deployFollowCurrent.getValueAsDouble(),
+        deployMotor.getSupplyCurrent().getValueAsDouble(),
+        deployFollowMotor.getSupplyCurrent().getValueAsDouble(),
         deployMotor.getPosition().getValueAsDouble(),
         deployFollowMotor.getPosition().getValueAsDouble(),
         intakeMotor.getDeviceTemp().getValueAsDouble(),
