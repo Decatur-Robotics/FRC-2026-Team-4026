@@ -16,6 +16,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.LocalADStarAK;
 
 /**
@@ -94,6 +95,7 @@ Logger.start();
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+          //  CommandScheduler.getInstance().run();
   }
 
   @Override
@@ -110,7 +112,7 @@ Logger.start();
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // m_robotContainer.distanceUpdate();
+       CommandScheduler.getInstance().run();
   }
 
   @Override

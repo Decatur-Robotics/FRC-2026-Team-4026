@@ -27,6 +27,7 @@ import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
+import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.SuperstructureState;
 import frc.robot.subsystems.superstructure.leds.leds;
 import frc.robot.subsystems.superstructure.leds.ledsConstants;
@@ -148,12 +149,12 @@ public class Superstructure extends SubsystemBase {
         if(getDefenseMode()){
             return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity(), 0, 8)), drive.setRotationXCommand());
         } else {
-            return Commands.parallel(shooter.setVelocityCommand(robotState.getTargetVelocity()), indexer.setVoltageCommand(10));
+            return shootCommand(ShotEstimator.getInstance().getTargetVelocity());
         }
     }
 
-    public Command shootCommand(DoubleSupplier velocitySupplier){
-        return Commands.parallel(shooter.setVelocityCommand(velocitySupplier.getAsDouble()), indexer.setVoltageCommand(10), intake.runIntakeCommand(-2));
+    public Command shootCommand(Supplier<Double> velocitySupplier){
+        return Commands.parallel(shooter.setVelocityCommand(velocitySupplier.get()), indexer.setVoltageCommand(10), intake.runIntakeCommand(-2));
     }
 
     public Command testingShootCommand(){

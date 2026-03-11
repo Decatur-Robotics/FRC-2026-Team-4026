@@ -19,6 +19,7 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
+import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 
 public class Autonomous {
       private Superstructure superstructure;
@@ -31,7 +32,7 @@ public class Autonomous {
 
     public void eventTriggersCenterRush() {
        NamedCommands.registerCommand("Intake", Commands.runOnce(() -> Commands.sequence(superstructure.intakeCommand(), Commands.waitSeconds(4)).finallyDo(() -> superstructure.storeCommand())));
-       NamedCommands.registerCommand("Shoot", superstructure.shootCommand(() -> 45).until(() -> !RobotState.isAutonomous()));
+       NamedCommands.registerCommand("Shoot", superstructure.shootCommand(ShotEstimator.getInstance().getTargetVelocity()).until(() -> !RobotState.isAutonomous()));
 
        auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
     }

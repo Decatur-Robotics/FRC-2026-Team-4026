@@ -1,5 +1,7 @@
 package frc.robot.subsystems.superstructure.shooter;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -35,7 +37,7 @@ public class ShotEstimator extends SubsystemBase{
         }
 
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
-        Logger.recordOutput("ShotEstimator/Velocity", getTargetVelocity());
+        Logger.recordOutput("ShotEstimator/Velocity", getTargetVelocity().get());
     }
 
     public static ShotEstimator getInstance(){
@@ -45,9 +47,9 @@ public class ShotEstimator extends SubsystemBase{
     return instance;
     }
 
-    public double getTargetVelocity(){
-        // return targetVelocities.get(robotDistance);
-        return 10.07*robotDistance+18.98;
+    public Supplier<Double> getTargetVelocity(){
+         return () ->  targetVelocities.get(robotDistance);
+        // return () -> 10.07*robotDistance+18.98;
     }
 
 
