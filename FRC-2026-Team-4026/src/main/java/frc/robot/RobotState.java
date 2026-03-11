@@ -45,7 +45,6 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
-import frc.robot.subsystems.vision.Vision;
 
 
 public class RobotState extends SubsystemBase

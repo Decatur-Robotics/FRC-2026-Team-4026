@@ -25,7 +25,6 @@ import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 
 public class Autonomous {
-
       private enum AutoType{
   CenterRush("Center Rush"), Depot("Depot"), Preload("Preload");
 
@@ -70,32 +69,33 @@ private enum AutoSide{
 
       public void chooseAuto(){
      if(autoSide.getSelected() == AutoSide.Left){
-      if(autoType.getSelected() == AutoType.CenterRush){
-            auto = new PathPlannerAuto("Center Rush");
-            auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-            auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
-      } else if(autoType.getSelected() == AutoType.Depot){
-          auto = new PathPlannerAuto("Depot Auto");
-            auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-            auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
-      } else if(autoType.getSelected() == AutoType.Preload){
-            auto = new PathPlannerAuto("Sad Auto");
-            auto.activePath("Sad Path").onFalse(superstructure.shootCommand());
-      }
+        if(autoType.getSelected() == AutoType.CenterRush){
+                auto = new PathPlannerAuto("Center Rush");
+                auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+                auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
+        } else if(autoType.getSelected() == AutoType.Depot){
+            auto = new PathPlannerAuto("Depot Auto");
+                auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+                auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
+        } else if(autoType.getSelected() == AutoType.Preload){
+                superstructure.shootCommand();
+        }
      } else if(autoSide.getSelected() == AutoSide.Center){
                   auto = new PathPlannerAuto("Center Depot Auto");
             auto.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
             auto.activePath("Center Depot Shoot").onFalse(superstructure.shootCommand());
      } else if(autoSide.getSelected() == AutoSide.Right){
-      if(autoType.getSelected() == AutoType.CenterRush){
-        auto = new PathPlannerAuto("Center Rush Right");
-      auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      auto.activePath("Center Rush Right shoot").onFalse(superstructure.shootCommand());
-      } else if(autoType.getSelected() == AutoType.Depot){
-         auto = new PathPlannerAuto("HP Auto Right");
-            auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
-            auto.activePath("HP Shoot").onFalse(superstructure.shootCommand());
-      }
+        if(autoType.getSelected() == AutoType.CenterRush){
+            auto = new PathPlannerAuto("Center Rush Right");
+        auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+        auto.activePath("Center Rush Right shoot").onFalse(superstructure.shootCommand());
+        } else if(autoType.getSelected() == AutoType.Depot){
+            auto = new PathPlannerAuto("HP Auto Right");
+                auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
+                auto.activePath("HP Shoot").onFalse(superstructure.shootCommand());
+        } else if(autoType.getSelected() == AutoType.Preload){
+            superstructure.shootCommand();
+        }
      }
   }
 

@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import static edu.wpi.first.units.Units.*;
 
-import java.lang.Thread.State;
-
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,8 +12,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class Shooter extends SubsystemBase {
 
-    private double velocity;
-    private double voltage;
 
     private int ballsShot;
     private boolean shootingBall;
@@ -28,8 +24,6 @@ public class Shooter extends SubsystemBase {
 
 public Shooter (ShooterIO io) {
     this.io = io;
-    velocity = ShooterConstants.FUEL_REST_VELOCITY;
-    voltage = inputs.data.voltage();
     ballsShot = 0;
     shootingBall = false;
 }

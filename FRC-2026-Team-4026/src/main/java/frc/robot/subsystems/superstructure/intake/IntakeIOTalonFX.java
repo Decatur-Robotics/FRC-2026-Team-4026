@@ -3,15 +3,12 @@ package frc.robot.subsystems.superstructure.intake;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.DynamicMotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -37,12 +34,7 @@ public class IntakeIOTalonFX implements IntakeIO{
 
     private double deployPosition;
     private StatusSignal<Current> deployCurrent;
-    private StatusSignal<Current> intakeCurrent;
-    private StatusSignal<Voltage> intakeVoltage;
-    private StatusSignal<Angle> deployFollowPosition;
     private StatusSignal<Current> deployFollowCurrent;
-    private StatusSignal<Voltage> deployVoltage;
-    private StatusSignal<Voltage> deployFollowVoltage;
 
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
     .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3))
@@ -59,9 +51,6 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Aligned));
 
         deployPosition = deployMotor.getPosition().getValueAsDouble();
-        deployFollowPosition = deployFollowMotor.getPosition();
-
-        intakeCurrent = intakeMotor.getSupplyCurrent();
 
         positionRequest = new PositionDutyCycle(deployPosition);
         alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
