@@ -136,7 +136,7 @@ private enum AutoSide{
 }
   private SendableChooser<AutoSide> autoSide;
   private SendableChooser<AutoType> autoType;
-  // private Autonomous autonomous;
+   private Autonomous autonomous;
   public RobotContainer() {
 
     autoSide = new SendableChooser<>();
@@ -175,7 +175,7 @@ private enum AutoSide{
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
 
       
-      // autonomous = new Autonomous(superstructure);
+       autonomous = new Autonomous(superstructure);
     
     }
  else {
@@ -203,13 +203,11 @@ private enum AutoSide{
                                  robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
             driveInstance = drive;
-            // autonomous = new Autonomous(superstructure);
+            autonomous = new Autonomous(superstructure);
 
      }
 
-          //  auto = new PathPlannerAuto("Center Rush Right");
-      // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      // auto.activePath("Center Rush Right shoot").onFalse(superstructure.shootCommand(() -> 45));
+  
 
          targetVelocities = new InterpolatingDoubleTreeMap();
              targetVelocities.put(2.7, 38.0);
@@ -217,7 +215,6 @@ private enum AutoSide{
 
     // targetVelocities.put(3.911, 60.0);
     // targetVelocities.put(5.18, 75.0);
-     //NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
      resetSimulationField();
          configurePrimaryBindings();
     configureSecondaryBindings();

@@ -17,6 +17,8 @@ public class Shooter extends SubsystemBase {
     private double velocity;
     private double voltage;
 
+    private int ballsShot;
+    private boolean shootingBall;
     private ShooterIO io;
     private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
@@ -28,6 +30,8 @@ public Shooter (ShooterIO io) {
     this.io = io;
     velocity = ShooterConstants.FUEL_REST_VELOCITY;
     voltage = inputs.data.voltage();
+    ballsShot = 0;
+    shootingBall = false;
 }
 
 public double getVelocity() {
@@ -50,6 +54,16 @@ public Command setVoltageCommand(double voltage) {
 public void periodic () {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
+    if(getCurrent() > 10){
+        if(shootingBall == false){
+            ballsShot++;
+        }
+        shootingBall = true;
+    } else if(getCurrent() < 5){
+        shootingBall = false;
+    }
+
+    Logger.recordOutput("Shooter/Balls Shot", ballsShot);
 }
 
 public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
@@ -58,4 +72,8 @@ public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
     public Command sysIdDynamic (SysIdRoutine.Direction direction) {
         return sysIdRoutine.dynamic(direction);
     }
+
+public int getNumBallsShot(){
+    return ballsShot;
+}
 }

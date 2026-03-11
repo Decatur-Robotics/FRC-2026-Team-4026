@@ -212,4 +212,8 @@ public class Superstructure extends SubsystemBase {
     return Commands.runOnce(()-> intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
  }
 
+ public int getNumBallsStored(){
+    return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
+ }
+
 }

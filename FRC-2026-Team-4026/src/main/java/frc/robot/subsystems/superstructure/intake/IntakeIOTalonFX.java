@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
@@ -32,6 +33,8 @@ public class IntakeIOTalonFX implements IntakeIO{
     private DynamicMotionMagicExpoVoltage alternatePositionRequest;
     private VoltageOut voltageRequest;
 
+    private CANcoder encoder;
+
     private double deployPosition;
     private StatusSignal<Current> deployCurrent;
     private StatusSignal<Current> intakeCurrent;
@@ -46,11 +49,13 @@ public class IntakeIOTalonFX implements IntakeIO{
     .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.DEPLOY_CURRENT_LIMIT));
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
     .withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT));
+
     public IntakeIOTalonFX(){
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
 
         deployMotor = new TalonFX(Ports.DEPLOY_MOTOR_PORT);
         deployFollowMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
+        encoder = new CANcoder(0);
         deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Aligned));
 
         deployPosition = deployMotor.getPosition().getValueAsDouble();
