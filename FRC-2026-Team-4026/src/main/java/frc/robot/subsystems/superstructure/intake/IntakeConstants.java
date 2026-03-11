@@ -45,5 +45,8 @@ public class IntakeConstants {
     public static final double DEPLOY_MAX_ANGLE=100;
     public static final double DEPLOY_MIN_ANGLE =0;
 
+    public static final double INTAKE_CURRENT_LIMIT = 70;
+    public static final double DEPLOY_CURRENT_LIMIT = 60;
+
 
 }

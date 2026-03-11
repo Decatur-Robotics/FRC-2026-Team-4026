@@ -41,8 +41,11 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Voltage> deployVoltage;
     private StatusSignal<Voltage> deployFollowVoltage;
 
-    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3)).withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(60));
-    public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(70));
+    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
+    .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3))
+    .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.DEPLOY_CURRENT_LIMIT));
+    public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
+    .withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT));
     public IntakeIOTalonFX(){
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
 
@@ -50,7 +53,7 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployFollowMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
         deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Aligned));
 
-                deployPosition = deployMotor.getPosition().getValueAsDouble();
+        deployPosition = deployMotor.getPosition().getValueAsDouble();
         deployFollowPosition = deployFollowMotor.getPosition();
 
         intakeCurrent = intakeMotor.getSupplyCurrent();
@@ -58,23 +61,41 @@ public class IntakeIOTalonFX implements IntakeIO{
         positionRequest = new PositionDutyCycle(deployPosition);
         alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
 
-        intakeVoltage = intakeMotor.getMotorVoltage();
-        deployVoltage = deployMotor.getMotorVoltage();
-        deployFollowVoltage = deployFollowMotor.getMotorVoltage();
-        deployCurrent = deployMotor.getSupplyCurrent();
-        deployFollowCurrent = deployFollowMotor.getSupplyCurrent();
-
         deployMotor.setPosition(0);
         deployFollowMotor.setPosition(0);
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
         intakeMotor.getConfigurator().apply(intakeConfig);
-BaseStatusSignal.setUpdateFrequencyForAll(40.0, intakeMotor.getMotorVoltage(), deployMotor.getMotorVoltage(),deployFollowMotor.getMotorVoltage(), intakeMotor.getSupplyCurrent(), deployMotor.getSupplyCurrent(),deployFollowMotor.getSupplyCurrent(), deployMotor.getPosition(),deployFollowMotor.getPosition(), deployMotor.getSupplyCurrent());
+BaseStatusSignal.setUpdateFrequencyForAll(40.0, 
+        intakeMotor.getMotorVoltage(),
+        deployMotor.getMotorVoltage(),
+        deployFollowMotor.getMotorVoltage(),
+        intakeMotor.getSupplyCurrent(),
+        deployCurrent,
+        deployFollowCurrent,
+        deployMotor.getPosition(),
+        deployFollowMotor.getPosition(),
+        intakeMotor.getDeviceTemp(),
+        deployMotor.getDeviceTemp(),
+        deployMotor.getDeviceTemp(),
+        deployMotor.getVelocity(),
+        deployMotor.getAcceleration());
+
         tryUntilOk(5, () -> intakeMotor.optimizeBusUtilization());
         tryUntilOk(5, () -> deployMotor.optimizeBusUtilization());
         tryUntilOk(5, () -> deployFollowMotor.optimizeBusUtilization());
         deployFollowMotor.optimizeBusUtilization();
-        PhoenixUtil.registerSignals(false, intakeMotor.getMotorVoltage(), deployMotor.getMotorVoltage(),deployFollowMotor.getMotorVoltage(), intakeMotor.getSupplyCurrent(), deployMotor.getSupplyCurrent(),deployFollowMotor.getSupplyCurrent(), deployMotor.getPosition(),deployFollowMotor.getPosition(), intakeMotor.getSupplyCurrent());
+
+        PhoenixUtil.registerSignals(false, 
+            intakeMotor.getMotorVoltage(),
+            deployMotor.getMotorVoltage(),
+            deployFollowMotor.getMotorVoltage(),
+            intakeMotor.getSupplyCurrent(),
+            deployMotor.getSupplyCurrent(),
+            deployFollowMotor.getSupplyCurrent(),
+            deployMotor.getPosition(),
+            deployFollowMotor.getPosition(),
+            intakeMotor.getSupplyCurrent());
     }
     @Override
     public void periodic(){

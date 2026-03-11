@@ -35,7 +35,6 @@ import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.subsystems.superstructure.turret.shot.ShotOptimizer;
-import frc.robot.subsystems.vision.TestVision;
 import frc.robot.subsystems.vision.template.Vision;
 import frc.robot.subsystems.vision.template.VisionConstants;
 import frc.robot.subsystems.vision.template.VisionIOPhotonVision;
@@ -86,7 +85,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
-import frc.robot.subsystems.vision.template.VisionIOSim;
 
 
 /**
@@ -114,8 +112,7 @@ public class RobotContainer {
   public Drive drive;
   public static Drive driveInstance;
   private SwerveDriveSimulation driveSimulation;
-//  private final TestVision vision;
-  //  private Vision vision;
+   private Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private PathPlannerAuto auto;
@@ -158,7 +155,6 @@ private enum AutoSide{
     
       instance = this;
       driveInstance = drive;
-    // Configure the trigger bindings
 
      if(Constants.currentMode != Constants.Mode.SIM) {
       hood = new Hood( new HoodIOTalonFX());
@@ -175,9 +171,7 @@ private enum AutoSide{
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
       robotState = new RobotState(drive);
-            // distanceEstimator = new DistanceEstimator();
-      //    vision = new TestVision(drive);
-              // vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+              vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
 
       
@@ -204,12 +198,8 @@ private enum AutoSide{
                         new ModuleIOTalonFXSim(
                                 TunerConstants.BackRight, driveSimulation.getModules()[3]),
                         driveSimulation::setSimulationWorldPose);
-      // vision = new TestVision(drive);
-      // vision = null;
-      // distanceEstimator = new DistanceEstimator();
-      // new Vision(drive, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-      //                                 new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
-      // vision = null;
+      new Vision(drive, new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                  robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
             driveInstance = drive;

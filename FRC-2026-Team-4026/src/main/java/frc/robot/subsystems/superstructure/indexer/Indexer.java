@@ -5,8 +5,6 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.superstructure.indexer.IndexerIO.IndexerIOInputs;
-import frc.robot.subsystems.superstructure.indexer.IndexerIOInputsAutoLogged;
 
 public class Indexer extends SubsystemBase{
     private IndexerIO io;
@@ -26,7 +24,7 @@ public class Indexer extends SubsystemBase{
         if (isEStopped){
             io.stop();
         }
-        if(getMecanumCurrent() > IndexerConstants.MAX_CURRENT && getMecanumVelocity() == 0 || getBeltCurrent() > IndexerConstants.MAX_CURRENT && getBeltVelocity() == 0 || getKickCurrent() > IndexerConstants.MAX_CURRENT && getKickVelocity() == 0 ){
+        if(getMecanumCurrent() == IndexerConstants.INDEXER_CURRENT_LIMIT && getMecanumVelocity() == 0 || getBeltCurrent() == IndexerConstants.INDEXER_CURRENT_LIMIT && getBeltVelocity() == 0 || getKickCurrent() > IndexerConstants.INDEXER_CURRENT_LIMIT && getKickVelocity() == 0 ){
             setVoltageCommand(-6);
             Commands.waitSeconds(0.7);
             setVoltageCommand(6);

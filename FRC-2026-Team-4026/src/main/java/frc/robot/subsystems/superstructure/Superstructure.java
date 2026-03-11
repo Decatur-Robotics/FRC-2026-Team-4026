@@ -147,7 +147,7 @@ public class Superstructure extends SubsystemBase {
         //     return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
         // }}
         if(getDefenseMode()){
-            return Commands.parallel(setState(new SuperstructureState(robotState.getTargetVelocity(), 0, 8)), drive.setRotationXCommand());
+            return Commands.parallel(shootCommand(ShotEstimator.getInstance().getTargetVelocity()), drive.setRotationXCommand());
         } else {
             return shootCommand(ShotEstimator.getInstance().getTargetVelocity());
         }
@@ -159,10 +159,6 @@ public class Superstructure extends SubsystemBase {
 
     public Command testingShootCommand(){
         return setState(new SuperstructureState(1, 0.0, 0, 12, 0.0));
-    }
-
-    public Command testShootCommand(){
-        return Commands.parallel(indexer.setVoltageCommand(8),shooter.setVelocityCommand(robotState.getTargetVelocity()), intake.runIntakeCommand(-4));
     }
     
     public Command testShootAutoCommand(){
@@ -182,7 +178,7 @@ public class Superstructure extends SubsystemBase {
             // }
     //    }
     //    else {
-            return setState(new SuperstructureState(robotState.getTargetVelocity()+10, 0, 8.0));
+            return setState(new SuperstructureState(ShotEstimator.getInstance().getTargetVelocity().get() + 10, 0, 8.0));
         // }
         }
             

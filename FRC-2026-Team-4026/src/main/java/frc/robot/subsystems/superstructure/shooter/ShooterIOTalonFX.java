@@ -39,20 +39,12 @@ public class ShooterIOTalonFX implements ShooterIO {
     public ShooterIOTalonFX () {
         motor = new TalonFX(Ports.SHOOTER_MOTOR);
         
-        config = new TalonFXConfiguration().withSlot0(ShooterConstants.SLOT_0_CONFIGS);
-    motor.getConfigurator().apply(config);
+        config = new TalonFXConfiguration().withSlot0(ShooterConstants.SLOT_0_CONFIGS).withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(ShooterConstants.SHOOTER_CURRENT_LIMIT));
+        motor.getConfigurator().apply(config);
         voltage = motor.getMotorVoltage();
-            velocity = motor.getVelocity().getValueAsDouble();
+        velocity = motor.getVelocity().getValueAsDouble();
         voltageRequest = new VoltageOut(voltage.getValueAsDouble());
-        
         velocityRequest = new VelocityVoltage(velocity);
-
-         
-
-      
-
-       
-
 
         tryUntilOk(5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, motor.getVelocity()));
         tryUntilOk(5, () -> motor.optimizeBusUtilization());

@@ -31,6 +31,8 @@ public class ShooterConstants {
     public static final double kV = 6.0;
     public static final double kA = 1.0;
 
+    public static final double SHOOTER_CURRENT_LIMIT = 60;
+
       public static final Slot0Configs SLOT_0_CONFIGS = new Slot0Configs()
         .withKP(0.3) // 0.5
         .withKI(0)
