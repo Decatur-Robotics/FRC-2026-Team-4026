@@ -20,8 +20,13 @@ public class Intake extends SubsystemBase{
     private boolean osillatingIntakeGoingUp = true;
 
 
+    private int ballsIntaked;
+    private boolean intakingBalls;
+
     public Intake(IntakeIO io){
         this.io = io;
+        ballsIntaked = 0;
+        intakingBalls = false;
     }
 
     @Override
@@ -33,6 +38,25 @@ public class Intake extends SubsystemBase{
         Logger.recordOutput("Intake Voltage", getIntakeVoltage());
         Logger.recordOutput("Deploy Current", getDeployCurrent());
         Logger.recordOutput("Intake Current", getIntakeCurrent());
+
+        if(getIntakeCurrent() > 50){
+            if(intakingBalls == false){
+                ballsIntaked += 3;
+            } else if (getIntakeCurrent() > 40){
+                if(intakingBalls == false){
+                    ballsIntaked += 2;
+                }
+            } else if (getIntakeCurrent() > 30){
+                if(intakingBalls == false){
+                    ballsIntaked++;
+                }
+            }
+            intakingBalls = true;
+        } else if(getIntakeCurrent() < 25){
+            intakingBalls = false;
+        }
+
+        Logger.recordOutput("Balls Intaked", ballsIntaked);
     }
 
     public void osillatingIntake(){
@@ -94,6 +118,10 @@ public class Intake extends SubsystemBase{
     public Command deployIntakeCommand(double position){
         return Commands.runOnce(() -> io.setDeployPosition(position));
     }
+
+    public Command altDeployIntakeCommand(double position){
+        return Commands.runOnce(() -> io.setAltDeployPosition(position));
+    }
     public Command runIntakeCommand(double voltage){
 
         return Commands.startEnd(()-> io.setIntakeVoltage(voltage), () -> io.stopIntake());
@@ -112,5 +140,8 @@ public class Intake extends SubsystemBase{
         return sysIdRoutine.dynamic(direction);
     }
 
+    public int getNumBallsIntaked(){
+        return ballsIntaked;
+    }
 }
 

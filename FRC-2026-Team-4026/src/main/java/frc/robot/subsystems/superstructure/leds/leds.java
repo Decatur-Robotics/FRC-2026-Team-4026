@@ -12,8 +12,6 @@ public class leds implements Subsystem {
 
     // an led strip
     private AddressableLED led;
-
-    private double m;
     // how many leds on the strip
     private int length;
     // a buffer with data on the led strip states

@@ -45,7 +45,6 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
-import frc.robot.subsystems.vision.Vision;
 
 
 public class RobotState extends SubsystemBase
@@ -97,22 +96,7 @@ public RobotState(Drive drive){
     robotPose = drive.getPose();
     targetAims = new InterpolatingDoubleTreeMap();
     targetVelocities = new InterpolatingDoubleTreeMap();
-
-    robotDistance = 2.0;
     speedOffset = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond);
-    targetAims.put(0.1, 0.0);
-    targetVelocities.put(2.235, 40.0);
-    targetVelocities.put(2.97, 50.0);
-    targetVelocities.put(3.911, 60.0);
-    targetVelocities.put(5.18, 75.0);
-    // targetAims.put(1.0, 0.0);
-    //   voltageToVelocity.put(0.0, 0.0);
-    // voltageToVelocity.put(6.0, 40.0);
-    // voltageToVelocity.put(8.0, 64.0);
-
-    // voltageToVelocity.put(12.0, 85.0);
-//    totalCurrentDraw = PDH.getTotalCurrent();
-    // busVoltage = PDH.getVoltage();
     hubToRobot = new Translation2d(robotPose.getX() - FieldConstants.Hub.topCenterPoint.getX(), robotPose.getY() - FieldConstants.Hub.topCenterPoint.getY());
 }
 
@@ -123,65 +107,6 @@ public void resetPose(Pose2d newPose){
     estimatedPose = newPose;
     poseBuffer.clear();
 }
-
-// public void addOdometryPose(OdometryObservation observation){
-//     Twist2d twist = kinematics.toTwist2d(modulePositions, observation.modulePositions);
-//     modulePositions = observation.modulePositions;
-//     Pose2d lastOdometryPose = odemetryPose;
-//     odemetryPose = odemetryPose.exp(twist);
-
-//     observation.gyroRotation.ifPresent(
-//         gyroRotation -> {
-//             Rotation2d angle = gyroRotation.plus(gyroOffset);
-//             odemetryPose = new Pose2d(odemetryPose.getTranslation(), angle);
-//         }
-//     );
-
-//     poseBuffer.addSample(observation.timestamp, odemetryPose);
-
-//     Twist2d finalTwist = lastOdometryPose.log(odemetryPose);
-//     estimatedPose = estimatedPose.exp(finalTwist);
-// }
-
-// public void addVisionPose(){
-//     try{
-//         if(poseBuffer.getInternalBuffer().lastKey() - poseBufferTime > visionTimestamp){
-//             return;
-//         }
-//     }
-//     catch(NoSuchElementException e){
-//         return;}
-
-//     var sample = poseBuffer.getSample(visionTimestamp);
-//     if(sample.isEmpty()){
-//         return;
-//     }
-
-//     var sampleToOdometryTransform = new Transform2d(sample.get(), odemetryPose);
-//     var odometryToSampleTransform = new Transform2d(odemetryPose, sample.get());
-
-//     Pose2d estimateAtTimestamp = estimatedPose.transformBy(odometryToSampleTransform);
-
-//     Matrix<N3, N3> kalmanGain = new Matrix<>(Nat.N3(), Nat.N3());
-//     for(int row = 0; row < 3; row++){
-//         double stdDev = visionMeasurementStdDevs.get(row, 0);
-//         if(stdDev == 0){
-//             kalmanGain.set(row, row, 0);
-//         }
-//         else{
-//             kalmanGain.set(row, row, stdDev/(stdDev + Math.sqrt(stdDev*visionMeasurementStdDevs.get(row,0))));
-//         }
-//     }
-
-//     Transform2d poseTransform = new Transform2d(estimateAtTimestamp, visionPose);
-
-//     var kalmanTransform = kalmanGain.times(VecBuilder.fill(poseTransform.getX(), poseTransform.getY(), poseTransform.getRotation().getRadians()));
-
-//     Transform2d scaledTransform = new Transform2d(kalmanTransform.get(0, 0), kalmanTransform.get(1, 0), new Rotation2d(kalmanTransform.get(2, 0)));
-
-//     estimatedPose = estimateAtTimestamp.plus(scaledTransform).plus(sampleToOdometryTransform);
-
-// }
 
 @Override
     public void periodic(){
@@ -197,11 +122,6 @@ public void resetPose(Pose2d newPose){
             
     //         BATTERY_BROWNOUT_PROTECTION = true;
     //     }
-        robotPose = drive.getPose();
-        robotDistance = drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));
-        getTargetVelocity();
-        Logger.recordOutput("RobotState/Distance", robotDistance);
-        Logger.recordOutput("RobotState/targetVelocity", getTargetVelocity());
     }
 
     public double getVoltageToVelocity(double voltage){
@@ -213,18 +133,6 @@ public void resetPose(Pose2d newPose){
 // }
     public double getTargetAim(){
         return targetAims.get(robotDistance);
-    }
-
-    public double getTargetVelocity(){
-return 10.07*robotDistance+18.98;
-        // if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)){
-        // return targetVelocities.get(drive.getPose().getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d()));
-        // } else{
-                    
-        // }
-
-
-        // return (Units.metersToInches(robotDistance)+47.6676)/3.3514;
     }
 
     public double getSpeedOffsetShooter() {
