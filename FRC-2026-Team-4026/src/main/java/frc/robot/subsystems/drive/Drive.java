@@ -63,6 +63,7 @@ import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LocalADStarAK;
 
 import java.util.Optional;
@@ -487,6 +488,10 @@ public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<
     return Commands.run(() -> driveToPose(targetSpeeds, targetPose)).finallyDo(() -> this.targetPose = null);
 }
 
+public Command alignToHub(Supplier<ChassisSpeeds> targetSpeeds){
+    return driveToPoseTeleop(targetSpeeds, () -> new Pose2d(getPose().getX(),  getPose().getY(), getTargetRotation()));
+}
+
 public boolean atTargetPose() {
     if (targetPose == null) {
         return false;
@@ -507,5 +512,13 @@ public boolean isAligned(){
         }
     }
     return velocityAligned && atTargetPose();
+}
+
+public Rotation2d getTargetRotation(){
+        if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+             return new Rotation2d(Math.atan((getPose().getY() - FieldConstants.Hub.topCenterPoint.getY())/(getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())));
+        } else {
+             return new Rotation2d(Math.atan((getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()))/(getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI);
+        }
 }
 }

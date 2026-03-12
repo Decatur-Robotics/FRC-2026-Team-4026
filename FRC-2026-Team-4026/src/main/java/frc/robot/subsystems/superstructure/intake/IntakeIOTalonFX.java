@@ -61,25 +61,27 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
         intakeMotor.getConfigurator().apply(intakeConfig);
-// BaseStatusSignal.setUpdateFrequencyForAll(40.0, 
-//         intakeMotor.getMotorVoltage(),
-//         deployMotor.getMotorVoltage(),
-//         deployFollowMotor.getMotorVoltage(),
-//         intakeMotor.getSupplyCurrent(),
-//         deployCurrent,
-//         deployFollowCurrent,
-//         deployMotor.getPosition(),
-//         deployFollowMotor.getPosition(),
-//         intakeMotor.getDeviceTemp(),
-//         deployMotor.getDeviceTemp(),
-//         deployMotor.getDeviceTemp(),
-//         deployMotor.getVelocity(),
-//         deployMotor.getAcceleration());
 
-        tryUntilOk(5, () -> intakeMotor.optimizeBusUtilization());
-        tryUntilOk(5, () -> deployMotor.optimizeBusUtilization());
-        tryUntilOk(5, () -> deployFollowMotor.optimizeBusUtilization());
-        deployFollowMotor.optimizeBusUtilization();
+
+        tryUntilOk(5, () -> intakeMotor.optimizeBusUtilization(40));
+        tryUntilOk(5, () -> deployMotor.optimizeBusUtilization(40));
+        tryUntilOk(5, () -> deployFollowMotor.optimizeBusUtilization(40));
+
+        BaseStatusSignal.setUpdateFrequencyForAll(40.0, 
+        intakeMotor.getMotorVoltage(),
+        deployMotor.getMotorVoltage(),
+        deployFollowMotor.getMotorVoltage(),
+        intakeMotor.getSupplyCurrent(),
+        deployCurrent,
+        deployFollowCurrent,
+        deployMotor.getPosition(),
+        deployFollowMotor.getPosition(),
+        intakeMotor.getDeviceTemp(),
+        deployMotor.getDeviceTemp(),
+        deployMotor.getDeviceTemp(),
+        deployMotor.getVelocity(),
+        deployMotor.getAcceleration());
+
 
         PhoenixUtil.registerSignals(false, 
             intakeMotor.getMotorVoltage(),

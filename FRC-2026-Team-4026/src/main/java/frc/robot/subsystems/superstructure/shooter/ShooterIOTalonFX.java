@@ -41,7 +41,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         velocityRequest = new VelocityVoltage(velocity);
 
         tryUntilOk(5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, motor.getVelocity()));
-        tryUntilOk(5, () -> motor.optimizeBusUtilization());
+        tryUntilOk(5, () -> motor.optimizeBusUtilization(40));
         PhoenixUtil.registerSignals(true,voltage);    
     }
 

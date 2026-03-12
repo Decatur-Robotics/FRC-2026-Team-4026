@@ -197,7 +197,7 @@ public class RobotContainer {
           y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           x.whileTrue(drive.setRotationXCommand());
-          b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation()))));
+          b.whileTrue(drive.alignToHub(() ->drive.getChassisSpeeds()));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 ()-> joystick.getY()*0.6,
