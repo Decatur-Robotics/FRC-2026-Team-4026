@@ -87,10 +87,11 @@ public class RobotContainer {
   private static RobotContainer instance;
   private PathPlannerAuto auto;
 
+
    private Autonomous autonomous;
   public RobotContainer() {
       instance = this;
-      driveInstance = drive;
+
 
      if(Constants.currentMode != Constants.Mode.SIM) {
       hood = new Hood( new HoodIOTalonFX());
@@ -110,7 +111,7 @@ public class RobotContainer {
               vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
 
-      
+            driveInstance = drive;
        autonomous = new Autonomous(superstructure);
     
     }
@@ -140,7 +141,6 @@ public class RobotContainer {
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
             driveInstance = drive;
             autonomous = new Autonomous(superstructure);
-
      }
 
   
@@ -197,16 +197,16 @@ public class RobotContainer {
           y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           x.whileTrue(drive.setRotationXCommand());
-          //b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation()))));
+          b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation()))));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 ()-> joystick.getY()*0.6,
                 ()-> joystick.getX()*0.6,
                 ()-> -joystick.getTwist()*0.6));
-           b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
+          //  b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
   }
 
-  private void configureSecondaryBindings() {
+  public void configureSecondaryBindings() {
     Joystick joystick = new Joystick(1);
 
         JoystickButton start = new JoystickButton(joystick, LogitechControllerButtons.start);
@@ -226,7 +226,7 @@ public class RobotContainer {
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
         // triggerLeft.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
@@ -245,7 +245,8 @@ public class RobotContainer {
    */
   
   public Command getAutonomousCommand() {
-      return autonomous.getAuto();
+      // return autonomous.getAuto();
+      return new PathPlannerAuto("New Auto");
   }
 
   public Command pathfinderToPose(Pose2d targetPose) {

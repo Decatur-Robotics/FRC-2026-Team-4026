@@ -14,7 +14,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AllianceFlipUtil;
 
 public class ShotEstimator extends SubsystemBase{
-    public Drive drive;
+    private Drive drive;
     private InterpolatingDoubleTreeMap targetVelocities;
     public double robotDistance;
     public static ShotEstimator instance;
@@ -40,12 +40,12 @@ public class ShotEstimator extends SubsystemBase{
         Logger.recordOutput("ShotEstimator/Velocity", getTargetVelocity().get());
     }
 
-    public static ShotEstimator getInstance(){
-        if(instance == null){
+     public static ShotEstimator getInstance(){
+         if(instance == null){
             instance = new ShotEstimator();
     }
-    return instance;
-    }
+     return instance;
+     }
 
     public Supplier<Double> getTargetVelocity(){
          return () ->  targetVelocities.get(robotDistance);

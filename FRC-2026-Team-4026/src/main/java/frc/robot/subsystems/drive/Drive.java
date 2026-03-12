@@ -137,8 +137,8 @@ implements Vision.VisionConsumer
 
     private Pose2d targetPose;
     private SwerveSetpoint previousSetpoint;
-    private PIDController translationalController = new PIDController(4.5, 0, 0.1);
-    private PIDController rotationalController = new PIDController(0.5, 0, 0);
+    private PIDController translationalController = new PIDController(0.5, 0, 5.5);
+    private PIDController rotationalController = new PIDController(0.2, 0, 1.3);
 private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
 
     static final Lock odometryLock = new ReentrantLock();
@@ -189,7 +189,7 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
                 this::setPose,
                 this::getChassisSpeeds,
                 this::runVelocity,
-                new PPHolonomicDriveController(new PIDConstants(2, 0.0, 0.2), new PIDConstants(1, 0.0, 0.1)),
+                new PPHolonomicDriveController(new PIDConstants(0, 0.0, 0.0), new PIDConstants(0, 0.0, 0)),
                 PP_CONFIG,
                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                 this);

@@ -94,9 +94,7 @@ Logger.start();
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-          CommandScheduler.getInstance().run();
-  }
+  public void autonomousPeriodic() {}
 
   @Override
   public void teleopInit() {
@@ -111,9 +109,7 @@ Logger.start();
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-       CommandScheduler.getInstance().run();
-  }
+  public void teleopPeriodic() { }
 
   @Override
   public void testInit() {

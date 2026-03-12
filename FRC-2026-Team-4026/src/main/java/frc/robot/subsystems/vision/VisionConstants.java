@@ -22,10 +22,10 @@ public class VisionConstants {
 
          public static final Transform3d ROBOT_TO_CAMERA_FRONT_LEFT = new Transform3d(
         new Translation3d(Units.inchesToMeters(12),Units.inchesToMeters(12),0.24), 
-        new Rotation3d(0, -0.34,Math.PI/4));
+        new Rotation3d(0, -0.34,Math.PI/12));
     public static final Transform3d ROBOT_TO_CAMERA_FRONT_RIGHT = new Transform3d(
         new Translation3d(Units.inchesToMeters(12),-Units.inchesToMeters(12),0.24), 
-        new Rotation3d(0, -0.34,-Math.PI/4));
+        new Rotation3d(0, -0.34,-Math.PI/12));
 
           public static final Transform3d ROBOT_TO_CAMERA_BACK = new Transform3d(
         new Translation3d(0, 0, 0), 
@@ -59,7 +59,7 @@ public class VisionConstants {
 
         // The standard deviations of our vision estimated poses, which affect correction rate
         // (Fake values. Experiment and determine estimation noise on an actual robot.)
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2, 2, 4);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
 }

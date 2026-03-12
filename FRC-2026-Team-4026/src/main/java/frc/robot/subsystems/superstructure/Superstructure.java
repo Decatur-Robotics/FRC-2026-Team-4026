@@ -119,34 +119,34 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE));
     }
 
-    public Command shootCommand(){
-        // if(!Robot.isReal()){
+    // public Command shootCommand(){
+    //     // if(!Robot.isReal()){
             
-        // }
-        // if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
-        //     return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-        // }
-        // else{
-        //     // if (RobotState.BATTERY_BROWNOUT_PROTECTION){
-        //         return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() < SuperstructureConstants.VELOCITY_BROWNOUT_LIMIT ? robotState.getTargetVelocity() : 0.0,  
-        //         robotState.getTargetAim(), 1.0, 6, 6)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
+    //     // }
+    //     // if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
+    //     //     return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+    //     // }
+    //     // else{
+    //     //     // if (RobotState.BATTERY_BROWNOUT_PROTECTION){
+    //     //         return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() < SuperstructureConstants.VELOCITY_BROWNOUT_LIMIT ? robotState.getTargetVelocity() : 0.0,  
+    //     //         robotState.getTargetAim(), 1.0, 6, 6)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
                 
-        //     // }
-        //    }
+    //     //     // }
+    //     //    }
 
 
-        // else {
-        //     return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-        // }}
-        if(getDefenseMode()){
-            return Commands.parallel(shootCommand(ShotEstimator.getInstance().getTargetVelocity()), drive.setRotationXCommand());
-        } else {
-            return shootCommand(ShotEstimator.getInstance().getTargetVelocity());
-        }
-    }
+    //     // else {
+    //     //     return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity(), robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim(),0.0,12*robotState.getBrownoutVoltage(),0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+    //     // }}
+    //     if(getDefenseMode()){
+    //         return Commands.parallel(shootCommand(ShotEstimator.getInstance(drive).getTargetVelocity()), drive.setRotationXCommand());
+    //     } else {
+    //         return shootCommand(ShotEstimator.getInstance(drive).getTargetVelocity());
+    //     }
+    // }
 
-    public Command shootCommand(Supplier<Double> velocitySupplier){
-        return Commands.parallel(shooter.setVelocityCommand(velocitySupplier.get()), indexer.setVoltageCommand(10), intake.runIntakeCommand(-2));
+    public Command shootCommand(){
+        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), intake.runIntakeCommand(-2));
     }
 
     public Command testingShootCommand(){
@@ -160,19 +160,19 @@ public class Superstructure extends SubsystemBase {
     public Command noTestShootCommand(){
         return Commands.parallel(indexer.setVoltageCommand(0), shooter.setVoltageCommand(0));
     }
-    public Command passCommand(){
-    //    if (defenseMode) {
-            // if (robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())<robotState.getTargetVelocity()+10){
-            //     return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 0.0, 0.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-            // }
-            // else {
-                // return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity()+10, robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim()+0.1,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
-            // }
-    //    }
-    //    else {
-            return setState(new SuperstructureState(ShotEstimator.getInstance().getTargetVelocity().get() + 10, 0, 8.0));
-        // }
-        }
+    // public Command passCommand(){
+    // //    if (defenseMode) {
+    //         // if (robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())<robotState.getTargetVelocity()+10){
+    //         //     return Commands.parallel(setState(new SuperstructureState(0.0, 0.0, 0.0, 0.0, 0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+    //         // }
+    //         // else {
+    //             // return Commands.parallel(setState(new SuperstructureState(Math.min(robotState.getTargetVelocity()+10, robotState.getVoltageToVelocity(robotState.getBrownoutVoltage())),robotState.getTargetAim()+0.1,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
+    //         // }
+    // //    }
+    // //    else {
+    //     //  return setState(new SuperstructureState(ShotEstimator.getInstance(drive).getTargetVelocity().get() + 10, 0, 8.0));
+    //     // }
+    //     }
             
     
 
