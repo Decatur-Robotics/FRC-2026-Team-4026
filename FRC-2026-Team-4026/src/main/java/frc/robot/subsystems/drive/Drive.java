@@ -519,7 +519,7 @@ public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<
 }
 
 public Command alignToHub(Supplier<ChassisSpeeds> speeds){
-    return Commands.run(() -> driveToPose(speeds,() -> new Pose2d(getPose().getTranslation(), new Rotation2d(0))));
+    return Commands.run(() -> driveToPose(() -> new chassisSpeeds(0,0,0)),() -> new Pose2d(FieldConstants.Hub.topCenterPoint.toTranslation2d,new Rotation2d(0)));
 }
 
 public boolean atTargetPose() {
