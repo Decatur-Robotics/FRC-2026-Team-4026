@@ -1,15 +1,8 @@
 package frc.robot.core;
 
-
-import static edu.wpi.first.units.Units.Seconds;
-
-import java.util.jar.Attributes.Name;
-
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotState;
@@ -26,7 +19,7 @@ import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 
 public class Autonomous {
       private enum AutoType{
-  CenterRush("Center Rush"), Depot("Depot"), Preload("Preload");
+  CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"), RushDepot("Center Rush + Depot");
 
   private String autoName;
   private AutoType(String autoName){
@@ -60,6 +53,8 @@ private enum AutoSide{
     autoType.setDefaultOption(AutoType.CenterRush.autoName, AutoType.CenterRush);
     autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
     autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
+    autoType.addOption(AutoType.DoubleCenter.autoName, AutoType.DoubleCenter);
+    autoType.addOption(AutoType.RushDepot.autoName, AutoType.RushDepot);
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
     autoTab.add("Side", autoSide);
     autoTab.add("Type", autoType);
@@ -79,6 +74,11 @@ private enum AutoSide{
                 auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
         } else if(autoType.getSelected() == AutoType.Preload){
                 superstructure.shootCommand();
+        } else if(autoType.getSelected() == AutoType.DoubleCenter){
+          auto = new PathPlannerAuto("Double Center Swipe Auto");
+          auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+          auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
+          // auto.condition(() -> superstructure.getNumBallsStored() < 5).onTrue();
         }
      } else if(autoSide.getSelected() == AutoSide.Center){
                   auto = new PathPlannerAuto("Center Depot Auto");
@@ -101,5 +101,9 @@ private enum AutoSide{
 
   public PathPlannerAuto getAuto(){
     return auto;
+  }
+
+  public void followPath(PathPlannerPath path){
+
   }
 }
