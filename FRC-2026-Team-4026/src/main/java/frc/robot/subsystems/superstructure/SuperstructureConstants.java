@@ -28,10 +28,7 @@ public class SuperstructureConstants {
     public static final SuperstructureState CONTAINING_STATE = new SuperstructureState(IntakeConstants.STORED_INTAKE_POSITION, 0);
 
     public static final SuperstructureState DUMPING_STATE = new SuperstructureState(
-        0.0,    // shooterVelocity
-        0.0,    // hoodAngle
-        1.0,    // intakeDeployed
-        -12.0,  // indexerVoltage
+        6.0,  // indexerVoltage
         -6.0     // intakeVoltage
     );
 

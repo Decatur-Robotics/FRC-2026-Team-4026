@@ -105,7 +105,7 @@ implements Vision.VisionConsumer
         config,
         Units.rotationsToRadians(DriveConstants.MAX_ANGULAR_VELOCITY)
     );
-    // PathPlanner config constants
+        // PathPlanner config constants
     private static final double ROBOT_MASS_KG = 74.088;
     private static final double ROBOT_MOI = 6.883;
     private static final double WHEEL_COF = 1.2;
@@ -138,8 +138,11 @@ implements Vision.VisionConsumer
 
     private Pose2d targetPose;
     private SwerveSetpoint previousSetpoint;
-    private PIDController translationalController = new PIDController(0.5, 0, 5.5);
-    private PIDController rotationalController = new PIDController(0.2, 0, 1.3);
+ private PIDController translationalController = new PIDController(
+        0.01, 0, 12);
+        // 5.25, 0, 0.3); 
+    private PIDController rotationalController = new PIDController(
+        0.0, 0, 12);
 private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
 
     static final Lock odometryLock = new ReentrantLock();
@@ -164,6 +167,7 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
 
     private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
+    private double robotAngle;
     public Drive(
             GyroIO gyroIO,
             ModuleIO flModuleIO,
@@ -208,10 +212,22 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
                 new SysIdRoutine.Config(
                         null, null, null, (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
                 new SysIdRoutine.Mechanism((voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+                   if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+             robotAngle =  Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX()));
+        } else {
+             robotAngle =  Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())));
+        }
     }
 
+    double robotDistance = 0;
     @Override
     public void periodic() {
+        if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+             robotAngle =  Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX()));
+        } else {
+             robotAngle =  Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
+        }
         odometryLock.lock(); // Prevents odometry updates while reading data
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -232,6 +248,8 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
             Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
             Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
         }
+
+        // Logger.recordOutput("Travel rotation", travelRotation.getDegrees());
 
         Logger.recordOutput("isAligned", isAligned());
 
@@ -267,6 +285,15 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
 
         // Update gyro alert
         gyroDisconnectedAlert.set(!gyroInputs.connected && frc.robot.constants.Constants.currentMode != frc.robot.constants.Constants.Mode.SIM);
+            
+                if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+            robotDistance = getPose().getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+        } else{
+            robotDistance = getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));        
+        }
+
+        Logger.recordOutput("ShotEstimator/Distance", robotDistance);
+        Logger.recordOutput("RobotAngle", robotAngle);
     }
 
     /**
@@ -454,6 +481,7 @@ public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> t
 
     if(targetSpeeds.get().omegaRadiansPerSecond == 0){
         targetRotation = rotationalController.calculate(getPose().getRotation().getRadians(), this.targetPose.getRotation().getRadians());
+     
     }
 
     if(targetSpeeds.get().vxMetersPerSecond == 0 && targetSpeeds.get().vyMetersPerSecond == 0) {
@@ -470,14 +498,16 @@ public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> t
 
 
         Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();
-
-        this.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation().minus(travelRotation)));
+           System.out.println(travelRotation);
+           System.out.println(targetPose);
+        // this.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation().minus(travelRotation)));
         // driveRobotRelative(speeds);
+        
 
     }
         else {
             ChassisSpeeds speeds = new ChassisSpeeds(targetSpeeds.get().vxMetersPerSecond, targetSpeeds.get().vyMetersPerSecond, targetRotation);
-            this.runVelocity(speeds);
+            // this.runVelocity(speeds);
             // driveRobotRelative(speeds);
         }
 
@@ -488,8 +518,8 @@ public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<
     return Commands.run(() -> driveToPose(targetSpeeds, targetPose)).finallyDo(() -> this.targetPose = null);
 }
 
-public Command alignToHub(Supplier<ChassisSpeeds> targetSpeeds){
-    return driveToPoseTeleop(targetSpeeds, () -> new Pose2d(getPose().getX(),  getPose().getY(), getTargetRotation()));
+public Command alignToHub(Supplier<ChassisSpeeds> speeds){
+    return Commands.run(() -> driveToPose(speeds,() -> new Pose2d(getPose().getTranslation(), new Rotation2d(0))));
 }
 
 public boolean atTargetPose() {
@@ -514,11 +544,7 @@ public boolean isAligned(){
     return velocityAligned && atTargetPose();
 }
 
-public Rotation2d getTargetRotation(){
-        if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
-             return new Rotation2d(Math.atan((getPose().getY() - FieldConstants.Hub.topCenterPoint.getY())/(getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())));
-        } else {
-             return new Rotation2d(Math.atan((getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()))/(getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI);
-        }
-}
+// public Rotation2d getTargetRotation(){
+//        return new Rotation2d(robotAngle);
+// }
 }

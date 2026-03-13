@@ -116,7 +116,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command dumpCommand(){
-        return Commands.parallel(setState(SuperstructureConstants.DUMPING_STATE));
+        return Commands.parallel(intake.runIntakeCommand(6), indexer.setVoltageCommand(6));
     }
 
     // public Command shootCommand(){
