@@ -500,14 +500,14 @@ public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> t
         Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();
            System.out.println(travelRotation);
            System.out.println(targetPose);
-        // this.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation().minus(travelRotation)));
+        this.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation().minus(travelRotation)));
         // driveRobotRelative(speeds);
-        
+
 
     }
         else {
             ChassisSpeeds speeds = new ChassisSpeeds(targetSpeeds.get().vxMetersPerSecond, targetSpeeds.get().vyMetersPerSecond, targetRotation);
-            // this.runVelocity(speeds);
+            this.runVelocity(speeds);
             // driveRobotRelative(speeds);
         }
 
@@ -519,7 +519,9 @@ public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<
 }
 
 public Command alignToHub(Supplier<ChassisSpeeds> speeds){
-    return Commands.run(() -> driveToPose(() -> new chassisSpeeds(0,0,0)),() -> new Pose2d(FieldConstants.Hub.topCenterPoint.toTranslation2d,new Rotation2d(0)));
+    return Commands.run(() -> driveToPose(
+        () -> new ChassisSpeeds(0,0,0),
+         () -> new Pose2d(FieldConstants.Hub.topCenterPoint.toTranslation2d(), new Rotation2d(0))));
 }
 
 public boolean atTargetPose() {
