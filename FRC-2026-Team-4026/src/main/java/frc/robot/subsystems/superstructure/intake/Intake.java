@@ -114,7 +114,7 @@ public class Intake extends SubsystemBase{
     public void osillatingIntake(){
         if (osillatingIntakeGoingUp){
             io.setDeployPosition(IntakeConstants.HALFWAY_INTAKE_POSITION);
-            if(getDeployPosition() < IntakeConstants.HALFWAY_INTAKE_POSITION){
+            if(getDeployPosition() < IntakeConstants.HALFWAY_INTAKE_POSITION + 1){
                 osillatingIntakeGoingUp = false;
             }
         }
