@@ -22,6 +22,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -139,10 +140,10 @@ implements Vision.VisionConsumer
     private Pose2d targetPose;
     private SwerveSetpoint previousSetpoint;
  private PIDController translationalController = new PIDController(
-        0.01, 0, 12);
+        0.01, 0, 0);
         // 5.25, 0, 0.3); 
     private PIDController rotationalController = new PIDController(
-        0.0, 0, 12);
+        0.01, 0, 0);
 private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
 
     static final Lock odometryLock = new ReentrantLock();
@@ -475,16 +476,18 @@ public Command driveToPoseAuto(Supplier<Pose2d> targetPose){
 
 
 
+
+
 public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
     this.targetPose = targetPose.get();
     double targetRotation = targetSpeeds.get().omegaRadiansPerSecond;
 
     if(targetSpeeds.get().omegaRadiansPerSecond == 0){
         targetRotation = rotationalController.calculate(getPose().getRotation().getRadians(), this.targetPose.getRotation().getRadians());
-     
     }
 
-    if(targetSpeeds.get().vxMetersPerSecond == 0 && targetSpeeds.get().vyMetersPerSecond == 0) {
+    boolean isNotDriving = targetSpeeds.get().vxMetersPerSecond == 0 && targetSpeeds.get().vyMetersPerSecond == 0;
+    if(isNotDriving) {
         double targetTranlslationX = translationalController.calculate(0, Math.abs(getPose().getX() - this.targetPose.getX()));
         double targetTranlslationY = translationalController.calculate(0, Math.abs(getPose().getY() - this.targetPose.getY()));
         double distance = translationalController.calculate(0, getPose().getTranslation().getDistance(targetPose.get().getTranslation()));
@@ -492,15 +495,18 @@ public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> t
         // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : targetTranlslationX,
         //      isAligned() ? 0 : targetTranlslationY,
         //      isAligned() ? 0 : targetRotation);
-        ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
-             0,
-             isAligned() ? 0 : targetRotation);
+        // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
+        //      0,
+        //      isAligned() ? 0 : targetRotation);
 
+        ChassisSpeeds speeds = new ChassisSpeeds(0,
+             0,
+             isAligned() ? 0 : targetRotation*0.25);
 
         Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();
-           System.out.println(travelRotation);
-           System.out.println(targetPose);
-        this.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation().minus(travelRotation)));
+           System.out.println("travelRotation:" + travelRotation);
+           System.out.println("targetPose:" + targetPose);
+        this.runVelocity(speeds);
         // driveRobotRelative(speeds);
 
 
@@ -521,7 +527,7 @@ public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<
 public Command alignToHub(Supplier<ChassisSpeeds> speeds){
     return Commands.run(() -> driveToPose(
         () -> new ChassisSpeeds(0,0,0),
-         () -> new Pose2d(FieldConstants.Hub.topCenterPoint.toTranslation2d(), new Rotation2d(0))));
+         () -> new Pose2d(0,0, new Rotation2d(0))));
 }
 
 public boolean atTargetPose() {
@@ -530,7 +536,7 @@ public boolean atTargetPose() {
     }
     //I need to make these constants
     double translationTolerance = 0.001; 
-    double rotationTolerance = 0.001; 
+    double rotationTolerance = 0.1; 
     boolean atTranslation = Math.abs(translationalController.getError()) < translationTolerance;
     boolean atRotation = Math.abs(rotationalController.getError()) < rotationTolerance;
     return atTranslation && atRotation;
@@ -544,6 +550,17 @@ public boolean isAligned(){
         }
     }
     return velocityAligned && atTargetPose();
+}
+PathConstraints constraints = new PathConstraints(
+        0.25, 1.0,
+        Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+public Command driveToPosePathPl(Pose2d pose){
+    return AutoBuilder.pathfindToPose(pose, constraints);
+}
+
+public Command alignHubPathpl(){
+    return driveToPosePathPl(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d(0)));
 }
 
 // public Rotation2d getTargetRotation(){

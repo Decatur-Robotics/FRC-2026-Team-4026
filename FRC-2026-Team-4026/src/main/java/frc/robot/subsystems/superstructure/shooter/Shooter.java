@@ -52,12 +52,12 @@ public Command setVoltageCommand(double voltage) {
 public void periodic () {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
-    if(getCurrent() > 10){
+    if(getCurrent() > 40){
         if(shootingBall == false){
-            ballsShot++;
+            ballsShot+=1;
         }
         shootingBall = true;
-    } else if(getCurrent() < 5){
+    } else if(getCurrent() < 10){
         shootingBall = false;
     }
 

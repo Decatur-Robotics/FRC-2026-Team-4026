@@ -199,6 +199,7 @@ public class RobotContainer {
           a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           x.whileTrue(drive.setRotationXCommand());
           bumperRight.whileTrue(drive.alignToHub(() -> drive.getChassisSpeeds()));
+          bumperLeft.whileTrue(drive.alignHubPathpl());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 ()-> joystick.getY()*0.6,
@@ -234,6 +235,7 @@ public class RobotContainer {
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
       left.whileTrue(intake.deployIntakeCommand(7));
+      right.whileTrue(intake.osillateIntakeCommand()).onFalse(superstructure.storeCommand());
       up.whileTrue(intake.altDeployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
       down.whileTrue(intake.altDeployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
   }

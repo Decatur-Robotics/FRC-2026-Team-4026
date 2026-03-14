@@ -41,6 +41,7 @@ public class IntakeConstants {
 
     public static final double INTAKE_CURRENT_LIMIT = 70;
     public static final double DEPLOY_CURRENT_LIMIT = 60;
+    public static final double HALFWAY_INTAKE_POSITION = 7;
 
 
 }
