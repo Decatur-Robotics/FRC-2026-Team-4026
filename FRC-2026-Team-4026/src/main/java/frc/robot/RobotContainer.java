@@ -202,8 +202,8 @@ public class RobotContainer {
           bumperLeft.whileTrue(drive.alignHubPathpl());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
-                ()-> joystick.getY()*0.6,
-                ()-> joystick.getX()*0.6,
+                ()-> -joystick.getY()*0.6,
+                ()-> -joystick.getX()*0.6,
                 ()-> -joystick.getTwist()*0.6));
           //  b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
   }
