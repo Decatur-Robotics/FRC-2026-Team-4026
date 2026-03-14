@@ -146,11 +146,11 @@ public class Superstructure extends SubsystemBase {
     // }
 
     public Command shootCommand(){
-        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), intake.runIntakeCommand(-2));
+        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10));
     }
 
     public Command shootCommand(Supplier<Double> velocity){
-        return Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10), intake.runIntakeCommand(-2));
+        return Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10));
     }
 
     public Command testingShootCommand(){

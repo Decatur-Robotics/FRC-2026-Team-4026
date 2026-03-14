@@ -250,7 +250,7 @@ public class RobotContainer {
       // return autonomous.getAuto();
       PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
       auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      auto.activePath("Center Rush Right shoot").onFalse(superstructure.shootCommand());
+      auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.shootCommand(), intake.osillateIntakeCommand()));
       return auto;
 
   }
