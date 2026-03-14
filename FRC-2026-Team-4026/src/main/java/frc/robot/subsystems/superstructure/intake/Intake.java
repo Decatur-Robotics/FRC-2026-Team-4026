@@ -114,13 +114,13 @@ public class Intake extends SubsystemBase{
     public void osillatingIntake(){
         if (osillatingIntakeGoingUp){
             io.setDeployPosition(IntakeConstants.HALFWAY_INTAKE_POSITION);
-            if(MathUtil.applyDeadband(getDeployPosition(),0.8) == IntakeConstants.HALFWAY_INTAKE_POSITION){
+            if(getDeployPosition() < IntakeConstants.HALFWAY_INTAKE_POSITION){
                 osillatingIntakeGoingUp = false;
             }
         }
         if (!osillatingIntakeGoingUp){
             io.setDeployPosition(IntakeConstants.DEPLOY_INTAKE_POSITION);     
-            if(MathUtil.applyDeadband(getDeployPosition(),0.8) == IntakeConstants.DEPLOY_INTAKE_POSITION){
+            if(getDeployPosition() > IntakeConstants.DEPLOY_INTAKE_POSITION - 1){
                 osillatingIntakeGoingUp = true;
             }
         }
