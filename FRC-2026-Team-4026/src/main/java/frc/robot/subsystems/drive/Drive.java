@@ -304,6 +304,18 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
      */
     public void runVelocity(ChassisSpeeds speeds) {
         // Calculate module setpoints
+        /* 
+        Excerpt from the WPILib Documentation on ChassisSpeeds.discretize():
+        This is useful for compensating for translational skew when translating and rotating a holonomic (swerve or mecanum) drivetrain. 
+        However, scaling down the ChassisSpeeds after discretizing (e.g., when desaturating swerve module speeds) 
+        rotates the direction of net motion in the opposite direction of rotational velocity, 
+        introducing a different translational skew which is not accounted for by discretization.
+        
+        https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/kinematics/ChassisSpeeds.html#discretize(double,double,double,double)
+
+        This means you should not use ChassisSpeeds.discretize() and SwerveDriveKinematics.desaturateWheelSpeeds() in the same calculation, 
+        since it will introduce unpredictable rotation.
+        */
         speeds = ChassisSpeeds.discretize(speeds, 0.01);
         SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
@@ -480,44 +492,58 @@ public Command driveToPoseAuto(Supplier<Pose2d> targetPose){
 
 public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
     this.targetPose = targetPose.get();
-    double targetRotation = targetSpeeds.get().omegaRadiansPerSecond;
+    //Consider differentiating between rotation and angular velocity more frequently. omergaRadiansPerSecond represents angular velocity, while rotation is generally the static direction of the robot (angle)
+    double targetAngularVelocity = targetSpeeds.get().omegaRadiansPerSecond;
 
-    if(targetSpeeds.get().omegaRadiansPerSecond == 0){
-        targetRotation = rotationalController.calculate(getPose().getRotation().getRadians(), this.targetPose.getRotation().getRadians());
+    //Equality conditions of continuous variables is unreliable. Using an epsilon provides more wiggle room.
+    if(Math.abs(targetSpeeds.get().omegaRadiansPerSecond) < .05){
+        //Extracting these values into named variables makes it more clear what they represent
+        double currentRotation = this.getPose().getRotation().getRadians()
+        double targetRotation = this.targetPose.getRotation().getRadians()
+
+        //The rotationalController PID controller doesn't appear to be tuned (both I and D values are 0). 
+        //This means it is effectively applying a scalar multiplier to all inputs.
+        //Replacing it will a simple multiplication makes testing simpler
+        targetAngularVelocity = 0.01 * (targetRotation - currentRotation) ;
     }
-
-    boolean isNotDriving = targetSpeeds.get().vxMetersPerSecond == 0 && targetSpeeds.get().vyMetersPerSecond == 0;
+    //It's not clear what the point of this check is, but if its required, an epsilon should be used here as well.
+    boolean isNotDriving = Math.abs(targetSpeeds.get().vxMetersPerSecond) < 0.05 && Math.abs(targetSpeeds.get().vyMetersPerSecond)  < 0.05;
     if(isNotDriving) {
-        double targetTranlslationX = translationalController.calculate(0, Math.abs(getPose().getX() - this.targetPose.getX()));
-        double targetTranlslationY = translationalController.calculate(0, Math.abs(getPose().getY() - this.targetPose.getY()));
-        double distance = translationalController.calculate(0, getPose().getTranslation().getDistance(targetPose.get().getTranslation()));
-        Translation2d targetTranlslation = new Translation2d(targetTranlslationX, targetTranlslationY);
-        // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : targetTranlslationX,
-        //      isAligned() ? 0 : targetTranlslationY,
-        //      isAligned() ? 0 : targetRotation);
-        // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
-        //      0,
-        //      isAligned() ? 0 : targetRotation);
+        //The translationalController is calculating translation velocities. Rename these variables to be more descriptive.
+        //If you don't preserve the sign of the difference in pose, your target velocities might be in the wrong direction. Don't use Math.abs here.
+        double targetXVelocity = translationalController.calculate(0, this.targetPose.getX() - getPose().getX());
+        double targetYVelocity = translationalController.calculate(0, this.targetPose.getY() - getPose().getY());
 
-        ChassisSpeeds speeds = new ChassisSpeeds(0,
-             0,
-             isAligned() ? 0 : targetRotation*0.25);
+        // Use one if statement instead of 3 ternarys
+        ChassisSpeeds speeds;
+        if(this.isAligned()){
+            speeds = new ChassisSpeeds(0,0,0);
+        }
+        else{
+            speeds = new ChassisSpeeds(targetXVelocity,targetYVelocity,targetAngularVelocity);
+        }
+
 
         Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();
            System.out.println("travelRotation:" + travelRotation);
            System.out.println("targetPose:" + targetPose);
         this.runVelocity(speeds);
-        // driveRobotRelative(speeds);
-
 
     }
-        else {
-            ChassisSpeeds speeds = new ChassisSpeeds(targetSpeeds.get().vxMetersPerSecond, targetSpeeds.get().vyMetersPerSecond, targetRotation);
-            this.runVelocity(speeds);
-            // driveRobotRelative(speeds);
-        }
+    else {
+        //Its not clear what this alternative branch is for, all it does is send the targetSpeeds to runVelocity, unless the targetAngularVelocity is 0. I think the other branch should handle that scenario instead. 
+        this.runVelocity(targetSpeeds);
+    }
 
     
+}
+public void zachsRotateToPose(Supplier<Pose2d> targetPose) {
+    //This method should rotate the robot at a fixed speed until it is rotationally aligned with the target pose.
+    //It sets translational velocity (x and y) to 0.
+    this.targetPose = targetPose.get();
+    double targetAngularVelocity = this.isAligned() ? 0 : .2;
+    ChassisSpeeds speeds = new ChassisSpeeds(0,0,targetAngularVelocity);
+    this.runVelocity(speeds);
 }
 
 public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose){
