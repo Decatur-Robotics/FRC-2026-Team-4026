@@ -249,7 +249,11 @@ public class RobotContainer {
   
   public Command getAutonomousCommand() {
       // return autonomous.getAuto();
-      return new PathPlannerAuto("Center Rush Right");
+      PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
+      auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      auto.activePath("Center Rush Right shoot").onFalse(superstructure.shootCommand());
+      return auto;
+
   }
 
   public Command pathfinderToPose(Pose2d targetPose) {
