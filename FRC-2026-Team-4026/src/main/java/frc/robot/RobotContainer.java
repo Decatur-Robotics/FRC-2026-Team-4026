@@ -249,7 +249,7 @@ public class RobotContainer {
   
   public Command getAutonomousCommand() {
       // return autonomous.getAuto();
-      return new PathPlannerAuto("New Auto");
+      return new PathPlannerAuto("Center Rush Right");
   }
 
   public Command pathfinderToPose(Pose2d targetPose) {
