@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 1.749928825622776,
-        "y": 1.2107117437722423
+        "x": 1.857520759193358,
+        "y": 1.0062870699881374
       },
       "prevControl": {
-        "x": 2.944199288256228,
-        "y": 1.2107117437788042
+        "x": 3.05179122182681,
+        "y": 1.0062870699946993
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,6 +47,10 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.3818827708703423,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.321492007104796,
       "rotationDegrees": 0.0
     }
   ],
@@ -63,7 +67,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 48.45241654763537
   },
   "reversed": false,
   "folder": "Center Rush",
