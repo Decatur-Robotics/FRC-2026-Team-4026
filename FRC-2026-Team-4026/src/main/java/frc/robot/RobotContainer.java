@@ -308,6 +308,8 @@ private enum AutoSide{
       left.whileTrue(intake.deployIntakeCommand(7));
 
 
+      //right.whileTrue(intake.oscillatingIntakeCommand());
+
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.

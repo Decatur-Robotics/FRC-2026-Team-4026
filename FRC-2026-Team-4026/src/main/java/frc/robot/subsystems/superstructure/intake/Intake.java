@@ -27,7 +27,7 @@ public class Intake extends SubsystemBase{
 
     public Intake(IntakeIO io){
         this.io = io;
-        osillatingIntakeGoingUp = false;
+        osillatingIntakeGoingUp = true;
         oscillatingTimer = new Timer();
     }
 
