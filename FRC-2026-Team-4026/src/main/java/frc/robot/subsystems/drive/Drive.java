@@ -532,6 +532,8 @@ public void autoAlign(Supplier<Rotation2d> targetRotation){
     double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), targetRotation.get().getRadians());
     ChassisSpeeds speeds = new ChassisSpeeds(0, 0, rotationSpeed);
     runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
+    Logger.recordOutput("Target Rotation", targetRotation.get());
+    Logger.recordOutput("autoAling Robot", getPose().getRotation());
 }
 
 public Command autoAlignToHub(){

@@ -197,7 +197,7 @@ public class RobotContainer {
 
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
-          // x.whileTrue(drive.setRotationXCommand());
+          x.whileTrue(drive.stopWithXCommand());
           bumperRight.whileTrue(drive.autoAlignToHub());
           bumperLeft.whileTrue(drive.alignHubPathpl());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
@@ -228,14 +228,14 @@ public class RobotContainer {
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
         triggerLeft.whileTrue(superstructure.shootCommand(() -> 42.0)).onFalse(superstructure.storeCommand());
-        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        // triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.whileTrue(superstructure.shootCommand());
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
-      left.whileTrue(intake.deployIntakeCommand(7));
-      right.whileTrue(intake.osillateIntakeCommand()).onFalse(superstructure.storeCommand());
+       right.whileTrue(intake.osillateIntakeCommand()).onFalse(superstructure.storeCommand());
 
   }
   
@@ -249,9 +249,11 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
       // return autonomous.getAuto();
       PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
-      auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.shootCommand(), intake.osillateIntakeCommand()));
-      return auto;
+      // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.shootCommand(), intake.osillateIntakeCommand()));
+      // return auto;
+
+      return drive.autoAlignToHub();
 
   }
 
