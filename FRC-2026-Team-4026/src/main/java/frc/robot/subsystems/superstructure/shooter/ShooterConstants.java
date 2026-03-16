@@ -4,20 +4,8 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 
-import java.util.function.DoubleSupplier;
-
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
-
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 
@@ -30,6 +18,8 @@ public class ShooterConstants {
     public static final double kS = 0.16;
     public static final double kV = 6.0;
     public static final double kA = 1.0;
+
+    public static final double SHOOTER_CURRENT_LIMIT = 60;
 
       public static final Slot0Configs SLOT_0_CONFIGS = new Slot0Configs()
         .withKP(0.3) // 0.5

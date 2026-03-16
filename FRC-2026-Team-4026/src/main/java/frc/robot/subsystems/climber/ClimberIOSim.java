@@ -1,14 +1,12 @@
 package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Volts;
 
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class ClimberIOSim implements ClimberIO{
