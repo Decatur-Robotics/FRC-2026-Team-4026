@@ -80,7 +80,8 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployMotor.getDeviceTemp(),
         deployMotor.getDeviceTemp(),
         deployMotor.getVelocity(),
-        deployMotor.getAcceleration());
+        deployMotor.getAcceleration(),
+            intakeMotor.getVelocity());
 
 
         PhoenixUtil.registerSignals(false, 
@@ -127,7 +128,8 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployMotor.getDeviceTemp().getValueAsDouble(),
         deployMotor.getDeviceTemp().getValueAsDouble(),
         deployMotor.getVelocity().getValueAsDouble(),
-        deployMotor.getAcceleration().getValueAsDouble()
+        deployMotor.getAcceleration().getValueAsDouble(),
+        intakeMotor.getVelocity().getValueAsDouble()
         );
     }
     @Override

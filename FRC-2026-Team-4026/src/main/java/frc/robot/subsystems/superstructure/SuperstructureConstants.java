@@ -17,7 +17,7 @@ public class SuperstructureConstants {
 
     public static final SuperstructureState INTAKE_STATE = new SuperstructureState(
         IntakeConstants.DEPLOY_INTAKE_POSITION,    // intakeDeployed
-        -8.0    // intakeVoltage
+        -10.0    // intakeVoltage
     );
 
     public static final SuperstructureState STORING_STATE = new SuperstructureState(

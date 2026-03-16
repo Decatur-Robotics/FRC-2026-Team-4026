@@ -7,25 +7,25 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Center Rush"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Center Rush Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center Rush Shoot 2"
+            "pathName": "Center rush Shoot Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2nd center rush"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "2nd Center rush shoot"
+            "pathName": "Center Rush Depot 2"
           }
         }
       ]
