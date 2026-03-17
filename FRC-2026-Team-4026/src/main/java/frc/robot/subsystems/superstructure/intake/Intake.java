@@ -32,9 +32,10 @@ public class Intake extends SubsystemBase{
         ballsIntaked = 0;
         intakingBalls = false;
         osillatingIntakeGoingUp = false;
+        oscillatingTimer = new Timer();
         oscillatingTimer.restart();
 
-        oscillatingTimer = new Timer();
+
     }
 
     @Override
