@@ -63,6 +63,8 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.leds.leds;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LocalADStarAK;
@@ -528,10 +530,17 @@ public void autoAlign(Supplier<Rotation2d> targetRotation){
     double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), targetRotation.get().getRadians());
     ChassisSpeeds speeds = new ChassisSpeeds(0, 0, rotationSpeed);
     runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
+
+}
+
+public boolean isAlignedToHub(){
+    return getRotation().getRadians() > robotAngle -1 && getRotation().getRadians() < robotAngle +1;
 }
 
 public Command autoAlignToHub(){
+        
     return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));
+    
 }
 
 public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose){

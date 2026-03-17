@@ -198,7 +198,7 @@ public class RobotContainer {
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           // x.whileTrue(drive.setRotationXCommand());
-          bumperRight.whileTrue(drive.autoAlignToHub());
+          bumperRight.whileTrue(Commands.parallel(drive.autoAlignToHub(),superstructure.setAlignedLEDsCommand()));
           bumperLeft.whileTrue(drive.alignHubPathpl());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
