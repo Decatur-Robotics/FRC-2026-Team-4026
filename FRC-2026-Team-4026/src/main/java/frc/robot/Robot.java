@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -17,6 +18,7 @@ import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.constants.Constants;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -27,6 +29,8 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+
+  private static final String AKIT_LOG_PATH = "C:\\Match Replay\\";
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -40,17 +44,25 @@ public class Robot extends LoggedRobot {
 
     Logger.recordMetadata("FRC-2026-Team-4026", "Set this to something else"); // Set a metadata value
 
-if (isReal()) {
-    //Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-    Logger.addDataReceiver(new NT4Publisher());
-     // Publish data to NetworkTables
-     
-} else {
-    // setUseTiming(false); // Run as fast as possible
-    // String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-    // Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-    // Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-    Logger.addDataReceiver(new NT4Publisher());
+    switch (Constants.currentMode) {
+      case REAL:
+        //Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(AKIT_LOG_PATH, "_real"))); // Save outputs to a new log
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+        // Publish data to NetworkTables
+        
+      case SIM:
+        // setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        // Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+      case REPLAY:
+        logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
 }
 
 Logger.start();
@@ -132,4 +144,5 @@ Logger.start();
   public void simulationPeriodic() {
     m_robotContainer.updateSimulation();
   }
+  
 }
