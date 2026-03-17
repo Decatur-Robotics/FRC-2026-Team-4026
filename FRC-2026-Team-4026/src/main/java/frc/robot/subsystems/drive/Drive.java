@@ -283,16 +283,9 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
         }
-        //RobotState.getInstance().addOdometryPose( new OdometryObservation(Timer.getTimestamp(), getModulePositions(), Optional.ofNullable(gyroInputs.connected ? rawGyroRotation : null)) );
-
+        
         // Update gyro alert
         gyroDisconnectedAlert.set(!gyroInputs.connected && frc.robot.constants.Constants.currentMode != frc.robot.constants.Constants.Mode.SIM);
-            
-        //         if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
-        //     robotDistance = getPose().getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
-        // } else{
-        //     robotDistance = getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));        
-        // }
 
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
         Logger.recordOutput("RobotAngle", robotAngle);
