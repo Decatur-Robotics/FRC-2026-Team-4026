@@ -235,7 +235,7 @@ public class RobotContainer {
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
       left.whileTrue(intake.deployIntakeCommand(7));
-      right.whileTrue(intake.oscillateIntakeCommand()).onFalse(superstructure.storeCommand());
+       right.whileTrue(intake.oscillateIntakeCommand());
 
   }
   

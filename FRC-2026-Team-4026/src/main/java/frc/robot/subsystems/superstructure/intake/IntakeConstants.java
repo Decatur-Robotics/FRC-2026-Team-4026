@@ -9,7 +9,7 @@ public class IntakeConstants {
     public static final double STORED_INTAKE_POSITION = 1.0;
     public static final double DEPLOY_INTAKE_POSITION = 15.3;//15.3
 
-    public static final double OSCILLATING_TIMER = 1;
+    public static final double OSCILLATING_TIMER = 0.5;
 
     public static final double kP = 0.08;
     public static final double kI = 0;
