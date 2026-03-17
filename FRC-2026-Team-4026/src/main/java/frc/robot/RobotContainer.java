@@ -235,7 +235,7 @@ public class RobotContainer {
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
       left.whileTrue(intake.deployIntakeCommand(7));
-      right.whileTrue(intake.osillateIntakeCommand()).onFalse(superstructure.storeCommand());
+      right.whileTrue(intake.oscillateIntakeCommand()).onFalse(superstructure.storeCommand());
 
   }
   
@@ -250,7 +250,7 @@ public class RobotContainer {
       // return autonomous.getAuto();
       PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
       auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.shootCommand(), intake.osillateIntakeCommand()));
+      auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.shootCommand(), intake.oscillateIntakeCommand()));
       return auto;
 
   }

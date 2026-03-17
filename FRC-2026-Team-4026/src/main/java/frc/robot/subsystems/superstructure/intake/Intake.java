@@ -5,12 +5,15 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import static edu.wpi.first.units.Units.*;
+
+
 
 public class Intake extends SubsystemBase{
 
@@ -22,12 +25,17 @@ public class Intake extends SubsystemBase{
 
     private int ballsIntaked;
     private boolean intakingBalls;
+    private Timer oscillatingTimer;
 
     public Intake(IntakeIO io){
         this.io = io;
         ballsIntaked = 0;
         intakingBalls = false;
         osillatingIntakeGoingUp = false;
+        oscillatingTimer = new Timer();
+        oscillatingTimer.restart();
+
+
     }
 
     @Override
@@ -111,23 +119,24 @@ public class Intake extends SubsystemBase{
 
     }
 
-    public void osillatingIntake(){
+    public void oscillatingIntake(){
         if (osillatingIntakeGoingUp){
             io.setDeployPosition(IntakeConstants.HALFWAY_INTAKE_POSITION);
             if(getDeployPosition() < IntakeConstants.HALFWAY_INTAKE_POSITION + 1){
                 osillatingIntakeGoingUp = false;
+                oscillatingTimer.restart();
             }
         }
         if (!osillatingIntakeGoingUp){
             io.setDeployPosition(IntakeConstants.DEPLOY_INTAKE_POSITION);     
-            if(getDeployPosition() > IntakeConstants.DEPLOY_INTAKE_POSITION - 1){
+            if(oscillatingTimer.get() > IntakeConstants.OSCILLATING_TIMER){
                 osillatingIntakeGoingUp = true;
             }
         }
     }
 
-    public Command osillateIntakeCommand(){
-        return Commands.run(() -> osillatingIntake());
+    public Command oscillateIntakeCommand(){
+        return Commands.run(() -> oscillatingIntake());
     }
     public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
         return sysIdRoutine.quasistatic(direction);
