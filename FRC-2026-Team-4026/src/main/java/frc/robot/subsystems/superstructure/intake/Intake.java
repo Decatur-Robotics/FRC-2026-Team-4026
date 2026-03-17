@@ -33,6 +33,8 @@ public class Intake extends SubsystemBase{
         intakingBalls = false;
         osillatingIntakeGoingUp = false;
         oscillatingTimer.restart();
+
+        oscillatingTimer = new Timer();
     }
 
     @Override
