@@ -603,7 +603,7 @@ public DoubleSupplier autoAlignOnTheMove(Supplier<Pose2d> FuturePose){
         } else {
             wantedAngle =  Math.atan2(getFuturePose().get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getFuturePose().get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())));
         }
-    double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), wantedAngle);
+    double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), new Rotation2d(wantedAngle).getRadians());
     return () -> rotationSpeed;
 }
 
