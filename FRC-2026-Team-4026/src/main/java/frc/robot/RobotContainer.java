@@ -41,6 +41,8 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -87,6 +89,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private PathPlannerAuto auto;
+
 
 
    private Autonomous autonomous;
@@ -190,6 +193,11 @@ public class RobotContainer {
          drive.setDefaultCommand(
               DriveCommands.joystickDrive(
                 drive,
+                //it was recommended to apply the filter after joystick input modificaiton (when it gets multiplied by max speed)
+                //however, since our modification is linear it should be fine to do it here. This might need to be changed.
+                //The change would be in the actual joystickDrive command. It did need to be changed 
+                //I almost messed this up, BIG mistake, never use one filter for multiple inputs.
+                //Each filter has it's own memory.
                 ()-> -joystick.getY(),
                 ()-> -joystick.getX(),
                 ()-> -joystick.getTwist()
