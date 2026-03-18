@@ -24,6 +24,7 @@ import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.superstructure.leds.ledsConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
@@ -198,7 +199,7 @@ public class RobotContainer {
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           // x.whileTrue(drive.setRotationXCommand());
-          bumperRight.whileTrue(Commands.parallel(drive.autoAlignToHub(),superstructure.setAlignedLEDsCommand()));
+          bumperRight.whileTrue(Commands.parallel(drive.autoAlignToHub(),superstructure.setAlignedLEDsCommand())).onFalse(leds.setAllLedsCommand(ledsConstants.BLUE));
           bumperLeft.whileTrue(drive.alignHubPathpl());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
