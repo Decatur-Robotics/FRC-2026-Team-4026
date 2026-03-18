@@ -51,7 +51,6 @@ public class DriveCommands {
     private NetworkTables networkTables = new NetworkTables();
 
     private static SlewRateLimiter linearMagnitudeFilter = new SlewRateLimiter(2);
-    linearMagnitudeFilter.reset(0);
 
     private DriveCommands() {}
 
