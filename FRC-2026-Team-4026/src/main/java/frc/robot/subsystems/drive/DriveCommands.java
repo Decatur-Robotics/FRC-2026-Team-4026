@@ -96,10 +96,11 @@ public class DriveCommands {
                     // Get linear velocity
                     Translation2d linearVelocity =
                             getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-
+                    boolean isFlipped = DriverStation.getAlliance().isPresent()
+                            && DriverStation.getAlliance().get() == Alliance.Red;
                     // Apply rotation deadband
                     //autoAlignOnTheMove returns a double of rotation in radians
-                    double omega = MathUtil.applyDeadband(drive.autoAlignOnTheMove(drive.getFuturePose()).getAsDouble()+Math.PI/drive.getMaxAngularSpeedRadPerSec(), DEADBAND);
+                    double omega = MathUtil.applyDeadband(drive.autoAlignOnTheMove(drive.getFuturePose()).getAsDouble()/drive.getMaxAngularSpeedRadPerSec(), DEADBAND);
 
                     // Square rotation value for more precise control
                     omega = Math.copySign(omega * omega, omega);
@@ -109,8 +110,7 @@ public class DriveCommands {
                             linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                             linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                             omega * drive.getMaxAngularSpeedRadPerSec());
-                    boolean isFlipped = DriverStation.getAlliance().isPresent()
-                            && DriverStation.getAlliance().get() == Alliance.Red;
+
                     drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
                             speeds,
                             isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
