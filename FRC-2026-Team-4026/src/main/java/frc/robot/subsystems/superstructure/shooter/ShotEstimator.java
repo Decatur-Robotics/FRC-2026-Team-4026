@@ -53,6 +53,10 @@ public class ShotEstimator extends SubsystemBase{
          return () ->  targetVelocities.get(robotDistance);
         // return () -> 10.07*robotDistance+18.98;
     }
+    public Supplier<Double> getTargetVelocity(double distance){
+        return () ->  targetVelocities.get(distance);
+        // return () -> 10.07*robotDistance+18.98;
+    }
 
 
 }

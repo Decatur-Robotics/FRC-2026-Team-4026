@@ -87,12 +87,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private PathPlannerAuto auto;
-
+  private boolean shootingOnMove;
 
    private Autonomous autonomous;
   public RobotContainer() {
       instance = this;
-
+      shootingOnMove = false;
 
      if(Constants.currentMode != Constants.Mode.SIM) {
       hood = new Hood( new HoodIOTalonFX());
@@ -192,8 +192,11 @@ public class RobotContainer {
                 drive,
                 ()-> joystick.getY(),
                 ()-> joystick.getX(),
-                ()-> -joystick.getTwist()
+                ()-> -joystick.getTwist(),
+                //please set this last button to whatever you want, this is just a placeholder
+                () -> triggerRight.getAsBoolean()
             ));
+          
 
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
@@ -204,7 +207,8 @@ public class RobotContainer {
                 drive,
                 ()-> joystick.getY()*0.6,
                 ()-> joystick.getX()*0.6,
-                ()-> -joystick.getTwist()*0.6));
+                ()-> -joystick.getTwist()*0.6,
+                () -> triggerRight.getAsBoolean()));
           //  b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
   }
 
@@ -228,7 +232,8 @@ public class RobotContainer {
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
         // triggerLeft.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        //Again, please change, I just set as a random button
+        triggerRight.whileTrue(triggerLeft.getAsBoolean()? superstructure.shootOnMoveCommand():superstructure.shootCommand());
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));

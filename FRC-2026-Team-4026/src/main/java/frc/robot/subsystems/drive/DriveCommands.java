@@ -32,6 +32,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -68,9 +69,9 @@ public class DriveCommands {
 
     /** Field relative drive command using two joysticks (controlling linear and angular velocities). */
     public static Command joystickDrive(
-            Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
+            Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier,BooleanSupplier shootOnMove) {
         return Commands.run(
-                () -> {
+                () -> {if (shootOnMove.getAsBoolean() == false){
                     // Get linear velocity
                     Translation2d linearVelocity =
                             getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -91,6 +92,30 @@ public class DriveCommands {
                     drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
                             speeds,
                             isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
+                }else{
+                    // Get linear velocity
+                    Translation2d linearVelocity =
+                            getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+                    // Apply rotation deadband
+                    //autoAlignOnTheMove returns a double of rotation in radians
+                    double omega = MathUtil.applyDeadband(drive.autoAlignOnTheMove(drive.getFuturePose()).getAsDouble(), DEADBAND);
+
+                    // Square rotation value for more precise control
+                    omega = Math.copySign(omega * omega, omega);
+
+                    // Convert to field relative speeds & send command
+                    ChassisSpeeds speeds = new ChassisSpeeds(
+                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                            omega * drive.getMaxAngularSpeedRadPerSec());
+                    boolean isFlipped = DriverStation.getAlliance().isPresent()
+                            && DriverStation.getAlliance().get() == Alliance.Red;
+                    drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                            speeds,
+                            isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
+                        
+                }
                 },
                 drive);
     }
@@ -280,6 +305,7 @@ public class DriveCommands {
                 5.0, 0.0, 0.4, new TrapezoidProfile.Constraints(8.0, 20.0));
 
       return Commands.run(() -> {angleController.setGoal(rotation.get().getRadians());
-      joystickDrive(drive, x, y,omegaSupplier);});
+        //I had to add a boolean supplier to this but it shouldnt be using joystick drive anyways. Should be using run velocity?
+      joystickDrive(drive, x, y,omegaSupplier, () ->false);});
   } 
 }

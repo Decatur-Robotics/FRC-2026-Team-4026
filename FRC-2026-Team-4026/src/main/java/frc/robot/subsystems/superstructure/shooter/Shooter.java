@@ -9,6 +9,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.subsystems.drive.Drive;
 
 public class Shooter extends SubsystemBase {
 
@@ -42,6 +43,9 @@ public Command setVelocityCommand(double velocity) {
 
 public Command shootAimCommand(){
     return Commands.run(() -> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity().get()));
+}
+public Command shootOnMoveCommand(Drive drive){
+    return Commands.run(()-> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity(drive.getDistanceToHub(drive.getFuturePose().get()).getAsDouble()).get()));
 }
 
 public Command setVoltageCommand(double voltage) {
