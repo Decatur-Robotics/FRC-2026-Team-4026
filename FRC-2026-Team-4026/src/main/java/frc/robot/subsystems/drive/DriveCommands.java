@@ -12,7 +12,9 @@
 // GNU General Public License for more details.
 package frc.robot.subsystems.drive;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,6 +38,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
+
 
 
 public class DriveCommands {
@@ -48,6 +52,7 @@ public class DriveCommands {
     private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+
 //should this go in the constructor?
     private NetworkTables networkTables = new NetworkTables();
 
@@ -100,7 +105,7 @@ public class DriveCommands {
                             && DriverStation.getAlliance().get() == Alliance.Red;
                     // Apply rotation deadband
                     //autoAlignOnTheMove returns a double of rotation in radians
-                    double omega = MathUtil.applyDeadband(drive.autoAlignOnTheMove(drive.getFuturePose()).getAsDouble()/drive.getMaxAngularSpeedRadPerSec(), DEADBAND);
+                    double omega = MathUtil.applyDeadband(drive.autoAlignOnTheMove(drive.getFuturePose()).getAsDouble()/drive.getMaxAngularSpeedRadPerSec(), 0.05);
 
                     // Square rotation value for more precise control
                     omega = Math.copySign(omega * omega, omega);

@@ -149,7 +149,7 @@ implements Vision.VisionConsumer
         0.01, 0, 0);
         // 5.25, 0, 0.3); 
     private PIDController rotationalController = new PIDController(
-        0.01, 0, 0);
+        3.5, 0, 0);
 private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
 
     static final Lock odometryLock = new ReentrantLock();
@@ -597,17 +597,29 @@ public Supplier<Pose2d> getFuturePose(){
 //velocities independently of each other.
 public DoubleSupplier autoAlignOnTheMove(Supplier<Pose2d> FuturePose){
     angleController.enableContinuousInput(-Math.PI, Math.PI);
-                        boolean isFlipped = DriverStation.getAlliance().isPresent()
-                            && DriverStation.getAlliance().get() == Alliance.Red;
+
     double wantedAngle;
     if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
-            wantedAngle =  Math.atan2(getFuturePose().get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getFuturePose().get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + (isFlipped ? Math.PI : 0);
+            wantedAngle =  Math.atan2(getFuturePose().get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getFuturePose().get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
         } else {
-            wantedAngle =  Math.atan2(getFuturePose().get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getFuturePose().get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())))+(isFlipped ? Math.PI : 0);
+            wantedAngle =  Math.atan2(getFuturePose().get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getFuturePose().get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())))+Math.PI;
         }
     double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), new Rotation2d(wantedAngle).getRadians());
     return () -> rotationSpeed;
 }
+public DoubleSupplier autoAlignOnTheMove(){
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+    double wantedAngle;
+    if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+            wantedAngle =  Math.atan2(getFuturePose().get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getFuturePose().get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+        } else {
+            wantedAngle =  Math.atan2(getFuturePose().get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getFuturePose().get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())))+Math.PI;
+        }
+   
+    return () -> wantedAngle;
+}
+
 
 // public Rotation2d getTargetRotation(){
 //        return new Rotation2d(robotAngle);
