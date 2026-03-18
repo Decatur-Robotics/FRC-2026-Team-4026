@@ -184,6 +184,7 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
             Consumer<Pose2d> resetSimulationPoseCallBack) {
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
+        flightTime = new InterpolatingDoubleTreeMap();
         flightTime.put(1.0, .01);
         flightTime.put(1.5, 1.5);
         flightTime.put(2.0,1.75);
