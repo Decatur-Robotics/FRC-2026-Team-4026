@@ -41,6 +41,8 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -87,11 +89,20 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private PathPlannerAuto auto;
+  private SlewRateLimiter filterX;
+  private SlewRateLimiter filterY;
 
 
    private Autonomous autonomous;
   public RobotContainer() {
       instance = this;
+      //This filter allows a the measurement to change 2 units per second. Since the joystick is on a range from -1 to 1, resting at 0,
+      //If you start from rest (0), and go to max speed (1), it will take 0.5 seconds to actually reach your input of 1.
+      filterX = new SlewRateLimiter(2);
+      filterY = new SlewRateLimiter(2);
+      //.reset() is probably not necessary but we can have it
+      filterX.reset(0);
+      filterY.reset(0);
 
 
      if(Constants.currentMode != Constants.Mode.SIM) {
@@ -190,8 +201,13 @@ public class RobotContainer {
          drive.setDefaultCommand(
               DriveCommands.joystickDrive(
                 drive,
-                ()-> -joystick.getY(),
-                ()-> -joystick.getX(),
+                //it was recommended to apply the filter after joystick input modificaiton (when it gets multiplied by max speed)
+                //however, since our modification is linear it should be fine to do it here. This might need to be changed.
+                //The change would be in the actual joystickDrive command.
+                //I almost messed this up, BIG mistake, never use one filter for multiple inputs.
+                //Each filter has it's own memory.
+                ()-> filterY.calculate(-joystick.getY()),
+                ()-> filterX.calculate(-joystick.getX()),
                 ()-> -joystick.getTwist()
             ));
 
