@@ -66,8 +66,8 @@ private enum AutoSide{
      if(autoSide.getSelected() == AutoSide.Left){
         if(autoType.getSelected() == AutoType.CenterRush){
                 auto = new PathPlannerAuto("Center Rush");
-                auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-                auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
+                auto.activePath("Center Rush Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+                auto.activePath("Center Rush Shoot").onFalse(superstructure.shootCommand());
         } else if(autoType.getSelected() == AutoType.Depot){
             auto = new PathPlannerAuto("Depot Auto");
                 auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
