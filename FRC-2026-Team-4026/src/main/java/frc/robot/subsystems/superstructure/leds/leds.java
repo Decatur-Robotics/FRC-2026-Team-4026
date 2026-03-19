@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Ports;
 import frc.robot.util.TeamColor;
-public class leds implements Subsystem {
+import edu.wpi.first.math.*;
+public class leds extends SubsystemBase {
 
     // an led strip
     private AddressableLED led;
@@ -68,7 +71,7 @@ public class leds implements Subsystem {
 
     public void setAllPixels(TeamColor color){
         currentColor = color;
-
+        mode = 1;
         for (int i = 0; i < length; i++){
             buffer.setRGB(i, color.r, color.g, color.b);
         }
@@ -104,6 +107,11 @@ public class leds implements Subsystem {
         pulseLEDS(ledsConstants.CYAN, length);
         pulseLEDS(ledsConstants.BLUE, length);
         pulseLEDS(ledsConstants.MAGENTA, length);
+    }
+
+    public void pulsingYellowLEDS(){
+        pulseLEDS(ledsConstants.YELLOW, 3);
+        pulseLEDS(ledsConstants.OFF_COLOR, 5);
     }
 
     public void rainbowLEDS(){
@@ -313,9 +321,58 @@ public class leds implements Subsystem {
             }
         }
 
+        if(mode == 6){
+           //shift timer
+
+           //Transition
+           if(DriverStation.getMatchTime()>130 && DriverStation.getMatchTime() <= 140){
+                double precentageLeft = (DriverStation.getMatchTime() - 130)/10;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
+                }
+           } else if(DriverStation.getMatchTime()>105 && DriverStation.getMatchTime() <= 130){
+                double precentageLeft = (DriverStation.getMatchTime() - 105)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
+                }
+            } else if(DriverStation.getMatchTime()>80 && DriverStation.getMatchTime() <= 105){
+                double precentageLeft = (DriverStation.getMatchTime() - 80)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
+                }
+            } else if(DriverStation.getMatchTime()>55 && DriverStation.getMatchTime() <= 80){
+                double precentageLeft = (DriverStation.getMatchTime() - 55)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
+                }
+            }else if(DriverStation.getMatchTime()>30 && DriverStation.getMatchTime() <= 55){
+                double precentageLeft = (DriverStation.getMatchTime() - 30)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
+                }
+            } else if(DriverStation.getMatchTime()>0 && DriverStation.getMatchTime() <= 30){
+                double precentageLeft = (DriverStation.getMatchTime() - 0)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
+                }
+            }
+        }
         if (periodsPassed > 5) {
 			periodsPassed = 0;
 		}
+        
 
     }
 

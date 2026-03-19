@@ -15,5 +15,5 @@ public class ledsConstants {
 	public static final TeamColor BLACK = new TeamColor(0, 0, 0);
 
 	public static final TeamColor OFF_COLOR = new TeamColor(0,0,0);
-	
+	public static final TeamColor SHIFT_COLOR = WHITE;
 }

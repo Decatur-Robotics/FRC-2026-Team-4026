@@ -161,17 +161,8 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(indexer.setVoltageCommand(8),shooter.setVelocityCommand(45), intake.runIntakeCommand(-4));
     }
 
-    public void setAlignedLEDs(){
-        if(drive.isAlignedToHub()){
-            leds.setAllLedsCommand(ledsConstants.GREEN);
-        } else{
-            leds.setAllLedsCommand(ledsConstants.RED);
-        }
-    }
 
-    public Command setAlignedLEDsCommand(){
-        return Commands.run(()->setAlignedLEDs());
-    }
+
 
     public Command noTestShootCommand(){
         return Commands.parallel(indexer.setVoltageCommand(0), shooter.setVoltageCommand(0));
