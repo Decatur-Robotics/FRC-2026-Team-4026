@@ -124,7 +124,7 @@ public class RobotContainer {
       hood = new Hood(new HoodIOSim());
       indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
-      driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3.6, 6, new Rotation2d()));
+      driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(), new Pose2d(3.6, 6, new Rotation2d()));
       intake = new Intake(new IntakeIOSim(driveSimulation));
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
       //climber = new Climber(new ClimberIOSim());
@@ -244,7 +244,7 @@ public class RobotContainer {
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
       left.whileTrue(intake.deployIntakeCommand(7));
        right.whileTrue(intake.oscillateIntakeCommand());
-
+       
   }
   
 
