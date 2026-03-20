@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,7 +47,10 @@ public class leds extends SubsystemBase {
     private final int blueFadeBottom = 140;
     private final int blueFadeTop = 240;
     private final int fadeSpeed = 5;
+    private LEDPattern pattern;
+    private final Timer ledTimer;
     public leds(){
+        ledTimer = new Timer();
         this.led = new AddressableLED(Ports.ADDRESSABLE_LED);
 
         this.length = ledsConstants.LENGTH;
@@ -405,5 +410,12 @@ public class leds extends SubsystemBase {
 
     public TeamColor getCurrentColor(){
         return currentColor;
+    }
+    public void progressBar(){
+        pattern = LEDPattern.progressMaskLayer(()-> ledTimer.get()%25);
+        pattern.applyTo(buffer);
+    }
+    public void resetTimer(){
+        ledTimer.reset();
     }
 }

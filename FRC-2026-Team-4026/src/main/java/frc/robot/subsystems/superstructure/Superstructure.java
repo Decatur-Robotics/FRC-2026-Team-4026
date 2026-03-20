@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.Radians;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,7 +74,8 @@ public class Superstructure extends SubsystemBase {
 
     @Override
     public void periodic(){
-
+        drive.isAligned();
+        Logger.recordOutput("Is Aligned", drive.isAligned());
     }
 
     public void toggleDefenseMode(){
@@ -218,6 +221,9 @@ public class Superstructure extends SubsystemBase {
  public Command alignCommand(){
     return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.setAllLedsCommand(ledsConstants.GREEN): leds.setAllLedsCommand(ledsConstants.RED));
 
+ }
+ public Command setAllLedsCommand(TeamColor color){
+    return Commands.run(() ->leds.setAllLedsCommand(color));
  }
 
 }

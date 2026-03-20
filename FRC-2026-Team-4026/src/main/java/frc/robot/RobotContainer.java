@@ -80,7 +80,7 @@ public class RobotContainer {
   private RobotState robotState;
       private InterpolatingDoubleTreeMap targetVelocities;
   //private final Climber climber;
-  private static frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
+  public frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
       private Double robotDistance;
   public Drive drive;
   public static Drive driveInstance;
