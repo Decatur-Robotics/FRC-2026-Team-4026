@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -53,8 +54,7 @@ public class Superstructure extends SubsystemBase {
 
         this.robotState = robotState;
         
-        leds.setAllLedsCommand(ledsConstants.BLUE);
-
+        leds.rainbowLEDS();
         this.targetState = SuperstructureConstants.STARTING_STATE;
     }
 
@@ -146,7 +146,7 @@ public class Superstructure extends SubsystemBase {
     // }
 
     public Command shootCommand(){
-        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.setAllLedsCommand(ledsConstants.YELLOW));
+        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.setAllLEDS(Color.kYellow));
     }
 
     public Command shootCommand(Supplier<Double> velocity){

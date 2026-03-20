@@ -1,10 +1,12 @@
 package frc.robot.subsystems.superstructure.leds;
 import java.util.ArrayList;
-
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,17 +39,11 @@ public class leds extends SubsystemBase {
     private int red = 0;
     private int green = 0;
     private int blue = 0;
-    private int fadeStage = 1;
-    private final int rainbowSpeed = 2;
-
-    private final int redFadeBottom = 200;
-    private final int redFadeTop = 255;
-    private final int blueFadeBottom = 140;
-    private final int blueFadeTop = 240;
-    private final int fadeSpeed = 5;
+    
+    private DoubleSupplier shiftProgressBar;
+    
     public leds(){
         this.led = new AddressableLED(Ports.ADDRESSABLE_LED);
-
         this.length = ledsConstants.LENGTH;
         buffer = new AddressableLEDBuffer(length);
 
@@ -55,6 +51,7 @@ public class leds extends SubsystemBase {
         led.setData(buffer);
         led.start();
 
+  
 
         numFlashes = 0;
         periodsPassed = 0;
@@ -62,340 +59,35 @@ public class leds extends SubsystemBase {
         on = true;
         offColor = ledsConstants.OFF_COLOR;
         currentColor = offColor;
-        mode = 1;
+
     }
 
     public void updateData(){
         led.setData(buffer);
     }
-
-    public void setAllPixels(TeamColor color){
-        currentColor = color;
-        mode = 1;
-        for (int i = 0; i < length; i++){
-            buffer.setRGB(i, color.r, color.g, color.b);
-        }
-        this.updateData();
+   
+    public Command runPattern(LEDPattern pattern){
+        return run(()->pattern.applyTo(buffer));
     }
 
-    public void flashAllPixels(TeamColor color, int numFlashes){
-        setAllPixels(color);
-        this.numFlashes = numFlashes;
-    }
-    // for pulsing moves all the leds foward one 
-    public void stepAllPixels(){
-        for( int i = length; i >0;){
-            i--;
-            if(i>0){
-                buffer.setRGB(i, buffer.getRed(i-1), buffer.getGreen(i-1), buffer.getBlue(i-1));
-            }
-        }
+
+    public Command setAllLEDS(Color color){
+        return run(()->runPattern(LEDPattern.solid(color)));
     }
 
-    public void pulseLEDS(TeamColor color, int amount){
-        mode = 2;
-        for (int i = 0; i < amount;i++){
-            ledsToAdd.add(color);
-        }
+    public Command  progressBar(Color color){
+        return run(()-> runPattern(LEDPattern.progressMaskLayer(shiftProgressBar)));
     }
 
-    public void rainbowPulseLEDS(int length){
-        pulseLEDS(ledsConstants.RED, length);
-        pulseLEDS(ledsConstants.ORANGE, length);
-        pulseLEDS(ledsConstants.YELLOW, length);
-        pulseLEDS(ledsConstants.GREEN, length);
-        pulseLEDS(ledsConstants.CYAN, length);
-        pulseLEDS(ledsConstants.BLUE, length);
-        pulseLEDS(ledsConstants.MAGENTA, length);
+    public Command rainbowLEDS(){
+        return run(()-> runPattern(LEDPattern.rainbow(255, 128)));
     }
 
-    public void pulsingYellowLEDS(){
-        pulseLEDS(ledsConstants.YELLOW, 3);
-        pulseLEDS(ledsConstants.OFF_COLOR, 5);
-    }
 
-    public void rainbowLEDS(){
-        mode = 3;
-    }
-    public void fadeRedLEDS(){
-        mode = 4;
-        red = 255;
-        blue = 0;
-        green = 0;
-        fadeStage = 2;
-    }
 
-    public void fadeBlueLEDS(){
-        mode = 5;
-        red = 0;
-        blue = 255;
-        green = 0;
-        fadeStage = 2;
-    }
-
-    public void shiftLEDS(){
-        mode = 6;
-    }
-
-    //commands
-    public Command setAllLedsCommand(TeamColor color){
-        return runOnce(()-> setAllPixels(color));
-    }
-
-    public Command flashAllLedsCommand(TeamColor color, int numFlashes){
-        return runOnce(()-> flashAllPixels(color,numFlashes));
-    }
-
-    public Command pulseLedsCommand(TeamColor color, int amount){
-        return runOnce(()-> pulseLEDS(color, amount));
-    }
-
-    public Command rainbowPulseLEDSCommand(int length){
-        return runOnce(()-> rainbowPulseLEDS(length));
-    }
-
-    public Command rainbowLEDSCommand(){
-        return runOnce(()-> rainbowLEDS());
-    }
-
-    public Command fadeRedLEDSCommand(){
-        return runOnce(()->fadeRedLEDS());
-    }
-
-    public Command fadeBlueLEDSCommand(){
-        return runOnce(()->fadeBlueLEDS());
-    }
-
-    public Command shiftLEDSCommand(){
-        return runOnce(()->shiftLEDS());
-    }
-    
     @Override
     public void periodic(){
-        periodsPassed ++;
-        if(DriverStation.getMatchTime() == 132){
-            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
-        }
-        if(DriverStation.getMatchTime() == 103){
-            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
-        }
-        if(DriverStation.getMatchTime() == 78){
-            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
-        }
-        if(DriverStation.getMatchTime() == 52){
-            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
-        }
-        if(DriverStation.getMatchTime() == 28){
-            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
-        }
-        
-        if(mode == 1){
-
-            if (periodsPassed == 10 && numFlashes >0){
-
-                if(on){
-
-                    for (int i = 0; i < length;i++){
-                        buffer.setRGB(i, offColor.r, offColor.g, offColor.b);
-                    }
-
-                    this.updateData();
-                    on = false;
-                }
-                else{
-
-                    for(int i = 0; i< length;i++){
-                        buffer.setRGB(i, currentColor.r, currentColor.g, currentColor.b);
-                    }
-
-                    this.updateData();
-                    on = true;
-                    numFlashes --;
-                }
-            }
-
-        } else if (mode == 2){
-
-           stepAllPixels();
-           if(ledsToAdd.size() >0){
-
-            buffer.setRGB(0,ledsToAdd.get(0).r,ledsToAdd.get(0).g,ledsToAdd.get(0).b);
-            ledsToAdd.remove(0);
-           } else{
-
-            buffer.setRGB(0,0,0,0);
-
-           }
-          
-           if(ledsToAdd.size() == 0){
-                boolean ledsClear = true;
-                for(int i = 0; i < length; i++){
-                    if(buffer.getRed(i) !=0 || buffer.getBlue(i) != 0 || buffer.getGreen(i) != 0){
-                        ledsClear = false;
-                    }
-                }
-                if (ledsClear){
-                    mode = 1;
-                    numFlashes = 0;
-                }
-           }
-
-        }  else if (mode == 3){
-            if (fadeStage == 1){
-                if (red < 10){
-                    fadeStage = 2;
-                } else{
-                    red -= rainbowSpeed;
-                    green += rainbowSpeed;
-                }
-            } 
-            else if (fadeStage == 2){
-                if (green < 10){
-                    fadeStage = 3;
-                } else{
-                    green -= rainbowSpeed;
-                    blue += rainbowSpeed;
-                }
-            }
-            else if (fadeStage == 3){
-                if ( blue < 10){
-                    fadeStage = 1;
-                } else {
-                    blue -= rainbowSpeed;
-                    red += rainbowSpeed;
-                }
-            }
-            // if value of colors are out of range it fixes it
-            if (red > 255){
-                red = 255;
-            }
-            if (green > 255){
-                green = 255;
-            }
-            if( blue > 255){
-                blue = 255;
-            }
-            if (red < 0){
-                red = 0;
-            }
-            if( green < 0){
-                green = 0;
-            }
-            if (blue < 0){
-                blue = 0;
-            }
-
-            for(int i = 0; i < length; i++){
-                buffer.setRGB(i, red, green, blue);
-            }
-        }
-
-        if(mode == 4){
-            if (fadeStage == 1){
-                if(red <= redFadeBottom){
-                    fadeStage = 2;
-                } else{
-                    red -= fadeSpeed;
-                }
-            } else if (fadeStage == 2){
-                if(red >= redFadeTop){
-                    fadeStage = 1;
-                } else{
-                    red += fadeSpeed;
-                }
-            }
-            if(red > 255){
-                red =255;
-            }
-            if (red < 0){
-                red = 0;
-            }
-
-            for(int i = 0; i < length; i++){
-                buffer.setRGB(i, red, 0, 0);
-            }
-        }
-
-
-        if(mode == 5){
-            if (fadeStage == 1){
-                if(blue <= blueFadeBottom){
-                    fadeStage = 2;
-                } else{
-                    blue -= fadeSpeed;
-                }
-            } else if (fadeStage == 2){
-                if(blue >= blueFadeTop){
-                    fadeStage = 1;
-                } else{
-                    blue += fadeSpeed;
-                }
-            }
-            if(blue > 255){
-                blue =255;
-            }
-            if (blue < 0){
-                blue = 0;
-            }
-
-            for(int i = 0; i < length; i++){
-                buffer.setRGB(i, 0, 0, blue);
-            }
-        }
-
-        if(mode == 6){
-           //shift timer
-
-           //Transition
-           if(DriverStation.getMatchTime()>130 && DriverStation.getMatchTime() <= 140){
-                double precentageLeft = (DriverStation.getMatchTime() - 130)/10;
-                int ledsToSet = (int)Math.round(precentageLeft*length);
-                setAllPixels(offColor);
-                for(int i = 0; i < ledsToSet; i++){
-                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
-                }
-           } else if(DriverStation.getMatchTime()>105 && DriverStation.getMatchTime() <= 130){
-                double precentageLeft = (DriverStation.getMatchTime() - 105)/25;
-                int ledsToSet = (int)Math.round(precentageLeft*length);
-                setAllPixels(offColor);
-                for(int i = 0; i < ledsToSet; i++){
-                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
-                }
-            } else if(DriverStation.getMatchTime()>80 && DriverStation.getMatchTime() <= 105){
-                double precentageLeft = (DriverStation.getMatchTime() - 80)/25;
-                int ledsToSet = (int)Math.round(precentageLeft*length);
-                setAllPixels(offColor);
-                for(int i = 0; i < ledsToSet; i++){
-                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
-                }
-            } else if(DriverStation.getMatchTime()>55 && DriverStation.getMatchTime() <= 80){
-                double precentageLeft = (DriverStation.getMatchTime() - 55)/25;
-                int ledsToSet = (int)Math.round(precentageLeft*length);
-                setAllPixels(offColor);
-                for(int i = 0; i < ledsToSet; i++){
-                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
-                }
-            }else if(DriverStation.getMatchTime()>30 && DriverStation.getMatchTime() <= 55){
-                double precentageLeft = (DriverStation.getMatchTime() - 30)/25;
-                int ledsToSet = (int)Math.round(precentageLeft*length);
-                setAllPixels(offColor);
-                for(int i = 0; i < ledsToSet; i++){
-                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
-                }
-            } else if(DriverStation.getMatchTime()>0 && DriverStation.getMatchTime() <= 30){
-                double precentageLeft = (DriverStation.getMatchTime() - 0)/25;
-                int ledsToSet = (int)Math.round(precentageLeft*length);
-                setAllPixels(offColor);
-                for(int i = 0; i < ledsToSet; i++){
-                    buffer.setRGB(i, ledsConstants.SHIFT_COLOR.r, ledsConstants.SHIFT_COLOR.g, ledsConstants.SHIFT_COLOR.b);
-                }
-            }
-        }
-        if (periodsPassed > 5) {
-			periodsPassed = 0;
-		}
-        
-
+        updateData();
     }
 
 
