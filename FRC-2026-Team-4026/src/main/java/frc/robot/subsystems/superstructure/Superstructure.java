@@ -21,6 +21,7 @@ import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.SuperstructureState;
+import frc.robot.util.TeamColor;
 import frc.robot.subsystems.superstructure.leds.leds;
 import frc.robot.subsystems.superstructure.leds.ledsConstants;
 
@@ -146,7 +147,7 @@ public class Superstructure extends SubsystemBase {
     // }
 
     public Command shootCommand(){
-        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.setAllLedsCommand(ledsConstants.YELLOW));
+        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10));
     }
 
     public Command shootCommand(Supplier<Double> velocity){
@@ -213,6 +214,10 @@ public class Superstructure extends SubsystemBase {
 
  public int getNumBallsStored(){
     return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
+ }
+ public Command alignCommand(){
+    return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.setAllLedsCommand(ledsConstants.GREEN): leds.setAllLedsCommand(ledsConstants.RED));
+
  }
 
 }

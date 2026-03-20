@@ -33,6 +33,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.TeamColor;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -79,7 +80,7 @@ public class RobotContainer {
   private RobotState robotState;
       private InterpolatingDoubleTreeMap targetVelocities;
   //private final Climber climber;
-  private  frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
+  private static frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
       private Double robotDistance;
   public Drive drive;
   public static Drive driveInstance;
@@ -92,6 +93,7 @@ public class RobotContainer {
 
    private Autonomous autonomous;
   public RobotContainer() {
+
       instance = this;
 
 
@@ -196,10 +198,11 @@ public class RobotContainer {
                 ()-> -joystick.getTwist()
             ));
 
+
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           // x.whileTrue(drive.setRotationXCommand());
-          bumperRight.whileTrue(drive.autoAlignToHub());
+          bumperRight.whileTrue(superstructure.alignCommand()).onFalse(leds.setAllLedsCommand(ledsConstants.BLUE));
           bumperLeft.whileTrue(drive.alignHubPathpl());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
@@ -228,19 +231,19 @@ public class RobotContainer {
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        triggerLeft.whileTrue(superstructure.shootCommand(() -> 42.0)).onFalse(superstructure.storeCommand());
-        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
-        a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-        y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
-       b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
-        x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
-      left.whileTrue(intake.deployIntakeCommand(7));
-       right.whileTrue(intake.oscillateIntakeCommand());
+      //   triggerLeft.whileTrue(superstructure.shootCommand(() -> 42.0)).onFalse(superstructure.storeCommand());
+      //   triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+      //   // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+      //   a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      //   y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
+      //  b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
+      //   x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
+      // left.whileTrue(intake.deployIntakeCommand(7));
+      //  right.whileTrue(intake.oscillateIntakeCommand());
 
-
+    a.whileTrue(leds.setAllLedsCommand(ledsConstants.BLUE));
+    b.whileTrue(leds.flashAllLedsCommand(ledsConstants.RED, 5));
   }
-  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

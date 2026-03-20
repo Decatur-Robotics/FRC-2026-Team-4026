@@ -542,12 +542,7 @@ public boolean isAlignedToHub(){
 }
 
 public Command autoAlignToHub(){
-    // if (isAlignedToHub()){
-    //     led.setAllLedsCommand(ledsConstants.GREEN);
-    // }
-    // else{
-    //     led.setAllLedsCommand(ledsConstants.RED);
-    // }
+
     return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));
     
 }
