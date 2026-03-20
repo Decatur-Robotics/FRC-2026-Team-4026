@@ -88,7 +88,6 @@ Logger.start();
   public void autonomousInit() {
     m_robotContainer.chooseAuto();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    m_robotContainer.leds.setAllLedsCommand(ledsConstants.YELLOW);
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -106,7 +105,6 @@ Logger.start();
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    m_robotContainer.leds.setAllLedsCommand(ledsConstants.BLUE);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
