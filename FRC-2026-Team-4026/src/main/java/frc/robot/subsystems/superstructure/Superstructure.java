@@ -157,6 +157,22 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10));
     }
 
+    public Command oscillateShootCommand(){
+        return Commands.parallel(shootCommand(), intake.oscillateIntakeCommand());
+    }
+
+    public Command oscillateShootCommand(Supplier<Double> velocity){
+         return Commands.parallel(shootCommand(velocity), intake.oscillateIntakeCommand());
+    }
+
+    public Command pushShootCommand(Supplier<Double> deployPosition){
+        return Commands.parallel(shootCommand(), intake.deployIntakeCommand(-deployPosition.get()*15.3+15.3));
+    }
+
+    public Command pushShootCommand(Supplier<Double> velocity, Supplier<Double> deployPosition){
+        return Commands.parallel(shootCommand(velocity), intake.deployIntakeCommand(-deployPosition.get()*15.3+15.3));
+    }
+
     public Command testingShootCommand(){
         return setState(new SuperstructureState(1, 0.0, 0, 12, 0.0));
     }
