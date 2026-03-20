@@ -244,6 +244,7 @@ private enum AutoSide{
           // x.whileTrue(drive.setRotationXCommand());
           bumperRight.whileTrue(drive.autoAlignToHub());
           bumperLeft.whileTrue(drive.alignHubPathpl());
+          x.whileTrue(drive.stopWithXCommand());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 ()-> -joystick.getY()*0.6,
