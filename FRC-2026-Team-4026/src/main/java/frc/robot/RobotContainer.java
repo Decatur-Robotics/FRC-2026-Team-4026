@@ -237,10 +237,10 @@ public class RobotContainer {
 
         triggerLeft.whileTrue(superstructure.shootCommand(() -> 42.0)).onFalse(superstructure.storeCommand());
         triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 42.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 42.0, () -> joystick.getX()));
+        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 42.0, () -> joystick.getY()));
         triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
-        triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getX()));
+        triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
