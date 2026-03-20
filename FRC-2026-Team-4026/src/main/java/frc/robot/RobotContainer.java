@@ -238,6 +238,7 @@ public class RobotContainer {
       left.whileTrue(intake.deployIntakeCommand(7));
        right.whileTrue(intake.oscillateIntakeCommand());
 
+
   }
   
 
@@ -252,7 +253,7 @@ public class RobotContainer {
       PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
       auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
       auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.shootCommand(), intake.oscillateIntakeCommand()));
-      return auto;
+      return leds.setAllLedsCommand(ledsConstants.BLUE);
 
   }
 

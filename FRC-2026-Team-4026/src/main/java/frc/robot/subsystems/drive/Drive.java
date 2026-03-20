@@ -173,7 +173,7 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
     private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
     private double robotAngle;
-    private leds led;
+   // private leds led;
     public Drive(
             GyroIO gyroIO,
             ModuleIO flModuleIO,
@@ -225,7 +225,7 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
         //      robotAngle =  Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())));
         // }
 
-        led = new leds();
+        //led = new leds();
     }
 
     double robotDistance = 0;
@@ -542,12 +542,12 @@ public boolean isAlignedToHub(){
 }
 
 public Command autoAlignToHub(){
-    if (isAlignedToHub()){
-        led.setAllLedsCommand(ledsConstants.GREEN);
-    }
-    else{
-        led.setAllLedsCommand(ledsConstants.RED);
-    }
+    // if (isAlignedToHub()){
+    //     led.setAllLedsCommand(ledsConstants.GREEN);
+    // }
+    // else{
+    //     led.setAllLedsCommand(ledsConstants.RED);
+    // }
     return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));
     
 }

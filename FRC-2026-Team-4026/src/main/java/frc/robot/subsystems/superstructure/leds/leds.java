@@ -133,6 +133,9 @@ public class leds extends SubsystemBase {
         fadeStage = 2;
     }
 
+    public void shiftLEDS(){
+        mode = 6;
+    }
 
     //commands
     public Command setAllLedsCommand(TeamColor color){
@@ -162,14 +165,33 @@ public class leds extends SubsystemBase {
     public Command fadeBlueLEDSCommand(){
         return runOnce(()->fadeBlueLEDS());
     }
+
+    public Command shiftLEDSCommand(){
+        return runOnce(()->shiftLEDS());
+    }
     
     @Override
     public void periodic(){
         periodsPassed ++;
-
+        if(DriverStation.getMatchTime() == 132){
+            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
+        }
+        if(DriverStation.getMatchTime() == 103){
+            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
+        }
+        if(DriverStation.getMatchTime() == 78){
+            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
+        }
+        if(DriverStation.getMatchTime() == 52){
+            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
+        }
+        if(DriverStation.getMatchTime() == 28){
+            flashAllLedsCommand(ledsConstants.SHIFT_COLOR, 3);
+        }
+        
         if(mode == 1){
 
-            if (periodsPassed == 5 && numFlashes >0){
+            if (periodsPassed == 10 && numFlashes >0){
 
                 if(on){
 

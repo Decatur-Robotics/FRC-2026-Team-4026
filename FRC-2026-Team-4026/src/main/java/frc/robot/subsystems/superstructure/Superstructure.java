@@ -146,7 +146,7 @@ public class Superstructure extends SubsystemBase {
     // }
 
     public Command shootCommand(){
-        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10));
+        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.setAllLedsCommand(ledsConstants.YELLOW));
     }
 
     public Command shootCommand(Supplier<Double> velocity){
