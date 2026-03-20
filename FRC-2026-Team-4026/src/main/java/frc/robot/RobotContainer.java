@@ -188,7 +188,6 @@ private enum AutoSide{
     autoTab.add("Side", autoSide);
     autoTab.add("Type", autoType);
     
-      this.auto = new PathPlannerAuto("Center Rush");
 
     // targetVelocities.put(3.911, 60.0);
     // targetVelocities.put(5.18, 75.0);
@@ -272,9 +271,9 @@ private enum AutoSide{
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        triggerLeft.whileTrue(superstructure.shootCommand(() -> 42.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 42.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 42.0, () -> joystick.getY()));
+        triggerLeft.whileTrue(superstructure.shootCommand(() -> 43.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 43.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 43.0, () -> joystick.getY()));
         triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
@@ -312,7 +311,7 @@ private enum AutoSide{
         if(autoType.getSelected() == AutoType.CenterRush){
             auto = new PathPlannerAuto("Center Rush Right");
         auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-        auto.activePath("Center Rush Right shoot").onFalse(superstructure.shootCommand());
+        auto.activePath("Center Rush Right shoot").onFalse(superstructure.oscillateShootCommand());
         } else if(autoType.getSelected() == AutoType.Depot){
             auto = new PathPlannerAuto("HP Auto Right");
                 auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
