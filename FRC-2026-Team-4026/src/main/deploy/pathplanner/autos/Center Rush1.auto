@@ -13,25 +13,13 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Center Rush Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Center rush shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Rush to Depot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot to Shoot"
           }
         }
       ]

@@ -45,7 +45,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("FRC-2026-Team-4026", "Set this to something else"); // Set a metadata value
 
 if (isReal()) {
-    //Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+    Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Log to a USB stick ("/U/logs")
     Logger.addDataReceiver(new NT4Publisher());
      // Publish data to NetworkTables
      
@@ -86,6 +86,7 @@ Logger.start();
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_robotContainer.chooseAuto();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
