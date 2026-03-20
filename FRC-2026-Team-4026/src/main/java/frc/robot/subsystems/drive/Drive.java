@@ -149,7 +149,7 @@ implements Vision.VisionConsumer
         0.01, 0, 0);
         // 5.25, 0, 0.3); 
     private PIDController rotationalController = new PIDController(
-        3.5, 0, 0);
+        5, 0, 0);
 private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
 
     static final Lock odometryLock = new ReentrantLock();
