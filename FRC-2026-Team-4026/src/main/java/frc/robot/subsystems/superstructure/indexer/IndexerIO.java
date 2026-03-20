@@ -51,4 +51,6 @@ public interface IndexerIO {
 
     default void stop(){}
     
+    default void resetTimer(){}
+    
 }        

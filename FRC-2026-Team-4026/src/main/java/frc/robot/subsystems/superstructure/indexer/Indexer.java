@@ -37,6 +37,10 @@ public class Indexer extends SubsystemBase{
             io.setVoltage(voltage);
         });
     }
+    public Command resetTimer(){
+
+        return Commands.runOnce(() -> io.resetTimer());
+    }
 
 
 

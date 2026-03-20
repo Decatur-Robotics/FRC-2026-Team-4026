@@ -105,7 +105,8 @@ public class DriveCommands {
                             && DriverStation.getAlliance().get() == Alliance.Red;
                     // Apply rotation deadband
                     //autoAlignOnTheMove returns a double of rotation in radians
-                    double omega = MathUtil.applyDeadband(drive.autoAlignOnTheMove(drive.getFuturePose()).getAsDouble()/drive.getMaxAngularSpeedRadPerSec()-(ySupplier.getAsDouble()/2), 0.01);
+                    //drive.getFuturePose()).getAsDouble()
+                    double omega = MathUtil.applyDeadband(drive.autoAlignOnTheMove(drive.getFuturePose()).getAsDouble()/drive.getMaxAngularSpeedRadPerSec(), 0.01);
 
                     // Square rotation value for more precise control
                     omega = Math.copySign(omega * omega, omega);
