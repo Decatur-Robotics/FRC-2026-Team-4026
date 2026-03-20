@@ -484,7 +484,7 @@ public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> t
     
 }
 
-private ProfiledPIDController angleController = new ProfiledPIDController(2.0, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 4));
+private ProfiledPIDController angleController = new ProfiledPIDController(3.5, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 4));
 public void autoAlign(Supplier<Rotation2d> targetRotation){
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
