@@ -24,7 +24,8 @@ import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.superstructure.leds.ledsConstants;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
@@ -107,7 +108,7 @@ private enum AutoSide{
   private RobotState robotState;
       private InterpolatingDoubleTreeMap targetVelocities;
   //private final Climber climber;
-  public frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
+  private Leds leds = new Leds();
       private Double robotDistance;
   public Drive drive;
   public static Drive driveInstance;
@@ -246,7 +247,7 @@ private enum AutoSide{
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           // x.whileTrue(drive.setRotationXCommand());
-          bumperRight.whileTrue(superstructure.alignCommand()).onFalse(leds.setAllLedsCommand(ledsConstants.BLUE));
+          bumperRight.whileTrue(superstructure.alignCommand()).onFalse(leds.setAllLedsCommand(LedsConstants.BLUE));
           bumperLeft.whileTrue(drive.alignHubPathpl());
           x.whileTrue(drive.stopWithXCommand());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
@@ -288,8 +289,8 @@ private enum AutoSide{
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
        right.whileTrue(intake.oscillateIntakeCommand());
 
-       up.whileTrue(superstructure.setAllLedsCommand(ledsConstants.BLUE));
-       down.whileTrue(superstructure.setAllLedsCommand(ledsConstants.YELLOW));
+       up.whileTrue(superstructure.setAllLedsCommand(LedsConstants.BLUE));
+       down.whileTrue(superstructure.setAllLedsCommand(LedsConstants.YELLOW));
   }
 
   public void chooseAuto(){

@@ -24,15 +24,15 @@ import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.SuperstructureState;
 import frc.robot.util.TeamColor;
-import frc.robot.subsystems.superstructure.leds.leds;
-import frc.robot.subsystems.superstructure.leds.ledsConstants;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 
 public class Superstructure extends SubsystemBase {
     private Intake intake;
     private Indexer indexer;
     private Shooter shooter;
     private Hood hood;
-    private leds leds;
+    private Leds leds;
     private RobotState robotState;
     private Drive drive;
 
@@ -45,7 +45,7 @@ public class Superstructure extends SubsystemBase {
     
 
 
-    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, leds leds, RobotState robotState, Drive drive) {
+    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, Leds leds, RobotState robotState, Drive drive) {
         this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
@@ -56,7 +56,7 @@ public class Superstructure extends SubsystemBase {
 
         this.robotState = robotState;
         
-        leds.setAllLedsCommand(ledsConstants.BLUE);
+        leds.setAllLedsCommand(LedsConstants.BLUE);
 
         this.targetState = SuperstructureConstants.STARTING_STATE;
     }
@@ -235,7 +235,7 @@ public class Superstructure extends SubsystemBase {
     return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
  }
  public Command alignCommand(){
-    return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.setAllLedsCommand(ledsConstants.GREEN): leds.setAllLedsCommand(ledsConstants.RED));
+    return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.setAllLedsCommand(LedsConstants.GREEN): leds.setAllLedsCommand(LedsConstants.RED));
 
  }
  public Command setAllLedsCommand(TeamColor color){

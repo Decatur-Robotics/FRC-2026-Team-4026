@@ -1,7 +1,7 @@
 package frc.robot.subsystems.superstructure.leds;
 
 import frc.robot.util.TeamColor;
-public class ledsConstants {
+public class LedsConstants {
 	public static final int LENGTH = 61;
 
     public static final TeamColor RED = new TeamColor(255,0,0);
