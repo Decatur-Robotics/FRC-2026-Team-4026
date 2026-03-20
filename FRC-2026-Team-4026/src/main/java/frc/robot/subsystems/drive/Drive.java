@@ -63,6 +63,9 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LocalADStarAK;
@@ -500,7 +503,9 @@ public void autoAlign(Supplier<Rotation2d> targetRotation){
 }
 
 public Command autoAlignToHub(){
+
     return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));
+    
 }
 
 public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose){
