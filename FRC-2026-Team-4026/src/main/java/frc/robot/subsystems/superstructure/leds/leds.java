@@ -412,10 +412,7 @@ public class Leds extends SubsystemBase {
         return currentColor;
     }
     public void progressBar(){
-        pattern = LEDPattern.progressMaskLayer(()-> ledTimer.get()%25);
+        pattern = LEDPattern.progressMaskLayer(()-> DriverStation.getMatchTime()%25);
         pattern.applyTo(buffer);
-    }
-    public void resetTimer(){
-        ledTimer.reset();
     }
 }
