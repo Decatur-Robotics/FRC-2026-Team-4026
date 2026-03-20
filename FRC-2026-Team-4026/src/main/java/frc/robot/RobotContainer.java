@@ -272,9 +272,9 @@ private enum AutoSide{
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        triggerLeft.whileTrue(superstructure.shootCommand(() -> 43.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 43.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 43.0, () -> joystick.getY()));
+        triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
         triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
@@ -289,9 +289,9 @@ private enum AutoSide{
   public void chooseAuto(){
      if(autoSide.getSelected() == AutoSide.Left){
         if(autoType.getSelected() == AutoType.CenterRush){
-                auto = new PathPlannerAuto("Center Rush");
-                auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-                auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
+          auto = new PathPlannerAuto("Center Rush Right", true);
+          auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+          auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
         } else if(autoType.getSelected() == AutoType.Depot){
             auto = new PathPlannerAuto("Depot Auto");
                 auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
@@ -332,10 +332,11 @@ private enum AutoSide{
    */
   
   public Command getAutonomousCommand() {
+      Logger.recordOutput("Auto", auto.getName());
       return auto;
-      // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
+      // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right", true);
       // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.shootCommand(), intake.oscillateIntakeCommand()));
+      // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
       // return auto;
 
   }
