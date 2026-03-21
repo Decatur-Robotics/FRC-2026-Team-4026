@@ -24,6 +24,8 @@ import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
@@ -32,6 +34,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.TeamColor;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -105,7 +108,7 @@ private enum AutoSide{
   private RobotState robotState;
       private InterpolatingDoubleTreeMap targetVelocities;
   //private final Climber climber;
-  private  frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
+  private Leds leds = new Leds();
       private Double robotDistance;
   public Drive drive;
   public static Drive driveInstance;
@@ -118,6 +121,7 @@ private enum AutoSide{
 
    private Autonomous autonomous;
   public RobotContainer() {
+
       instance = this;
 
 
@@ -239,10 +243,11 @@ private enum AutoSide{
                 ()-> -joystick.getTwist()
             ));
 
+
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           // x.whileTrue(drive.setRotationXCommand());
-          bumperRight.whileTrue(drive.autoAlignToHub());
+          bumperRight.whileTrue(superstructure.alignCommand()).onFalse(leds.setAllLedsCommand(LedsConstants.BLUE));
           bumperLeft.whileTrue(drive.alignHubPathpl());
           x.whileTrue(drive.stopWithXCommand());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
@@ -283,7 +288,9 @@ private enum AutoSide{
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
        right.whileTrue(intake.oscillateIntakeCommand());
-       
+
+       up.whileTrue(superstructure.setAllLedsCommand(LedsConstants.BLUE));
+       down.whileTrue(superstructure.setAllLedsCommand(LedsConstants.YELLOW));
   }
 
   public void chooseAuto(){

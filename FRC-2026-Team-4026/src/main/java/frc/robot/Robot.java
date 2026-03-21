@@ -17,6 +17,8 @@ import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.core.Autonomous;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.LocalADStarAK;
 

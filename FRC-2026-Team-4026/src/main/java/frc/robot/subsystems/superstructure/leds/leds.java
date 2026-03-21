@@ -4,11 +4,16 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Ports;
 import frc.robot.util.TeamColor;
-public class leds implements Subsystem {
+import edu.wpi.first.math.*;
+public class Leds extends SubsystemBase {
 
     // an led strip
     private AddressableLED led;
@@ -42,10 +47,13 @@ public class leds implements Subsystem {
     private final int blueFadeBottom = 140;
     private final int blueFadeTop = 240;
     private final int fadeSpeed = 5;
-    public leds(){
+    private LEDPattern pattern;
+    private final Timer ledTimer;
+    public Leds(){
+        ledTimer = new Timer();
         this.led = new AddressableLED(Ports.ADDRESSABLE_LED);
 
-        this.length = ledsConstants.LENGTH;
+        this.length = LedsConstants.LENGTH;
         buffer = new AddressableLEDBuffer(length);
 
         led.setLength(length);
@@ -57,7 +65,7 @@ public class leds implements Subsystem {
         periodsPassed = 0;
 
         on = true;
-        offColor = ledsConstants.OFF_COLOR;
+        offColor = LedsConstants.OFF_COLOR;
         currentColor = offColor;
         mode = 1;
     }
@@ -68,7 +76,7 @@ public class leds implements Subsystem {
 
     public void setAllPixels(TeamColor color){
         currentColor = color;
-
+        mode = 1;
         for (int i = 0; i < length; i++){
             buffer.setRGB(i, color.r, color.g, color.b);
         }
@@ -97,13 +105,18 @@ public class leds implements Subsystem {
     }
 
     public void rainbowPulseLEDS(int length){
-        pulseLEDS(ledsConstants.RED, length);
-        pulseLEDS(ledsConstants.ORANGE, length);
-        pulseLEDS(ledsConstants.YELLOW, length);
-        pulseLEDS(ledsConstants.GREEN, length);
-        pulseLEDS(ledsConstants.CYAN, length);
-        pulseLEDS(ledsConstants.BLUE, length);
-        pulseLEDS(ledsConstants.MAGENTA, length);
+        pulseLEDS(LedsConstants.RED, length);
+        pulseLEDS(LedsConstants.ORANGE, length);
+        pulseLEDS(LedsConstants.YELLOW, length);
+        pulseLEDS(LedsConstants.GREEN, length);
+        pulseLEDS(LedsConstants.CYAN, length);
+        pulseLEDS(LedsConstants.BLUE, length);
+        pulseLEDS(LedsConstants.MAGENTA, length);
+    }
+
+    public void pulsingYellowLEDS(){
+        pulseLEDS(LedsConstants.YELLOW, 3);
+        pulseLEDS(LedsConstants.OFF_COLOR, 5);
     }
 
     public void rainbowLEDS(){
@@ -125,6 +138,9 @@ public class leds implements Subsystem {
         fadeStage = 2;
     }
 
+    public void shiftLEDS(){
+        mode = 6;
+    }
 
     //commands
     public Command setAllLedsCommand(TeamColor color){
@@ -154,14 +170,33 @@ public class leds implements Subsystem {
     public Command fadeBlueLEDSCommand(){
         return runOnce(()->fadeBlueLEDS());
     }
+
+    public Command shiftLEDSCommand(){
+        return runOnce(()->shiftLEDS());
+    }
     
     @Override
     public void periodic(){
         periodsPassed ++;
-
+        if(DriverStation.getMatchTime() == 132){
+            flashAllLedsCommand(LedsConstants.SHIFT_COLOR, 3);
+        }
+        if(DriverStation.getMatchTime() == 103){
+            flashAllLedsCommand(LedsConstants.SHIFT_COLOR, 3);
+        }
+        if(DriverStation.getMatchTime() == 78){
+            flashAllLedsCommand(LedsConstants.SHIFT_COLOR, 3);
+        }
+        if(DriverStation.getMatchTime() == 52){
+            flashAllLedsCommand(LedsConstants.SHIFT_COLOR, 3);
+        }
+        if(DriverStation.getMatchTime() == 28){
+            flashAllLedsCommand(LedsConstants.SHIFT_COLOR, 3);
+        }
+        
         if(mode == 1){
 
-            if (periodsPassed == 5 && numFlashes >0){
+            if (periodsPassed == 10 && numFlashes >0){
 
                 if(on){
 
@@ -313,9 +348,58 @@ public class leds implements Subsystem {
             }
         }
 
+        if(mode == 6){
+           //shift timer
+
+           //Transition
+           if(DriverStation.getMatchTime()>130 && DriverStation.getMatchTime() <= 140){
+                double precentageLeft = (DriverStation.getMatchTime() - 130)/10;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, LedsConstants.SHIFT_COLOR.r, LedsConstants.SHIFT_COLOR.g, LedsConstants.SHIFT_COLOR.b);
+                }
+           } else if(DriverStation.getMatchTime()>105 && DriverStation.getMatchTime() <= 130){
+                double precentageLeft = (DriverStation.getMatchTime() - 105)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, LedsConstants.SHIFT_COLOR.r, LedsConstants.SHIFT_COLOR.g, LedsConstants.SHIFT_COLOR.b);
+                }
+            } else if(DriverStation.getMatchTime()>80 && DriverStation.getMatchTime() <= 105){
+                double precentageLeft = (DriverStation.getMatchTime() - 80)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, LedsConstants.SHIFT_COLOR.r, LedsConstants.SHIFT_COLOR.g, LedsConstants.SHIFT_COLOR.b);
+                }
+            } else if(DriverStation.getMatchTime()>55 && DriverStation.getMatchTime() <= 80){
+                double precentageLeft = (DriverStation.getMatchTime() - 55)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, LedsConstants.SHIFT_COLOR.r, LedsConstants.SHIFT_COLOR.g, LedsConstants.SHIFT_COLOR.b);
+                }
+            }else if(DriverStation.getMatchTime()>30 && DriverStation.getMatchTime() <= 55){
+                double precentageLeft = (DriverStation.getMatchTime() - 30)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, LedsConstants.SHIFT_COLOR.r, LedsConstants.SHIFT_COLOR.g, LedsConstants.SHIFT_COLOR.b);
+                }
+            } else if(DriverStation.getMatchTime()>0 && DriverStation.getMatchTime() <= 30){
+                double precentageLeft = (DriverStation.getMatchTime() - 0)/25;
+                int ledsToSet = (int)Math.round(precentageLeft*length);
+                setAllPixels(offColor);
+                for(int i = 0; i < ledsToSet; i++){
+                    buffer.setRGB(i, LedsConstants.SHIFT_COLOR.r, LedsConstants.SHIFT_COLOR.g, LedsConstants.SHIFT_COLOR.b);
+                }
+            }
+        }
         if (periodsPassed > 5) {
 			periodsPassed = 0;
 		}
+        
 
     }
 
@@ -326,5 +410,9 @@ public class leds implements Subsystem {
 
     public TeamColor getCurrentColor(){
         return currentColor;
+    }
+    public void progressBar(){
+        pattern = LEDPattern.progressMaskLayer(()-> DriverStation.getMatchTime()%25);
+        pattern.applyTo(buffer);
     }
 }
