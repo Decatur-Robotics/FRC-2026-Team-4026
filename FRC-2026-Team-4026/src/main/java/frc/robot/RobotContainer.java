@@ -194,7 +194,7 @@ public class RobotContainer {
                 ()-> joystick.getX(),
                 ()-> -joystick.getTwist(),
                 //please set this last button to whatever you want, this is just a placeholder
-                () -> triggerRight.getAsBoolean()
+                () -> triggerRight.onTrue(drive.resetController()).getAsBoolean()
             ));
           
 
@@ -233,7 +233,8 @@ public class RobotContainer {
 
         // triggerLeft.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         //Again, please change, I just set as a random button
-        triggerRight.onTrue(indexer.resetTimer()).whileTrue(triggerLeft.getAsBoolean()? superstructure.shootOnMoveCommand():superstructure.shootCommand());
+        triggerRight.onTrue(indexer.resetTimer()).whileTrue(triggerLeft.getAsBoolean()
+        ? superstructure.shootOnMoveCommand():superstructure.shootCommand());
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));

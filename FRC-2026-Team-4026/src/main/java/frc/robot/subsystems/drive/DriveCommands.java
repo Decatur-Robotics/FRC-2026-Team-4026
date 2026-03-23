@@ -38,6 +38,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
 
 
@@ -106,7 +108,7 @@ public class DriveCommands {
                     // Apply rotation deadband
                     //autoAlignOnTheMove returns a double of rotation in radians
                     //drive.getFuturePose()).getAsDouble()
-                    double omega = MathUtil.applyDeadband(drive.autoAlignOnTheMove(drive.getFuturePose()).getAsDouble()/drive.getMaxAngularSpeedRadPerSec(), 0.01);
+                    double omega = MathUtil.applyDeadband(drive.autoAlignOnTheMove().getAsDouble()/drive.getMaxAngularSpeedRadPerSec(), 0);
 
                     // Square rotation value for more precise control
                     omega = Math.copySign(omega * omega, omega);
@@ -116,6 +118,8 @@ public class DriveCommands {
                             linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                             linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                             omega * drive.getMaxAngularSpeedRadPerSec());
+                            System.out.println("wanted rotation" + (omega + drive.getPose().getRotation().getRadians()));
+                            System.out.println(("currentAngle" + drive.getPose().getRotation().getRadians()));
 
                     drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
                             speeds,
