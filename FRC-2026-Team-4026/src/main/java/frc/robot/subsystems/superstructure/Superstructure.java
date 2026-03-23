@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.Radians;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,15 +23,16 @@ import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.SuperstructureState;
-import frc.robot.subsystems.superstructure.leds.leds;
-import frc.robot.subsystems.superstructure.leds.ledsConstants;
+import frc.robot.util.TeamColor;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 
 public class Superstructure extends SubsystemBase {
     private Intake intake;
     private Indexer indexer;
     private Shooter shooter;
     private Hood hood;
-    private leds leds;
+    private Leds leds;
     private RobotState robotState;
     private Drive drive;
 
@@ -42,7 +45,7 @@ public class Superstructure extends SubsystemBase {
     
 
 
-    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, leds leds, RobotState robotState, Drive drive) {
+    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, Leds leds, RobotState robotState, Drive drive) {
         this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
@@ -53,7 +56,7 @@ public class Superstructure extends SubsystemBase {
 
         this.robotState = robotState;
         
-        leds.setAllLedsCommand(ledsConstants.BLUE);
+        leds.setAllLedsCommand(LedsConstants.BLUE);
 
         this.targetState = SuperstructureConstants.STARTING_STATE;
     }
@@ -71,7 +74,8 @@ public class Superstructure extends SubsystemBase {
 
     @Override
     public void periodic(){
-
+        drive.isAligned();
+        Logger.recordOutput("Is Aligned", drive.isAligned());
     }
 
     public void toggleDefenseMode(){
@@ -153,6 +157,22 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10));
     }
 
+    public Command oscillateShootCommand(){
+        return Commands.parallel(shootCommand(), intake.oscillateIntakeCommand());
+    }
+
+    public Command oscillateShootCommand(Supplier<Double> velocity){
+         return Commands.parallel(shootCommand(velocity), intake.oscillateIntakeCommand());
+    }
+
+    public Command pushShootCommand(Supplier<Double> deployPosition){
+        return Commands.parallel(shootCommand(), intake.deployIntakeCommand(-deployPosition.get()*15.3+15.3));
+    }
+
+    public Command pushShootCommand(Supplier<Double> velocity, Supplier<Double> deployPosition){
+        return Commands.parallel(shootCommand(velocity), intake.deployIntakeCommand(-deployPosition.get()*15.3+15.3));
+    }
+
     public Command testingShootCommand(){
         return setState(new SuperstructureState(1, 0.0, 0, 12, 0.0));
     }
@@ -160,6 +180,9 @@ public class Superstructure extends SubsystemBase {
     public Command testShootAutoCommand(){
         return Commands.parallel(indexer.setVoltageCommand(8),shooter.setVelocityCommand(45), intake.runIntakeCommand(-4));
     }
+
+
+
 
     public Command noTestShootCommand(){
         return Commands.parallel(indexer.setVoltageCommand(0), shooter.setVoltageCommand(0));
@@ -178,7 +201,7 @@ public class Superstructure extends SubsystemBase {
     //     // }
     //     }
             
-    
+
 
     public void shootFuel(){
 
@@ -210,6 +233,13 @@ public class Superstructure extends SubsystemBase {
 
  public int getNumBallsStored(){
     return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
+ }
+ public Command alignCommand(){
+    return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.setAllLedsCommand(LedsConstants.GREEN): leds.setAllLedsCommand(LedsConstants.RED));
+
+ }
+ public Command setAllLedsCommand(TeamColor color){
+    return Commands.run(() ->leds.setAllLedsCommand(color));
  }
 
 }

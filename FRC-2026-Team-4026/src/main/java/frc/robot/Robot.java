@@ -17,6 +17,8 @@ import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.core.Autonomous;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.LocalADStarAK;
 
@@ -43,7 +45,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("FRC-2026-Team-4026", "Set this to something else"); // Set a metadata value
 
 if (isReal()) {
-    //Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+    Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Log to a USB stick ("/U/logs")
     Logger.addDataReceiver(new NT4Publisher());
      // Publish data to NetworkTables
      
@@ -84,6 +86,7 @@ Logger.start();
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_robotContainer.chooseAuto();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)

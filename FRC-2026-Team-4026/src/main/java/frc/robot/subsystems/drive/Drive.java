@@ -63,6 +63,9 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LocalADStarAK;
@@ -80,10 +83,7 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Drive extends SubsystemBase 
-implements Vision.VisionConsumer
-// implements TestVision.EstimateConsumer
-{
+public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     // TunerConstants doesn't include these constants, so they are declared locally
     static final double ODOMETRY_FREQUENCY =
             new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
@@ -95,19 +95,15 @@ implements Vision.VisionConsumer
                     Math.hypot(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
                     Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
-                private final Timer lastPoseTimer = new Timer();
+    // PathPlanner config constants
+    private Pose2d targetPose;
+    private SwerveSetpoint previousSetpoint;
+ private PIDController translationalController = new PIDController(
+        0.01, 0, 0);
+        // 5.25, 0, 0.3); 
+    private PIDController rotationalController = new PIDController(
+        0.01, 0, 0);
 
-    RobotConfig config = new RobotConfig(
-        ROBOT_MASS_KG,
-        ROBOT_MOI,
-        new ModuleConfig(TunerConstants.FrontLeft.WheelRadius, TunerConstants.FrontLeft.DriveInertia, WHEEL_COF, DCMotor.getKrakenX60(1), 60, 2),
-        DriveConstants.TRACK_WIDTH.in(Meters)
-    );
-    SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(
-        config,
-        Units.rotationsToRadians(DriveConstants.MAX_ANGULAR_VELOCITY)
-    );
-        // PathPlanner config constants
     private static final double ROBOT_MASS_KG = 74.088;
     private static final double ROBOT_MOI = 6.883;
     private static final double WHEEL_COF = 1.2;
@@ -123,30 +119,28 @@ implements Vision.VisionConsumer
                     1),
             getModuleTranslations());
 
-    public static final DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default()
-            .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
-            .withCustomModuleTranslations(getModuleTranslations())
-            .withGyro(COTS.ofPigeon2())
-            .withSwerveModule(new SwerveModuleSimulationConfig(
-                    DCMotor.getKrakenX60(1),
-                    DCMotor.getFalcon500(1),
-                    TunerConstants.FrontLeft.DriveMotorGearRatio,
-                    TunerConstants.FrontLeft.SteerMotorGearRatio,
-                    Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
-                    Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
-                    Meters.of(TunerConstants.FrontLeft.WheelRadius),
-                    KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
-                    WHEEL_COF));
+    private static DriveTrainSimulationConfig mapleSimConfig = null;
 
-    private Pose2d targetPose;
-    private SwerveSetpoint previousSetpoint;
- private PIDController translationalController = new PIDController(
-        0.01, 0, 0);
-        // 5.25, 0, 0.3); 
-    private PIDController rotationalController = new PIDController(
-        0.01, 0, 0);
-private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
+    public static DriveTrainSimulationConfig getMapleSimConfig() {
+        if (mapleSimConfig != null) return mapleSimConfig;
 
+        return mapleSimConfig = DriveTrainSimulationConfig.Default()
+                .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
+                .withCustomModuleTranslations(getModuleTranslations())
+                .withGyro(COTS.ofPigeon2())
+                .withSwerveModule(new SwerveModuleSimulationConfig(
+                        DCMotor.getKrakenX60(1),
+                        DCMotor.getFalcon500(1),
+                        TunerConstants.FrontLeft.DriveMotorGearRatio,
+                        TunerConstants.FrontLeft.SteerMotorGearRatio,
+                        Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
+                        Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
+                        Inches.of(2),
+                        KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
+                        WHEEL_COF));
+    }
+    private double robotAngle;
+        double robotDistance = 0;
     static final Lock odometryLock = new ReentrantLock();
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -166,10 +160,8 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
             };
     private final SwerveDrivePoseEstimator poseEstimator =
             new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-
     private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
-    private double robotAngle;
     public Drive(
             GyroIO gyroIO,
             ModuleIO flModuleIO,
@@ -193,10 +185,10 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
         // Configure AutoBuilder for PathPlanner
         AutoBuilder.configure(
                 this::getPose,
-                this::setPose,
+                this::resetOdometry,
                 this::getChassisSpeeds,
                 this::runVelocity,
-                new PPHolonomicDriveController(new PIDConstants(0, 0.0, 0.0), new PIDConstants(0, 0.0, 0)),
+                new PPHolonomicDriveController(new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
                 PP_CONFIG,
                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                 this);
@@ -208,21 +200,13 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
             Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-        previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(4));
         // Configure SysId
         sysId = new SysIdRoutine(
                 new SysIdRoutine.Config(
                         null, null, null, (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
                 new SysIdRoutine.Mechanism((voltage) -> runCharacterization(voltage.in(Volts)), null, this));
-
-        //            if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
-        //      robotAngle =  Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX()));
-        // } else {
-        //      robotAngle =  Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())));
-        // }
     }
 
-    double robotDistance = 0;
     @Override
     public void periodic() {
         if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
@@ -230,6 +214,10 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
         } else {
              robotAngle =  Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
         }
+
+        
+        Logger.recordOutput("ShotEstimator/Distance", robotDistance);
+        Logger.recordOutput("RobotAngle", robotAngle);
         odometryLock.lock(); // Prevents odometry updates while reading data
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -250,10 +238,6 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
             Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
             Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
         }
-
-        // Logger.recordOutput("Travel rotation", travelRotation.getDegrees());
-
-        Logger.recordOutput("isAligned", isAligned());
 
         // Update odometry
         double[] sampleTimestamps = modules[0].getOdometryTimestamps(); // All signals are sampled together
@@ -283,21 +267,16 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
         }
-        //RobotState.getInstance().addOdometryPose( new OdometryObservation(Timer.getTimestamp(), getModulePositions(), Optional.ofNullable(gyroInputs.connected ? rawGyroRotation : null)) );
 
         // Update gyro alert
-        gyroDisconnectedAlert.set(!gyroInputs.connected && frc.robot.constants.Constants.currentMode != frc.robot.constants.Constants.Mode.SIM);
-            
-        //         if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
-        //     robotDistance = getPose().getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
-        // } else{
-        //     robotDistance = getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));        
-        // }
-
-        Logger.recordOutput("ShotEstimator/Distance", robotDistance);
-        Logger.recordOutput("RobotAngle", robotAngle);
+        gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
     }
 
+    private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
+    SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(
+        PP_CONFIG,
+        Units.rotationsToRadians(DriveConstants.MAX_ANGULAR_VELOCITY)
+    );
     /**
      * Runs the drive at the desired velocity.
      *
@@ -305,7 +284,7 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
      */
     public void runVelocity(ChassisSpeeds speeds) {
         // Calculate module setpoints
-        speeds = ChassisSpeeds.discretize(speeds, 0.01);
+        speeds = ChassisSpeeds.discretize(speeds, 0.02);
         SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
 
@@ -345,6 +324,10 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
         }
         kinematics.resetHeadings(headings);
         stop();
+    }
+
+    public Command stopWithXCommand(){
+        return Commands.run(() -> stopWithX());
     }
 
     /** Returns a command to run a quasistatic test in the specified direction. */
@@ -399,47 +382,34 @@ private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.Ap
         }
         return output;
     }
-    public void setMinimumBumpVelocity(){
-        if( getPose().getX() > 3 && getPose().getX() < 5){
-            if(getPose().getY() > 1.5 && getPose().getY() < 3.5 || getPose().getY() > 4.5 && getPose().getY() < 6.5){
-                if(Math.hypot(getChassisSpeeds().vxMetersPerSecond,getChassisSpeeds().vyMetersPerSecond)< 2){
-                    runVelocity(new ChassisSpeeds(getRotation().getSin()*2,getRotation().getCos()*2,getRotation().getDegrees()));
-                }
-        }}
+
+    /** Returns the current odometry pose. */
+    @AutoLogOutput(key = "Odometry/Robot")
+    public Pose2d getPose() {
+        return poseEstimator.getEstimatedPosition();
     }
 
-    public Command setMinimumBumpVelocityCommand(){
-        return Commands.runOnce(()->setMinimumBumpVelocity());
-    }
-    /** Returns the current odometry pose. */
-      @AutoLogOutput(key = "Odometry/Robot")
-  public Pose2d getPose() {
-    return new Pose2d(poseEstimator.getEstimatedPosition().getMeasureX(), poseEstimator.getEstimatedPosition().getMeasureY(), poseEstimator.getEstimatedPosition().getRotation());
-  }
     /** Returns the current odometry rotation. */
     public Rotation2d getRotation() {
         return getPose().getRotation();
     }
 
     /** Resets the current odometry pose. */
-    public void setPose(Pose2d pose) {
+    public void resetOdometry(Pose2d pose) {
         resetSimulationPoseCallBack.accept(pose);
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
     }
 
-
     /** Adds a new timestamped vision measurement. */
-     @Override
-     public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-         poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-     }
+    @Override
+    public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
+        poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
 
     /** Returns the maximum linear speed in meters per sec. */
     public double getMaxLinearSpeedMetersPerSec() {
         return TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     }
-
-    
 
     /** Returns the maximum angular speed in radians per sec. */
     public double getMaxAngularSpeedRadPerSec() {
@@ -521,17 +491,21 @@ public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> t
     
 }
 
-private ProfiledPIDController angleController = new ProfiledPIDController(2.0, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 4));
+private ProfiledPIDController angleController = new ProfiledPIDController(5, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 4));
 public void autoAlign(Supplier<Rotation2d> targetRotation){
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
     double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), targetRotation.get().getRadians());
     ChassisSpeeds speeds = new ChassisSpeeds(0, 0, rotationSpeed);
     runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
+    Logger.recordOutput("Target Rotation", targetRotation.get());
+    Logger.recordOutput("autoAling Robot", getPose().getRotation());
 }
 
 public Command autoAlignToHub(){
+
     return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));
+    
 }
 
 public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose){

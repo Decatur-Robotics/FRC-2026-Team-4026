@@ -13,7 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center rush shoot"
+            "pathName": "Center Rush Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Shoot"
           }
         },
         {

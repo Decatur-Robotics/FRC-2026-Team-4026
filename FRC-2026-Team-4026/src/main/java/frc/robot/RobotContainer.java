@@ -24,6 +24,8 @@ import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
@@ -32,6 +34,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.TeamColor;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -51,6 +54,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -76,11 +82,33 @@ public class RobotContainer {
   private Intake intake;
   private Shooter shooter;
    private Hood hood;
+   private enum AutoType{
+  CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"), RushDepot("Center Rush + Depot");
+
+  private String autoName;
+  private AutoType(String autoName){
+    this.autoName = autoName;
+  }
+}
+
+private enum AutoSide{
+  Left("Left"), Center("Center"), Right("Right");
+
+  private String autoName;
+  private AutoSide(String autoName){
+    this.autoName = autoName;
+  }
+}
+
+
+      private PathPlannerAuto auto;
+       private SendableChooser<AutoSide> autoSide;
+  private SendableChooser<AutoType> autoType;
   //  public ShotEstimator shotEstimator;
   private RobotState robotState;
       private InterpolatingDoubleTreeMap targetVelocities;
   //private final Climber climber;
-  private  frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
+  private Leds leds = new Leds();
       private Double robotDistance;
   public Drive drive;
   public static Drive driveInstance;
@@ -88,12 +116,12 @@ public class RobotContainer {
    private Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
-  private PathPlannerAuto auto;
 
 
 
    private Autonomous autonomous;
   public RobotContainer() {
+
       instance = this;
 
 
@@ -124,7 +152,7 @@ public class RobotContainer {
       hood = new Hood(new HoodIOSim());
       indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
-      driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3.6, 6, new Rotation2d()));
+      driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(), new Pose2d(3.6, 6, new Rotation2d()));
       intake = new Intake(new IntakeIOSim(driveSimulation));
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
       //climber = new Climber(new ClimberIOSim());
@@ -149,9 +177,21 @@ public class RobotContainer {
 
   
 
-         targetVelocities = new InterpolatingDoubleTreeMap();
-             targetVelocities.put(2.7, 38.0);
-    targetVelocities.put(3.4, 45.0);
+               autoSide = new SendableChooser<>();
+                   autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
+    autoSide.addOption(AutoSide.Center.autoName, AutoSide.Center);
+    autoSide.addOption(AutoSide.Right.autoName, AutoSide.Right);
+
+    autoType = new SendableChooser<>();
+    autoType.setDefaultOption(AutoType.CenterRush.autoName, AutoType.CenterRush);
+    autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
+    autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
+    autoType.addOption(AutoType.DoubleCenter.autoName, AutoType.DoubleCenter);
+    autoType.addOption(AutoType.RushDepot.autoName, AutoType.RushDepot);
+    ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
+    autoTab.add("Side", autoSide);
+    autoTab.add("Type", autoType);
+    
 
     // targetVelocities.put(3.911, 60.0);
     // targetVelocities.put(5.18, 75.0);
@@ -203,11 +243,13 @@ public class RobotContainer {
                 ()-> -joystick.getTwist()
             ));
 
+
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           // x.whileTrue(drive.setRotationXCommand());
-          bumperRight.whileTrue(drive.autoAlignToHub());
+          bumperRight.whileTrue(superstructure.alignCommand()).onFalse(leds.setAllLedsCommand(LedsConstants.BLUE));
           bumperLeft.whileTrue(drive.alignHubPathpl());
+          x.whileTrue(drive.stopWithXCommand());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 ()-> -joystick.getY()*0.6,
@@ -235,17 +277,59 @@ public class RobotContainer {
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        triggerLeft.whileTrue(superstructure.shootCommand(() -> 42.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
         triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
-      left.whileTrue(intake.deployIntakeCommand(7));
        right.whileTrue(intake.oscillateIntakeCommand());
 
+       up.whileTrue(superstructure.setAllLedsCommand(LedsConstants.BLUE));
+       down.whileTrue(superstructure.setAllLedsCommand(LedsConstants.YELLOW));
   }
+
+  public void chooseAuto(){
+     if(autoSide.getSelected() == AutoSide.Left){
+        if(autoType.getSelected() == AutoType.CenterRush){
+          auto = new PathPlannerAuto("Center Rush Right", true);
+          auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+          auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+        } else if(autoType.getSelected() == AutoType.Depot){
+            auto = new PathPlannerAuto("Depot Auto");
+                auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+                auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
+        } else if(autoType.getSelected() == AutoType.Preload){
+                superstructure.shootCommand();
+        } else if(autoType.getSelected() == AutoType.DoubleCenter){
+          auto = new PathPlannerAuto("Double Center Swipe Auto");
+          auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+          auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
+          // auto.condition(() -> superstructure.getNumBallsStored() < 5).onTrue();
+        }
+     } else if(autoSide.getSelected() == AutoSide.Center){
+                  auto = new PathPlannerAuto("Center Depot Auto");
+            auto.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+            auto.activePath("Center Depot Shoot").onFalse(superstructure.shootCommand());
+     } else if(autoSide.getSelected() == AutoSide.Right){
+        if(autoType.getSelected() == AutoType.CenterRush){
+            auto = new PathPlannerAuto("Center Rush Right");
+        auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+        auto.activePath("Center Rush Right shoot").onFalse(superstructure.oscillateShootCommand());
+        } else if(autoType.getSelected() == AutoType.Depot){
+            auto = new PathPlannerAuto("HP Auto Right");
+                auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
+                auto.activePath("HP Shoot").onFalse(superstructure.shootCommand());
+        } else if(autoType.getSelected() == AutoType.Preload){
+            superstructure.shootCommand();
+        }
+     }
+  }
+
   
 
   /**
@@ -255,11 +339,12 @@ public class RobotContainer {
    */
   
   public Command getAutonomousCommand() {
-      // return autonomous.getAuto();
-      PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
-      auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.shootCommand(), intake.oscillateIntakeCommand()));
+      Logger.recordOutput("Auto", auto.getName());
       return auto;
+      // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right", true);
+      // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+      // return auto;
 
   }
 
