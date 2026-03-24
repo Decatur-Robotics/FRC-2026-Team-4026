@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -101,10 +103,11 @@ private enum AutoSide{
   public Drive drive;
   public static Drive driveInstance;
   private SwerveDriveSimulation driveSimulation;
+     private Vision vision;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
-
+  private Autonomous autonomous;
 
 
 
@@ -118,7 +121,8 @@ private enum AutoSide{
       indexer = new Indexer(new IndexerIOTalonFX());
       intake = new Intake(new IntakeIOTalonFX());
       shooter = new Shooter(new ShooterIOTalonFX());
-      // climber = new Climber(new ClimberTalonFX());
+
+
       driveSimulation = null;
       this.drive = new Drive(
         new GyroIOPigeon2(),
@@ -128,10 +132,15 @@ private enum AutoSide{
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
       robotState = new RobotState(drive);
+      vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME,
+       VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
+        new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME,
+         VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
            
       superstructure = new Superstructure(intake, indexer, shooter, leds, robotState, drive);
 
             driveInstance = drive;
+            autonomous = new Autonomous(superstructure);
 
     
     }
@@ -140,10 +149,11 @@ private enum AutoSide{
 
       indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
+
       driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(), new Pose2d(3.6, 6, new Rotation2d()));
       intake = new Intake(new IntakeIOSim(driveSimulation));
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-      //climber = new Climber(new ClimberIOSim());
+
       drive = new Drive(
                         new GyroIOSim(driveSimulation.getGyroSimulation()),
                         new ModuleIOTalonFXSim(
@@ -160,6 +170,7 @@ private enum AutoSide{
                                  robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, leds, robotState, drive);
             driveInstance = drive;
+            autonomous = new Autonomous(superstructure);
 
      }
 
@@ -169,7 +180,6 @@ private enum AutoSide{
                    autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
     autoSide.addOption(AutoSide.Center.autoName, AutoSide.Center);
     autoSide.addOption(AutoSide.Right.autoName, AutoSide.Right);
-
     autoType = new SendableChooser<>();
     autoType.setDefaultOption(AutoType.CenterRush.autoName, AutoType.CenterRush);
     autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
