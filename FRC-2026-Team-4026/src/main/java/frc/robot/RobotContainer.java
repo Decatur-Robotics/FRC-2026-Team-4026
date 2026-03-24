@@ -257,7 +257,7 @@ private enum AutoSide{
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           // x.whileTrue(drive.setRotationXCommand());
-          bumperRight.whileTrue(superstructure.alignCommand()).onFalse(leds.setAllLedsCommand(LedsConstants.BLUE));
+          bumperRight.whileTrue(superstructure.alignCommand());
           bumperLeft.whileTrue(drive.alignHubPathpl());
           x.whileTrue(drive.stopWithXCommand());
           b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d(-Math.PI))));
@@ -300,8 +300,7 @@ private enum AutoSide{
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
        right.whileTrue(intake.oscillateIntakeCommand());
 
-       up.whileTrue(superstructure.setAllLedsCommand(LedsConstants.BLUE));
-       down.whileTrue(superstructure.setAllLedsCommand(LedsConstants.YELLOW));
+
   }
 
   public void chooseAuto(){

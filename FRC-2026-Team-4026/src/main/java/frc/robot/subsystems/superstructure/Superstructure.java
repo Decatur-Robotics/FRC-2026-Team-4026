@@ -56,7 +56,6 @@ public class Superstructure extends SubsystemBase {
 
         this.robotState = robotState;
         
-        leds.setAllLedsCommand(LedsConstants.BLUE);
 
         this.targetState = SuperstructureConstants.STARTING_STATE;
     }
@@ -108,7 +107,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command intakeCommand(){
-        return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE));
+        return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulsingCommand());
     }
 
     public Command storeCommand(){
@@ -150,11 +149,11 @@ public class Superstructure extends SubsystemBase {
     // }
 
     public Command shootCommand(){
-        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10));
+        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.rainbowCommand());
     }
 
     public Command shootCommand(Supplier<Double> velocity){
-        return Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10));
+        return Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10), leds.rainbowCommand());
     }
 
     public Command oscillateShootCommand(){
@@ -235,11 +234,9 @@ public class Superstructure extends SubsystemBase {
     return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
  }
  public Command alignCommand(){
-    return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.setAllLedsCommand(LedsConstants.GREEN): leds.setAllLedsCommand(LedsConstants.RED));
+    return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.correctCommand():leds.aligningCommand());
 
  }
- public Command setAllLedsCommand(TeamColor color){
-    return Commands.run(() ->leds.setAllLedsCommand(color));
- }
+
 
 }
