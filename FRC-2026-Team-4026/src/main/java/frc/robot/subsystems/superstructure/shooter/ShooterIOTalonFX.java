@@ -38,7 +38,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     public ShooterIOTalonFX () {
         motor = new TalonFX(Ports.SHOOTER_MOTOR);
         followerMotor = new TalonFX(Ports.SHOOTER_FOLLOWER_MOTOR);
-        followerMotor.setControl(new Follower(Ports.SHOOTER_MOTOR, MotorAlignmentValue.Aligned));      
+        followerMotor.setControl(new Follower(Ports.SHOOTER_MOTOR, MotorAlignmentValue.Opposed));      
         config = new TalonFXConfiguration().withSlot0(ShooterConstants.SLOT_0_CONFIGS);
         motor.getConfigurator().apply(config);
         voltage = motor.getMotorVoltage();
