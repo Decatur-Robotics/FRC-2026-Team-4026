@@ -23,6 +23,7 @@ public class ShooterIOSim implements ShooterIO {
     private FlywheelSim shooterSim; 
     private double velocity;
     private final SimulatedMotorController.GenericMotorController motor;
+    private final SimulatedMotorController.GenericMotorController followerMotor;
 
     private final PIDController controller = new PIDController (0,0,0);
 
@@ -31,7 +32,8 @@ public class ShooterIOSim implements ShooterIO {
     public ShooterIOSim(
     ) {
         motor = new SimulatedMotorController.GenericMotorController(DCMotor.getKrakenX60(1));
-        shooterSim = new FlywheelSim(flywheelSystem, DCMotor.getKrakenX60(2),0.0);
+        followerMotor = new SimulatedMotorController.GenericMotorController(DCMotor.getKrakenX60(1));
+        shooterSim = new FlywheelSim(flywheelSystem, DCMotor.getKrakenX60(3),0.0);
 
         velocity = 0;
         SimulatedBattery.addElectricalAppliances(this::getSupplyCurrent);
@@ -51,9 +53,14 @@ public class ShooterIOSim implements ShooterIO {
 
         inputs.data = new ShooterIOData (
             true,
+            true,
+            velocity,
             velocity,
             voltage.in(Volts),
+            voltage.in(Volts),
             getSupplyCurrent().in(Amps),
+            getSupplyCurrent().in(Amps),
+            0.0,
             0.0
             );
     
