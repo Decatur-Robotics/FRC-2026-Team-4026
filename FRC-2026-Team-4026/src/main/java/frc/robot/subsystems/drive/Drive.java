@@ -79,6 +79,9 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.superstructure.turret.TurretIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO.TargetObservation;
+import frc.robot.subsystems.vision.ColorVision.ColorVision;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionIO;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer
 {
@@ -105,6 +108,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
         config,
         Units.rotationsToRadians(DriveConstants.MAX_ANGULAR_VELOCITY)
     );
+    private ColorVision colorvision;
     // PathPlanner config constants
     private static final double ROBOT_MASS_KG = 74.088;
     private static final double ROBOT_MOI = 6.883;
@@ -171,6 +175,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer
             ModuleIO blModuleIO,
             ModuleIO brModuleIO,
             Consumer<Pose2d> resetSimulationPoseCallBack) {
+        colorvision = new ColorVision(new ColorVisionIOPhotonVision());
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
@@ -496,5 +501,13 @@ public boolean isAligned(){
         }
     }
     return velocityAligned && atTargetPose();
+}
+public Command driveToFuel(){
+    rotationalController.enableContinuousInput(Math.PI, -Math.PI);
+    colorvision.getRotationChange(this);
+    return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
+        2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
+        colorvision.getRotationChange(this).getRadians()), getPose().getRotation()
+    )));
 }
 }

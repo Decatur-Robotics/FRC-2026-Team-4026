@@ -9,7 +9,7 @@ public interface ColorVisionIO{
     }
     public record ColorVisionIOData(
         boolean cameraConnected,
-        float averageYaw)
+        double yaw)
     {}
 
     default void updateInputs(ColorVisionIOInputs inputs){

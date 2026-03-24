@@ -9,11 +9,11 @@ import frc.robot.subsystems.drive.Drive;
 public class ColorVision {
     private ColorVisionIO io;
     private final ColorVisionIOInputsAutoLogged inputs = new ColorVisionIOInputsAutoLogged();
-    private double averageYaw;
+    private double yaw;
 
     public ColorVision(ColorVisionIO io){
         this.io = io;
-        averageYaw = inputs.colorVisionData.averageYaw();
+        averageYaw = inputs.colorVisionData.yaw();
 
     }
     public void periodic(){
@@ -23,13 +23,13 @@ public class ColorVision {
 
     }
     public Rotation2d getRotationChange(Drive drive){
-        averageYaw = inputs.colorVisionData.averageYaw();
-        if (inputs.colorVisionData.averageYaw() == 0){
+        yaw = inputs.colorVisionData.yaw();
+        if (inputs.colorVisionData.yaw() == 0){
 
             return Rotation2d.fromDegrees(drive.getRotation().getDegrees()+45);
         }
         else{
-            return Rotation2d.fromDegrees(inputs.colorVisionData.averageYaw()+ drive.getRotation().getDegrees());
+            return Rotation2d.fromDegrees(inputs.colorVisionData.yaw()+ drive.getRotation().getDegrees());
         }
     }
 }
