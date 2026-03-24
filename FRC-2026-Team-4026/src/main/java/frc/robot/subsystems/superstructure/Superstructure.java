@@ -14,14 +14,11 @@ import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.superstructure.hood.Hood;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
-import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.SuperstructureState;
 import frc.robot.util.TeamColor;
 import frc.robot.subsystems.superstructure.leds.Leds;
@@ -31,25 +28,21 @@ public class Superstructure extends SubsystemBase {
     private Intake intake;
     private Indexer indexer;
     private Shooter shooter;
-    private Hood hood;
+
     private Leds leds;
     private RobotState robotState;
     private Drive drive;
-
-    private boolean isSimulation = Robot.isSimulation();
-
-    private SuperstructureState targetState;
 
     //This is for making out robot both harder to defend and makes the chance of robot damage lower
     private boolean defenseMode = false;
     
 
 
-    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, Leds leds, RobotState robotState, Drive drive) {
+    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Leds leds, RobotState robotState, Drive drive) {
         this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
-        this.hood = hood;
+
         this.leds = leds;
         this.drive = drive;
 
@@ -58,15 +51,14 @@ public class Superstructure extends SubsystemBase {
         
         leds.setAllLedsCommand(LedsConstants.BLUE);
 
-        this.targetState = SuperstructureConstants.STARTING_STATE;
+
     }
 
     public Command setState(SuperstructureState targetState){
 
-        this.targetState = targetState.copyInstatnce();
         return Commands.parallel(
         shooter.setVelocityCommand(targetState.shooterVelocity),
-        hood.setPositionCommand(targetState.hoodAngle),
+     
         intake.deployIntakeCommand(targetState.intakeDeployed),
         intake.runIntakeCommand(targetState.intakeVoltage),
         indexer.setVoltageCommand(targetState.indexerVoltage));
@@ -95,12 +87,10 @@ public class Superstructure extends SubsystemBase {
     }
     
     public SuperstructureState getCurrentState(){
-        return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getMecanumVoltage(), intake.getIntakeVoltage());
+        return new SuperstructureState(shooter.getVelocity(), intake.getDeployPosition(), indexer.getMecanumVoltage(), intake.getIntakeVoltage());
     }
 
-    // public boolean isHoodAtTarget(){
-    //     return (hood.getPosition() < targetState.hoodAngle + SuperstructureConstants.HOOD_DEADBAND) && (hood.getPosition() > targetState.hoodAngle - SuperstructureConstants.HOOD_DEADBAND);
-    // }
+
 
 
     public Command startingCommand(){
@@ -174,7 +164,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command testingShootCommand(){
-        return setState(new SuperstructureState(1, 0.0, 0, 12, 0.0));
+        return setState(new SuperstructureState(1, 0, 12, 0.0));
     }
     
     public Command testShootAutoCommand(){
@@ -212,7 +202,8 @@ public class Superstructure extends SubsystemBase {
             robotState.getDriveRotatoin(),
             Meters.of(0.2),
             MetersPerSecond.of(2),
-            Radians.of(hood.getPosition())
+            // was Radians.of(hood.getPosition())
+            Radians.of(0)
         );
 
         fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();

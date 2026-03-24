@@ -6,9 +6,6 @@ public class Ports {
     public static final int DEPLOY_MOTOR_PORT = 14;
     public static final int DEPLOY_FOLLOW_MOTOR_PORT = 20;
     
-    public static final int HOOD_MOTOR = 16;
-    public static final int TURRET_MOTOR_ID = 1;
-    
     public static final int ADDRESSABLE_LED = 0;
 
 
@@ -23,5 +20,5 @@ public class Ports {
 
     public static final int HOPPER_MOTOR_LEFT = 0;
     public static final int HOPPER_MOTOR_RIGHT = 0;
-    public static final int HOOD_ENCODER = 40;
+
 }

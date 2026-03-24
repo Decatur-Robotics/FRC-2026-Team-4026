@@ -3,10 +3,8 @@ package frc.robot.subsystems.superstructure.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
@@ -22,8 +20,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     private StatusSignal<Voltage> voltage;
 
-    private VoltageOut voltageRequest;
-
     private VelocityVoltage velocityRequest;
 
     private double velocity;
@@ -37,7 +33,6 @@ public class ShooterIOTalonFX implements ShooterIO {
         motor.getConfigurator().apply(config);
         voltage = motor.getMotorVoltage();
         velocity = motor.getVelocity().getValueAsDouble();
-        voltageRequest = new VoltageOut(voltage.getValueAsDouble());
         velocityRequest = new VelocityVoltage(velocity);
 
         tryUntilOk(5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, motor.getVelocity()));

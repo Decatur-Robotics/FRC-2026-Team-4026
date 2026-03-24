@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -14,9 +13,6 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.hood.Hood;
-import frc.robot.subsystems.superstructure.hood.HoodIOSim;
-import frc.robot.subsystems.superstructure.hood.HoodIOTalonFX;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
@@ -29,13 +25,9 @@ import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
-import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import frc.robot.util.TeamColor;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
@@ -45,14 +37,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -81,7 +70,6 @@ public class RobotContainer {
   private Indexer indexer;
   private Intake intake;
   private Shooter shooter;
-   private Hood hood;
    private enum AutoType{
   CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"), RushDepot("Center Rush + Depot");
 
@@ -113,20 +101,20 @@ private enum AutoSide{
   public Drive drive;
   public static Drive driveInstance;
   private SwerveDriveSimulation driveSimulation;
-   private Vision vision;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
 
 
 
-   private Autonomous autonomous;
+
   public RobotContainer() {
 
       instance = this;
 
 
      if(Constants.currentMode != Constants.Mode.SIM) {
-      hood = new Hood( new HoodIOTalonFX());
+
       indexer = new Indexer(new IndexerIOTalonFX());
       intake = new Intake(new IntakeIOTalonFX());
       shooter = new Shooter(new ShooterIOTalonFX());
@@ -140,16 +128,16 @@ private enum AutoSide{
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
       robotState = new RobotState(drive);
-              vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
-      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
+           
+      superstructure = new Superstructure(intake, indexer, shooter, leds, robotState, drive);
 
             driveInstance = drive;
-       autonomous = new Autonomous(superstructure);
+
     
     }
  else {
 
-      hood = new Hood(new HoodIOSim());
+
       indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
       driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(), new Pose2d(3.6, 6, new Rotation2d()));
@@ -170,9 +158,9 @@ private enum AutoSide{
       new Vision(drive, new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
                                       new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                  robotState = new RobotState(drive);
-      superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
+      superstructure = new Superstructure(intake, indexer, shooter, leds, robotState, drive);
             driveInstance = drive;
-            autonomous = new Autonomous(superstructure);
+
      }
 
   

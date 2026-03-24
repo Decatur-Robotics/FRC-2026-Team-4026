@@ -3,10 +3,8 @@ package frc.robot.subsystems.superstructure.intake;
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
@@ -16,11 +14,7 @@ public class IntakeIOSim implements IntakeIO{
 
     private final DCMotorSim intakeSim;
     private final SingleJointedArmSim deploySim;
-    private final ProfiledPIDController controller = new ProfiledPIDController(
-    IntakeConstants.kP, 
-    IntakeConstants.kI, 
-    IntakeConstants.kD,
-    new TrapezoidProfile.Constraints(0, 0));
+
     private double pidOutput;
     private final IntakeSimulation intakeSimulation;
         //make encoder! add the encoder channels this goes in overall constants file?
