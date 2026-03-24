@@ -250,6 +250,7 @@ private enum AutoSide{
           bumperRight.whileTrue(superstructure.alignCommand()).onFalse(leds.setAllLedsCommand(LedsConstants.BLUE));
           bumperLeft.whileTrue(drive.alignHubPathpl());
           x.whileTrue(drive.stopWithXCommand());
+          b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d(-Math.PI))));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 ()-> -joystick.getY()*0.6,
