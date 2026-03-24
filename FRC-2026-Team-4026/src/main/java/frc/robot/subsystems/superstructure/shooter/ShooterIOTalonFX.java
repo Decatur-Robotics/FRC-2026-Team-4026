@@ -18,6 +18,7 @@ import frc.robot.util.PhoenixUtil;
 
 public class ShooterIOTalonFX implements ShooterIO {
     public TalonFX motor;
+    public TalonFX followerMotor;
     private TalonFXConfiguration config;
 
     private StatusSignal<Voltage> voltage;
@@ -32,9 +33,11 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     public ShooterIOTalonFX () {
         motor = new TalonFX(Ports.SHOOTER_MOTOR);
+        followerMotor = new TalonFX(Ports.SHOOTER_FOLLOWER_MOTOR);
         
         config = new TalonFXConfiguration().withSlot0(ShooterConstants.SLOT_0_CONFIGS);
         motor.getConfigurator().apply(config);
+        followerMotor.getConfigurator().apply(config);
         voltage = motor.getMotorVoltage();
         velocity = motor.getVelocity().getValueAsDouble();
         voltageRequest = new VoltageOut(voltage.getValueAsDouble());
@@ -42,6 +45,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
         tryUntilOk(5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, motor.getVelocity()));
         tryUntilOk(5, () -> motor.optimizeBusUtilization(40));
+        tryUntilOk(5,() -> followerMotor.optimizeBusUtilization(40));
         PhoenixUtil.registerSignals(true,voltage);    
     }
 
@@ -49,12 +53,14 @@ public class ShooterIOTalonFX implements ShooterIO {
 public void setVelocity (double velocity){
     this.velocity = velocity;
      motor.setControl(velocityRequest.withVelocity(velocity)); 
+     followerMotor.setControl(velocityRequest.withVelocity(velocity));
     Logger.recordOutput("Target Velocity", velocity);
 }
 
 @Override
 public void setVoltage (double voltage){
     motor.setVoltage(voltage);
+    followerMotor.setVoltage(voltage);
 }
 
 @Override
@@ -63,17 +69,26 @@ public void periodic () {
         motor.optimizeBusUtilization();
         motor.getVelocity().setUpdateFrequency(40);
     }
+
+    if (followerMotor.hasResetOccurred()) {
+        followerMotor.optimizeBusUtilization();
+        followerMotor.getVelocity().setUpdateFrequency(40);
+    }
 }
 
 @Override
 public void updateInputs (ShooterIOInputs inputs){
     inputs.data = new ShooterIOData (
         motor.isConnected(),
+        followerMotor.isConnected(),
         motor.getVelocity().getValueAsDouble(),
         motor.getMotorVoltage().getValueAsDouble(),
         motor.getSupplyCurrent().getValueAsDouble(),
-        motor.getDeviceTemp().getValueAsDouble()
-        );
+        motor.getDeviceTemp().getValueAsDouble(),
+        followerMotor.getVelocity().getValueAsDouble(),
+        followerMotor.getMotorVoltage().getValueAsDouble(),
+        followerMotor.getSupplyCurrent().getValueAsDouble(),
+        followerMotor.getDeviceTemp().getValueAsDouble() );
 }
 
 }
