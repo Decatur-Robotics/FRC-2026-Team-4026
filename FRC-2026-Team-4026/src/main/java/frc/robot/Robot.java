@@ -30,7 +30,7 @@ public class Robot extends LoggedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  private static final String AKIT_LOG_PATH = "C:\\Match Replay\\";
+  private static final String AKIT_LOG_PATH = "/U/logs/matchReplay/";
 
   /**
    * This function is run when the robot is first started up and should be used for any
