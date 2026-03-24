@@ -36,10 +36,10 @@ public class ShotEstimator extends SubsystemBase{
     public void periodic(){
         if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
             robotDistance = drive.getPose().getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
-            passingDistance = 5 + drive.getPose().getTranslation().getDistance(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX()));
+            passingDistance = drive.getPose().getTranslation().getDistance(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX()));
         } else{
             robotDistance = drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));
-            passingDistance = 5 + drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX())));        
+            passingDistance =  drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX())));        
         }
 
         
@@ -60,7 +60,7 @@ public class ShotEstimator extends SubsystemBase{
     }
 
     public Supplier<Double> getPassingVelocity(){
-        return () -> targetVelocities.get(passingDistance);
+        return () -> targetVelocities.get(passingDistance)+5;
     }
 
 
