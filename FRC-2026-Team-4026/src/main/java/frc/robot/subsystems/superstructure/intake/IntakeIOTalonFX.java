@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.DynamicMotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
@@ -25,6 +26,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     private VoltageOut voltageRequest;
 
     private double deployPosition;
+    private CANcoder encoder;
 
 
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
@@ -39,6 +41,7 @@ public class IntakeIOTalonFX implements IntakeIO{
 
         deployMotor = new TalonFX(Ports.DEPLOY_MOTOR_PORT);
         deployFollowMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
+        encoder = new CANcoder(0);
 
         deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Aligned));
 
