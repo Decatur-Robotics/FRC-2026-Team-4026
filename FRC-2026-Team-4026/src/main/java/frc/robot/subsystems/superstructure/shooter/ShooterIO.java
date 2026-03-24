@@ -7,17 +7,22 @@ import edu.wpi.first.units.measure.Voltage;
 public interface ShooterIO {
 @AutoLog
 public class ShooterIOInputs { 
-    public ShooterIOData data = new ShooterIOData (false,0.0,0.0,0.0,0.0);
+    public ShooterIOData data = new ShooterIOData (false,false,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
     public Voltage leftVoltage;
 }
 
 public record ShooterIOData ( 
     
     boolean motorConnected,
+    boolean followerMotorConnected,
     double velocity,
+    double followerVelocity,
     double voltage,
+    double followerVoltage,
     double supplyCurrent,
-    double temp
+    double followerSupplyCurrent,
+    double temp,
+    double followerTemp
     
 )
 {}

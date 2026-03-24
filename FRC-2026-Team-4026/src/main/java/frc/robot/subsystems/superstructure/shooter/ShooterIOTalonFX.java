@@ -8,6 +8,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.controls.Follower;
+
+
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 import org.littletonrobotics.junction.Logger;
@@ -18,6 +22,7 @@ import frc.robot.util.PhoenixUtil;
 
 public class ShooterIOTalonFX implements ShooterIO {
     public TalonFX motor;
+    public TalonFX followerMotor;
     private TalonFXConfiguration config;
 
     private StatusSignal<Voltage> voltage;
@@ -32,7 +37,8 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     public ShooterIOTalonFX () {
         motor = new TalonFX(Ports.SHOOTER_MOTOR);
-        
+        followerMotor = new TalonFX(Ports.SHOOTER_FOLLOWER_MOTOR);
+        followerMotor.setControl(new Follower(Ports.SHOOTER_MOTOR, MotorAlignmentValue.Opposed));      
         config = new TalonFXConfiguration().withSlot0(ShooterConstants.SLOT_0_CONFIGS);
         motor.getConfigurator().apply(config);
         voltage = motor.getMotorVoltage();
@@ -42,6 +48,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
         tryUntilOk(5,() -> BaseStatusSignal.setUpdateFrequencyForAll(40.0, voltage, motor.getVelocity()));
         tryUntilOk(5, () -> motor.optimizeBusUtilization(40));
+        tryUntilOk(5,() -> followerMotor.optimizeBusUtilization(40));
         PhoenixUtil.registerSignals(true,voltage);    
     }
 
@@ -63,17 +70,26 @@ public void periodic () {
         motor.optimizeBusUtilization();
         motor.getVelocity().setUpdateFrequency(40);
     }
+
+    if (followerMotor.hasResetOccurred()) {
+        followerMotor.optimizeBusUtilization();
+        followerMotor.getVelocity().setUpdateFrequency(40);
+    }
 }
 
 @Override
 public void updateInputs (ShooterIOInputs inputs){
     inputs.data = new ShooterIOData (
         motor.isConnected(),
+        followerMotor.isConnected(),
         motor.getVelocity().getValueAsDouble(),
         motor.getMotorVoltage().getValueAsDouble(),
         motor.getSupplyCurrent().getValueAsDouble(),
-        motor.getDeviceTemp().getValueAsDouble()
-        );
+        motor.getDeviceTemp().getValueAsDouble(),
+        followerMotor.getVelocity().getValueAsDouble(),
+        followerMotor.getMotorVoltage().getValueAsDouble(),
+        followerMotor.getSupplyCurrent().getValueAsDouble(),
+        followerMotor.getDeviceTemp().getValueAsDouble() );
 }
 
 }
