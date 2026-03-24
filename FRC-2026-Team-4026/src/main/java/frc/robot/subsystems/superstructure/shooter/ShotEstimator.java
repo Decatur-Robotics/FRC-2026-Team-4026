@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -17,6 +18,7 @@ public class ShotEstimator extends SubsystemBase{
     private Drive drive;
     private InterpolatingDoubleTreeMap targetVelocities;
     public double robotDistance;
+    public double passingDistance;
     public static ShotEstimator instance;
     
     public ShotEstimator(){
@@ -34,10 +36,13 @@ public class ShotEstimator extends SubsystemBase{
     public void periodic(){
         if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
             robotDistance = drive.getPose().getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+            passingDistance = 5 + drive.getPose().getTranslation().getDistance(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX()));
         } else{
-            robotDistance = drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));        
+            robotDistance = drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));
+            passingDistance = 5 + drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX())));        
         }
 
+        
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
         Logger.recordOutput("ShotEstimator/Velocity", getTargetVelocity().get());
     }
@@ -52,6 +57,10 @@ public class ShotEstimator extends SubsystemBase{
     public Supplier<Double> getTargetVelocity(){
          return () ->  targetVelocities.get(robotDistance);
         // return () -> 10.07*robotDistance+18.98;
+    }
+
+    public Supplier<Double> getPassingVelocity(){
+        return () -> targetVelocities.get(passingDistance);
     }
 
 
