@@ -1,7 +1,6 @@
 package frc.robot.subsystems.superstructure.indexer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -9,47 +8,55 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
 import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 
 public class IndexerIOTalonFX implements IndexerIO{
     private TalonFX mecanumMotor, beltMotor, kickMotor;
     
-    private TalonFXConfiguration config = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(60));
+    private TalonFXConfiguration config = new TalonFXConfiguration()
+    .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(IndexerConstants.INDEXER_CURRENT_LIMIT));
 
     private VoltageOut voltageRequest;
-
-    private StatusSignal<Voltage> mecanumVoltage;
-    private StatusSignal<Voltage> beltVoltage;
-    private StatusSignal<Voltage> kickVoltage;
-
-    private StatusSignal<Current> mechanumCurrent;
-    private StatusSignal<Current> beltCurrent;
-    private StatusSignal<Current> kickCurrent;
 
     public IndexerIOTalonFX(){
         mecanumMotor = new TalonFX(Ports.INDEXER_MOTOR_MECANUM);
          beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
         kickMotor = new TalonFX(Ports.INDEXER_MOTOR_KICK);
 
-        beltMotor= new TalonFX(Ports.INDEXER_MOTOR_BELT);
+        mecanumMotor.getConfigurator().apply(config);
+        beltMotor.getConfigurator().apply(config);
+        kickMotor.getConfigurator().apply(config);
 
-        //idk if alligned or opposed
         beltMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Opposed));
         kickMotor.setControl(new Follower(Ports.INDEXER_MOTOR_MECANUM, MotorAlignmentValue.Opposed));
 
-        mecanumVoltage = mecanumMotor.getMotorVoltage();
-        beltVoltage = beltMotor.getMotorVoltage();
-        kickVoltage = kickMotor.getMotorVoltage();
+        BaseStatusSignal.setUpdateFrequencyForAll(40,
+            mecanumMotor.getSupplyCurrent(),
+            beltMotor.getSupplyCurrent(),
+            kickMotor.getSupplyCurrent(),
+            mecanumMotor.getMotorVoltage(),
+            beltMotor.getMotorVoltage(),
+            kickMotor.getMotorVoltage(),
+            mecanumMotor.getVelocity(),
+            beltMotor.getVelocity(),
+            kickMotor.getVelocity(),
+            mecanumMotor.getDeviceTemp(),
+            beltMotor.getDeviceTemp(),
+            kickMotor.getDeviceTemp());
 
-        mechanumCurrent = mecanumMotor.getSupplyCurrent();
-        beltCurrent = beltMotor.getSupplyCurrent();
-        kickCurrent = kickMotor.getSupplyCurrent();
-
-        BaseStatusSignal.setUpdateFrequencyForAll(40, mecanumVoltage, beltVoltage,kickVoltage, mechanumCurrent, beltCurrent, kickCurrent, beltMotor.getSupplyCurrent());
-        PhoenixUtil.registerSignals(false, mecanumVoltage, mechanumCurrent, kickVoltage, kickCurrent, beltVoltage, beltCurrent);
+        PhoenixUtil.registerSignals(false,   mecanumMotor.getSupplyCurrent(),
+            beltMotor.getSupplyCurrent(),
+            kickMotor.getSupplyCurrent(),
+            mecanumMotor.getMotorVoltage(),
+            beltMotor.getMotorVoltage(),
+            kickMotor.getMotorVoltage(),
+            mecanumMotor.getVelocity(),
+            beltMotor.getVelocity(),
+            kickMotor.getVelocity(),
+            mecanumMotor.getDeviceTemp(),
+            beltMotor.getDeviceTemp(),
+            kickMotor.getDeviceTemp());
     }
 
     @Override
@@ -69,12 +76,12 @@ public class IndexerIOTalonFX implements IndexerIO{
             mecanumMotor.isConnected(),
             beltMotor.isConnected(),
             kickMotor.isConnected(),
-            mechanumCurrent.getValueAsDouble(),
+               mecanumMotor.getSupplyCurrent().getValueAsDouble(),
             beltMotor.getSupplyCurrent().getValueAsDouble(),
-            kickCurrent.getValueAsDouble(),
-            mecanumVoltage.getValueAsDouble(),
-            beltVoltage.getValueAsDouble(),
-            kickVoltage.getValueAsDouble(),
+            kickMotor.getSupplyCurrent().getValueAsDouble(),
+            mecanumMotor.getMotorVoltage().getValueAsDouble(),
+            beltMotor.getMotorVoltage().getValueAsDouble(),
+            kickMotor.getMotorVoltage().getValueAsDouble(),
             mecanumMotor.getVelocity().getValueAsDouble(),
             beltMotor.getVelocity().getValueAsDouble(),
             kickMotor.getVelocity().getValueAsDouble(),

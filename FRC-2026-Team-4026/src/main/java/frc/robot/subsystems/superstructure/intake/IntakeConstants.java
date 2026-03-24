@@ -1,19 +1,15 @@
 package frc.robot.subsystems.superstructure.intake;
 
 import static edu.wpi.first.units.Units.Inches;
-
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
-
 import com.ctre.phoenix6.configs.Slot0Configs;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
 
 public class IntakeConstants {
     public static final double STORED_INTAKE_POSITION = 1.0;
     public static final double DEPLOY_INTAKE_POSITION = 15.3;//15.3
 
+    public static final double OSCILLATING_TIMER = 0.5;
 
     public static final double kP = 0.08;
     public static final double kI = 0;
@@ -44,6 +40,10 @@ public class IntakeConstants {
     public static final double DEPLOY_LENGTH = 9.5;
     public static final double DEPLOY_MAX_ANGLE=100;
     public static final double DEPLOY_MIN_ANGLE =0;
+
+    public static final double INTAKE_CURRENT_LIMIT = 70;
+    public static final double DEPLOY_CURRENT_LIMIT = 45;
+    public static final double HALFWAY_INTAKE_POSITION = 7;
 
 
 }

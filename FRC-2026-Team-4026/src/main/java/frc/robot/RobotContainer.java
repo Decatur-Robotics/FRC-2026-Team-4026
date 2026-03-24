@@ -7,15 +7,10 @@ package frc.robot;
 import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.DistanceEstimator;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberIOSim;
-import frc.robot.subsystems.climber.ClimberTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveCommands;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -29,17 +24,16 @@ import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.superstructure.leds.ledsConstants;
+import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
-import frc.robot.subsystems.superstructure.shooter.ShooterIO;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
-import frc.robot.subsystems.vision.TestVision;
-import frc.robot.subsystems.vision.template.Vision;
-import frc.robot.subsystems.vision.template.VisionConstants;
-import frc.robot.subsystems.vision.template.VisionIOPhotonVision;
-import frc.robot.subsystems.vision.template.VisionIOPhotonVisionSim;
-import frc.robot.util.AllianceFlipUtil;
+import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.TeamColor;
 
 import org.ironmaple.simulation.SimulatedArena;
@@ -58,13 +52,10 @@ import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
-import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -73,7 +64,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -83,10 +73,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.Constants;
-import frc.robot.constants.FieldConstants;
-import frc.robot.subsystems.vision.template.VisionIOSim;
 
 
 /**
@@ -105,22 +92,8 @@ public class RobotContainer {
   private Intake intake;
   private Shooter shooter;
    private Hood hood;
-  private RobotState robotState;
-      private InterpolatingDoubleTreeMap targetVelocities;
-  //private final Climber climber;
-  private  frc.robot.subsystems.superstructure.leds.leds leds = new frc.robot.subsystems.superstructure.leds.leds();
-      private Double robotDistance;
-  public Drive drive;
-  private SwerveDriveSimulation driveSimulation;
-//  private final TestVision vision;
-   private Vision vision;
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  private static RobotContainer instance;
-  private PathPlannerAuto auto;
-  private DistanceEstimator distanceEstimator;
-
-private enum AutoType{
-  CenterRush("Center Rush"), Depot("Depot"), Preload("Preload");
+   private enum AutoType{
+  CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"), RushDepot("Center Rush + Depot");
 
   private String autoName;
   private AutoType(String autoName){
@@ -136,27 +109,31 @@ private enum AutoSide{
     this.autoName = autoName;
   }
 }
-  private SendableChooser<AutoSide> autoSide;
+
+
+      private PathPlannerAuto auto;
+       private SendableChooser<AutoSide> autoSide;
   private SendableChooser<AutoType> autoType;
-  // private Autonomous autonomous;
+  //  public ShotEstimator shotEstimator;
+  private RobotState robotState;
+      private InterpolatingDoubleTreeMap targetVelocities;
+  //private final Climber climber;
+  private Leds leds = new Leds();
+      private Double robotDistance;
+  public Drive drive;
+  public static Drive driveInstance;
+  private SwerveDriveSimulation driveSimulation;
+   private Vision vision;
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  private static RobotContainer instance;
+
+
+
+   private Autonomous autonomous;
   public RobotContainer() {
 
-    autoSide = new SendableChooser<>();
-    autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
-    autoSide.addOption(AutoSide.Center.autoName, AutoSide.Center);
-    autoSide.addOption(AutoSide.Right.autoName, AutoSide.Right);
-
-    autoType = new SendableChooser<>();
-    autoType.setDefaultOption(AutoType.CenterRush.autoName, AutoType.CenterRush);
-    autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
-    autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
-    ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
-    autoTab.add("Side", autoSide);
-    autoTab.add("Type", autoType);
-
-    
       instance = this;
-    // Configure the trigger bindings
+
 
      if(Constants.currentMode != Constants.Mode.SIM) {
       hood = new Hood( new HoodIOTalonFX());
@@ -173,12 +150,11 @@ private enum AutoSide{
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
       robotState = new RobotState(drive);
-            // distanceEstimator = new DistanceEstimator();
-      //    vision = new TestVision(drive);
-              // vision = new Vision(distanceEstimator, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+              vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
 
-      // autonomous = new Autonomous(superstructure);
+            driveInstance = drive;
+       autonomous = new Autonomous(superstructure);
     
     }
  else {
@@ -186,7 +162,7 @@ private enum AutoSide{
       hood = new Hood(new HoodIOSim());
       indexer = new Indexer(new IndexerIOSim());
       shooter = new Shooter(new ShooterIOSim());
-      driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3.6, 6, new Rotation2d()));
+      driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(), new Pose2d(3.6, 6, new Rotation2d()));
       intake = new Intake(new IntakeIOSim(driveSimulation));
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
       //climber = new Climber(new ClimberIOSim());
@@ -201,29 +177,34 @@ private enum AutoSide{
                         new ModuleIOTalonFXSim(
                                 TunerConstants.BackRight, driveSimulation.getModules()[3]),
                         driveSimulation::setSimulationWorldPose);
-      // vision = new TestVision(drive);
-      // vision = null;
-      // distanceEstimator = new DistanceEstimator();
-      // new Vision(distanceEstimator, new VisionIOSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-      //                                 new VisionIOSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
-      vision = null;
+      new Vision(drive, new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
                                  robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
-            // autonomous = new Autonomous(superstructure);
-
+            driveInstance = drive;
+            autonomous = new Autonomous(superstructure);
      }
 
-          //  auto = new PathPlannerAuto("Center Rush Right");
-      // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      // auto.activePath("Center Rush Right shoot").onFalse(superstructure.shootCommand(() -> 45));
+  
 
-         targetVelocities = new InterpolatingDoubleTreeMap();
-             targetVelocities.put(2.7, 38.0);
-    targetVelocities.put(3.4, 45.0);
+               autoSide = new SendableChooser<>();
+                   autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
+    autoSide.addOption(AutoSide.Center.autoName, AutoSide.Center);
+    autoSide.addOption(AutoSide.Right.autoName, AutoSide.Right);
+
+    autoType = new SendableChooser<>();
+    autoType.setDefaultOption(AutoType.CenterRush.autoName, AutoType.CenterRush);
+    autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
+    autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
+    autoType.addOption(AutoType.DoubleCenter.autoName, AutoType.DoubleCenter);
+    autoType.addOption(AutoType.RushDepot.autoName, AutoType.RushDepot);
+    ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
+    autoTab.add("Side", autoSide);
+    autoTab.add("Type", autoType);
+    
 
     // targetVelocities.put(3.911, 60.0);
     // targetVelocities.put(5.18, 75.0);
-     //NamedCommands.registerCommand("Intake", superstructure.intakeCommand().finallyDo(() -> superstructure.storeCommand()));
      resetSimulationField();
          configurePrimaryBindings();
     configureSecondaryBindings();
@@ -262,25 +243,33 @@ private enum AutoSide{
          drive.setDefaultCommand(
               DriveCommands.joystickDrive(
                 drive,
-                ()-> joystick.getY(),
-                ()-> joystick.getX(),
+                //it was recommended to apply the filter after joystick input modificaiton (when it gets multiplied by max speed)
+                //however, since our modification is linear it should be fine to do it here. This might need to be changed.
+                //The change would be in the actual joystickDrive command. It did need to be changed 
+                //I almost messed this up, BIG mistake, never use one filter for multiple inputs.
+                //Each filter has it's own memory.
+                ()-> -joystick.getY(),
+                ()-> -joystick.getX(),
                 ()-> -joystick.getTwist()
             ));
 
-          y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
-          a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
-          x.whileTrue(drive.setRotationXCommand());
-          //b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(robotState.getTurretRotation()))));
+
+          // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
+          // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
+          // x.whileTrue(drive.setRotationXCommand());
+          bumperRight.whileTrue(superstructure.alignCommand()).onFalse(leds.setAllLedsCommand(LedsConstants.BLUE));
+          bumperLeft.whileTrue(drive.alignHubPathpl());
+          x.whileTrue(drive.stopWithXCommand());
+          b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d(-Math.PI))));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
-                ()-> joystick.getY()*0.6,
-                ()-> joystick.getX()*0.6,
+                ()-> -joystick.getY()*0.6,
+                ()-> -joystick.getX()*0.6,
                 ()-> -joystick.getTwist()*0.6));
-           b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
-          // a.whileTrue()
+          //  b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
   }
 
-  private void configureSecondaryBindings() {
+  public void configureSecondaryBindings() {
     Joystick joystick = new Joystick(1);
 
         JoystickButton start = new JoystickButton(joystick, LogitechControllerButtons.start);
@@ -299,21 +288,59 @@ private enum AutoSide{
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        // triggerLeft.whileTrue(superstructure.shootCommand(() -> targetVelocities.get(distanceEstimator.getDistance()))).onFalse(superstructure.storeCommand());
-        triggerRight.whileTrue(superstructure.shootCommand(() -> 42)).onFalse(superstructure.storeCommand());
-        bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+        triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
+        triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
-      left.whileTrue(intake.deployIntakeCommand(7));
+       right.whileTrue(intake.oscillateIntakeCommand());
 
-
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-
+       up.whileTrue(superstructure.setAllLedsCommand(LedsConstants.BLUE));
+       down.whileTrue(superstructure.setAllLedsCommand(LedsConstants.YELLOW));
   }
+
+  public void chooseAuto(){
+     if(autoSide.getSelected() == AutoSide.Left){
+        if(autoType.getSelected() == AutoType.CenterRush){
+          auto = new PathPlannerAuto("Center Rush Right", true);
+          auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+          auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+        } else if(autoType.getSelected() == AutoType.Depot){
+            auto = new PathPlannerAuto("Depot Auto");
+                auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+                auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
+        } else if(autoType.getSelected() == AutoType.Preload){
+                superstructure.shootCommand();
+        } else if(autoType.getSelected() == AutoType.DoubleCenter){
+          auto = new PathPlannerAuto("Double Center Swipe Auto");
+          auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+          auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
+          // auto.condition(() -> superstructure.getNumBallsStored() < 5).onTrue();
+        }
+     } else if(autoSide.getSelected() == AutoSide.Center){
+                  auto = new PathPlannerAuto("Center Depot Auto");
+            auto.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+            auto.activePath("Center Depot Shoot").onFalse(superstructure.shootCommand());
+     } else if(autoSide.getSelected() == AutoSide.Right){
+        if(autoType.getSelected() == AutoType.CenterRush){
+            auto = new PathPlannerAuto("Center Rush Right");
+        auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+        auto.activePath("Center Rush Right shoot").onFalse(superstructure.oscillateShootCommand());
+        } else if(autoType.getSelected() == AutoType.Depot){
+            auto = new PathPlannerAuto("HP Auto Right");
+                auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
+                auto.activePath("HP Shoot").onFalse(superstructure.shootCommand());
+        } else if(autoType.getSelected() == AutoType.Preload){
+            superstructure.shootCommand();
+        }
+     }
+  }
+
   
 
   /**
@@ -321,45 +348,15 @@ private enum AutoSide{
    *
    * @return the command to run in autonomous
    */
-  public void chooseAuto(){
-     if(autoSide.getSelected() == AutoSide.Left){
-      if(autoType.getSelected() == AutoType.CenterRush){
-            auto = new PathPlannerAuto("Center Rush");
-            auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-            auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand(() -> 45));
-      } else if(autoType.getSelected() == AutoType.Depot){
-          auto = new PathPlannerAuto("Depot Auto");
-            auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-            auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand(() -> 55));
-      } else if(autoType.getSelected() == AutoType.Preload){
-            auto = new PathPlannerAuto("Sad Auto");
-            auto.activePath("Sad Path").onFalse(superstructure.shootCommand(() -> 55));
-      }
-     } else if(autoSide.getSelected() == AutoSide.Center){
-                  auto = new PathPlannerAuto("Center Depot Auto");
-            auto.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-            auto.activePath("Center Depot Shoot").onFalse(superstructure.shootCommand(() -> 50));
-     } else if(autoSide.getSelected() == AutoSide.Right){
-      if(autoType.getSelected() == AutoType.CenterRush){
-        auto = new PathPlannerAuto("Center Rush Right");
-      auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      auto.activePath("Center Rush Right shoot").onFalse(superstructure.shootCommand(() -> 45));
-      } else if(autoType.getSelected() == AutoType.Depot){
-         auto = new PathPlannerAuto("HP Auto Right");
-            auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
-            auto.activePath("HP Shoot").onFalse(superstructure.shootCommand(() -> 55));
-      }
-     }
-  }
+  
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-      return superstructure.shootCommand(() -> 42);
-      // return Commands.sequence(Commands.run(() -> drive.setPose(new Pose2d(3.56, 6, new Rotation2d()))),
-      //  Commands.parallel(drive.driveToPoseAuto(() -> new Pose2d(0.6,6,new Rotation2d()))),
-      //  superstructure.intakeCommand().until(() -> drive.isAligned()).andThen(superstructure.storeCommand()),
-      //   drive.driveToPoseAuto(() ->  new Pose2d(0.8, 6, new Rotation2d(Units.degreesToRadians(-27)))), superstructure.shootCommand(() -> 55));
-      // return new PathPlannerAuto("New Auto");
-    //  return superstructure.testShootCommand().finallyDo(() -> superstructure.noTestShootCommand());
+      Logger.recordOutput("Auto", auto.getName());
+      return auto;
+      // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right", true);
+      // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+      // return auto;
+
   }
 
   public Command pathfinderToPose(Pose2d targetPose) {
@@ -386,10 +383,6 @@ private enum AutoSide{
     Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
   }
 
-  public Drive getDrive() {
-    return drive;
-  }
-
     public void distanceUpdate(){
         configureSecondaryBindings();
   }
@@ -400,6 +393,10 @@ private enum AutoSide{
  
   public static RobotContainer getInstance(){
     return instance;
+  }
+
+  public static Drive getDrive(){
+    return driveInstance;
   }
 
   public Pose2d getDrivePose(){
