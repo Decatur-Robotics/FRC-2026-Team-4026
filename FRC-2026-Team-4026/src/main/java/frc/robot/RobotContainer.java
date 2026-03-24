@@ -38,6 +38,16 @@ import frc.robot.util.TeamColor;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.LogFileUtil;
+
+import frc.robot.subsystems.superstructure.hood.Hood;
+import frc.robot.subsystems.superstructure.hood.HoodIO;
+import frc.robot.subsystems.superstructure.hood.HoodIOSim;
+
+import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
+import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
+
 
 import org.littletonrobotics.junction.Logger;
 
