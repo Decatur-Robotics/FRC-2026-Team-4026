@@ -8,6 +8,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.controls.Follower;
+
+
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 import org.littletonrobotics.junction.Logger;
@@ -34,10 +38,9 @@ public class ShooterIOTalonFX implements ShooterIO {
     public ShooterIOTalonFX () {
         motor = new TalonFX(Ports.SHOOTER_MOTOR);
         followerMotor = new TalonFX(Ports.SHOOTER_FOLLOWER_MOTOR);
-        
+        followerMotor.setControl(new Follower(Ports.SHOOTER_MOTOR, MotorAlignmentValue.Aligned));      
         config = new TalonFXConfiguration().withSlot0(ShooterConstants.SLOT_0_CONFIGS);
         motor.getConfigurator().apply(config);
-        followerMotor.getConfigurator().apply(config);
         voltage = motor.getMotorVoltage();
         velocity = motor.getVelocity().getValueAsDouble();
         voltageRequest = new VoltageOut(voltage.getValueAsDouble());
@@ -53,14 +56,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 public void setVelocity (double velocity){
     this.velocity = velocity;
      motor.setControl(velocityRequest.withVelocity(velocity)); 
-     followerMotor.setControl(velocityRequest.withVelocity(velocity));
     Logger.recordOutput("Target Velocity", velocity);
 }
 
 @Override
 public void setVoltage (double voltage){
     motor.setVoltage(voltage);
-    followerMotor.setVoltage(voltage);
 }
 
 @Override
