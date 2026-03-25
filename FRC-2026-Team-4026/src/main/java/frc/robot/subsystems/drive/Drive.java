@@ -606,13 +606,18 @@ public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose){
     ,new Rotation2d(0)));
 
 }
+public Supplier<Pose2d> convergentFlightTime(){
+
+    return getFuturePose(getFuturePose(getFuturePose(getFuturePose())));
+}
 //Since the ball will travel longer in the air or shorter in the air based on y velocity, we may need to recalculate x and y
 //velocities independently of each other.
+
 public DoubleSupplier autoAlignOnTheMove(){
     shootOnMoveController.enableContinuousInput(-Math.PI, Math.PI);
 
 
-    futurePose = getFuturePose(getFuturePose(getFuturePose(getFuturePose())));
+    futurePose = convergentFlightTime();
     double wantedAngle;
     if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
             wantedAngle =  Math.atan2(futurePose.get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (futurePose.get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;

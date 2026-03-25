@@ -37,13 +37,6 @@ public class Indexer extends SubsystemBase{
             io.setVoltage(voltage);
         });
     }
-    public Command resetTimer(){
-
-        return Commands.runOnce(() -> io.resetTimer());
-    }
-
-
-
 
     public double getMecanumCurrent(){
         return inputs.indexerData.mecanumCurrent();

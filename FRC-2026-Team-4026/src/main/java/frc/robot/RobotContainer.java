@@ -233,7 +233,7 @@ public class RobotContainer {
 
         // triggerLeft.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         //Again, please change, I just set as a random button
-        triggerRight.onTrue(indexer.resetTimer()).whileTrue(triggerLeft.getAsBoolean()
+        triggerRight.whileTrue(triggerLeft.getAsBoolean()
         ? superstructure.shootOnMoveCommand():superstructure.shootCommand());
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
