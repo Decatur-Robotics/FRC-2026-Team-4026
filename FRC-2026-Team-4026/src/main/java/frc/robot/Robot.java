@@ -48,29 +48,26 @@ public class Robot extends LoggedRobot {
 
     Logger.recordMetadata("FRC-2026-Team-4026", "Set this to something else"); // Set a metadata value
 
-    switch (Constants.currentMode) {
-      case REAL:
+    if(isReal()){
         //Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(AKIT_LOG_PATH, "_real"))); // Save outputs to a new log
         Logger.addDataReceiver(new NT4Publisher());
-        break;
+    }
         // Publish data to NetworkTables
-        
-      case SIM:
+    else if(isSimulation()){
         // setUseTiming(false); // Run as fast as possible
-        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        // String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
         // Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
         Logger.addDataReceiver(new NT4Publisher());
-        break;
-      case REPLAY:
-        logPath = LogFileUtil.findReplayLog();
+    } else {
+        String logPath = LogFileUtil.findReplayLog();
         Logger.setReplaySource(new WPILOGReader(logPath));
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-        break;
+    }
+    Logger.start();
 }
 
-Logger.start();
-  }
+
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
