@@ -299,6 +299,7 @@ private enum AutoSide{
        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
        right.whileTrue(intake.oscillateIntakeCommand());
+        bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
 
 
   }

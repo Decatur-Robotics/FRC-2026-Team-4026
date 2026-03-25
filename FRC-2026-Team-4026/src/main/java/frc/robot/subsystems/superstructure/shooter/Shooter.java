@@ -44,6 +44,10 @@ public Command shootAimCommand(){
     return Commands.run(() -> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity().get()));
 }
 
+public Command passAimCommand(){
+    return Commands.run(()->io.setVelocity(ShotEstimator.getInstance().getPassingVelocity().get()));
+}
+
 public Command setVoltageCommand(double voltage) {
     return Commands.run(() -> io.setVoltage(voltage));
 }
