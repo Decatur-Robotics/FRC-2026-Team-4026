@@ -178,7 +178,9 @@ private enum AutoSide{
                                 TunerConstants.BackRight, driveSimulation.getModules()[3]),
                         driveSimulation::setSimulationWorldPose);
       new Vision(drive, new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-                                      new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose));
+                                      new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOPhotonVisionSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose)
+                                    );
                                  robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
             driveInstance = drive;
