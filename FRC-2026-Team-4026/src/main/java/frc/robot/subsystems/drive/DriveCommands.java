@@ -58,6 +58,8 @@ public class DriveCommands {
 //should this go in the constructor?
     private NetworkTables networkTables = new NetworkTables();
 
+    private static SlewRateLimiter linearMagnitudeFilter = new SlewRateLimiter(2);
+
     private DriveCommands() {}
 
     private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
@@ -67,7 +69,7 @@ public class DriveCommands {
 
         // Square magnitude for more precise control
         linearMagnitude = linearMagnitude * linearMagnitude;
-
+        linearMagnitudeFilter.calculate(linearMagnitude);
         // Return new linear velocity
         return new Pose2d(new Translation2d(), linearDirection)
                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))

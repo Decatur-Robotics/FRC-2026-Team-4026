@@ -9,6 +9,8 @@ public class IntakeConstants {
     public static final double STORED_INTAKE_POSITION = 1.0;
     public static final double DEPLOY_INTAKE_POSITION = 15.3;//15.3
 
+    public static final double OSCILLATING_TIMER = 0.5;
+
     public static final double kP = 0.08;
     public static final double kI = 0;
     public static final double kD = 0;
@@ -40,7 +42,7 @@ public class IntakeConstants {
     public static final double DEPLOY_MIN_ANGLE =0;
 
     public static final double INTAKE_CURRENT_LIMIT = 70;
-    public static final double DEPLOY_CURRENT_LIMIT = 60;
+    public static final double DEPLOY_CURRENT_LIMIT = 45;
     public static final double HALFWAY_INTAKE_POSITION = 7;
 
 

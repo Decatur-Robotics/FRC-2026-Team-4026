@@ -48,6 +48,10 @@ public Command shootOnMoveCommand(Drive drive){
     return Commands.run(()-> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity(drive.getDistanceToHub(drive.convergentFlightTime().get()).getAsDouble()).get()));
 }
 
+public Command passAimCommand(){
+    return Commands.run(()->io.setVelocity(ShotEstimator.getInstance().getPassingVelocity().get()));
+}
+
 public Command setVoltageCommand(double voltage) {
     return Commands.run(() -> io.setVoltage(voltage));
 }
