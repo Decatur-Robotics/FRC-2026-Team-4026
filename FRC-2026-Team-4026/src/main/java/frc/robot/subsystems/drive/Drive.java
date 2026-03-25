@@ -38,8 +38,10 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -75,6 +77,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.dyn4j.geometry.Rotation;
@@ -173,6 +176,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         colorvision = new ColorVision(new ColorVisionIOPhotonVision());
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
+        flightTime = new InterpolatingDoubleTreeMap();
+        flightTime.put(1.0, 0.5);
+        flightTime.put(1.5, 0.7);
+        flightTime.put(2.0,0.9);
         modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
         modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
         modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
@@ -557,6 +564,56 @@ public Command driveToPosePathPl(Pose2d pose){
 
 public Command alignHubPathpl(){
     return driveToPosePathPl(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d(0)));
+}
+public DoubleSupplier getDistanceToHub(Pose2d pose){
+    return () -> pose.getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+
+}
+public Supplier<Pose2d> getFuturePose(){
+    ChassisSpeeds currentSpeeds = getChassisSpeeds();
+    ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(getPose()).getAsDouble()));
+    //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
+    //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
+    //travelled in a direction added to the ball from our velocity.
+    return () -> getPose().transformBy(new Transform2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond
+    ,new Rotation2d(0)));
+
+}
+public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose){
+    ChassisSpeeds currentSpeeds = getChassisSpeeds();
+    ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(pose.get()).getAsDouble()));
+    //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
+    //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
+    //travelled in a direction added to the ball from our velocity.
+    return () -> getPose().transformBy(new Transform2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond
+    ,new Rotation2d(0)));
+
+}
+public Supplier<Pose2d> convergentFlightTime(){
+
+    return getFuturePose(getFuturePose(getFuturePose(getFuturePose())));
+}
+//Since the ball will travel longer in the air or shorter in the air based on y velocity, we may need to recalculate x and y
+//velocities independently of each other.
+
+public DoubleSupplier autoAlignOnTheMove(){
+    shootOnMoveController.enableContinuousInput(-Math.PI, Math.PI);
+
+
+    futurePose = convergentFlightTime();
+    double wantedAngle;
+    if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+            wantedAngle =  Math.atan2(futurePose.get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (futurePose.get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+        } else {
+            wantedAngle =  Math.atan2(futurePose.get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (futurePose
+            .get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())))+Math.PI;
+        }
+    double rotationSpeed = shootOnMoveController.calculate(getPose().getRotation().getRadians(), new Rotation2d(wantedAngle).getRadians());
+    return () -> rotationSpeed;
+}
+
+public Command resetController(){
+    return Commands.runOnce(() ->shootOnMoveController.reset());
 }
 
 // public Rotation2d getTargetRotation(){

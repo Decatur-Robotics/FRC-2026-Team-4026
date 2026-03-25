@@ -126,14 +126,14 @@ private enum AutoSide{
    private Vision vision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
-
-
+  private PathPlannerAuto auto;
+  private boolean shootingOnMove;
 
    private Autonomous autonomous;
   public RobotContainer() {
 
       instance = this;
-
+      shootingOnMove = false;
 
      if(Constants.currentMode != Constants.Mode.SIM) {
       hood = new Hood( new HoodIOTalonFX());
@@ -243,15 +243,13 @@ private enum AutoSide{
          drive.setDefaultCommand(
               DriveCommands.joystickDrive(
                 drive,
-                //it was recommended to apply the filter after joystick input modificaiton (when it gets multiplied by max speed)
-                //however, since our modification is linear it should be fine to do it here. This might need to be changed.
-                //The change would be in the actual joystickDrive command. It did need to be changed 
-                //I almost messed this up, BIG mistake, never use one filter for multiple inputs.
-                //Each filter has it's own memory.
-                ()-> -joystick.getY(),
-                ()-> -joystick.getX(),
-                ()-> -joystick.getTwist()
+                ()-> joystick.getY(),
+                ()-> joystick.getX(),
+                ()-> -joystick.getTwist(),
+                //please set this last button to whatever you want, this is just a placeholder
+                () -> triggerRight.onTrue(drive.resetController()).getAsBoolean()
             ));
+          
 
 
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
@@ -263,9 +261,10 @@ private enum AutoSide{
           b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d(-Math.PI))));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
-                ()-> -joystick.getY()*0.6,
-                ()-> -joystick.getX()*0.6,
-                ()-> -joystick.getTwist()*0.6));
+                ()-> joystick.getY()*0.6,
+                ()-> joystick.getX()*0.6,
+                ()-> -joystick.getTwist()*0.6,
+                () -> triggerRight.getAsBoolean()));
           //  b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
   }
 
@@ -288,6 +287,11 @@ private enum AutoSide{
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
+        // triggerLeft.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        //Again, please change, I just set as a random button
+        triggerRight.whileTrue(triggerLeft.getAsBoolean()
+        ? superstructure.shootOnMoveCommand():superstructure.shootCommand());
+        // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
         triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
         triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));

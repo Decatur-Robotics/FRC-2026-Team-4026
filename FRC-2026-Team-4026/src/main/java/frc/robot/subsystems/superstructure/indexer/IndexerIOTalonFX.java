@@ -8,11 +8,13 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 
 public class IndexerIOTalonFX implements IndexerIO{
     private TalonFX mecanumMotor, beltMotor, kickMotor;
+
     
     private TalonFXConfiguration config = new TalonFXConfiguration()
     .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(IndexerConstants.INDEXER_CURRENT_LIMIT));
@@ -20,6 +22,7 @@ public class IndexerIOTalonFX implements IndexerIO{
     private VoltageOut voltageRequest;
 
     public IndexerIOTalonFX(){
+
         mecanumMotor = new TalonFX(Ports.INDEXER_MOTOR_MECANUM);
          beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
         kickMotor = new TalonFX(Ports.INDEXER_MOTOR_KICK);
@@ -93,6 +96,7 @@ public class IndexerIOTalonFX implements IndexerIO{
 
     @Override
     public void setVoltage(double voltage){
+
         voltageRequest = new VoltageOut(voltage);
 
         beltMotor.setControl(voltageRequest);
@@ -100,6 +104,7 @@ public class IndexerIOTalonFX implements IndexerIO{
 
         voltageRequest = new VoltageOut(voltage*-1);
         mecanumMotor.setControl(voltageRequest);
+        
     }
 
 
@@ -109,6 +114,5 @@ public class IndexerIOTalonFX implements IndexerIO{
         beltMotor.stopMotor();
         kickMotor.stopMotor();
     }
-
 
 }

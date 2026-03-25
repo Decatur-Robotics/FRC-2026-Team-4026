@@ -35,6 +35,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     private double deployPosition;
     private StatusSignal<Current> deployCurrent;
     private StatusSignal<Current> deployFollowCurrent;
+    
 
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
     .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3))
@@ -164,6 +165,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     public void coast(){
         deployMotor.setControl(new CoastOut());
     }
+
 
 
 
