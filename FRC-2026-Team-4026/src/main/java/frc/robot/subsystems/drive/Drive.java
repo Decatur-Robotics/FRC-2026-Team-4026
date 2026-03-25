@@ -170,6 +170,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             ModuleIO blModuleIO,
             ModuleIO brModuleIO,
             Consumer<Pose2d> resetSimulationPoseCallBack) {
+        colorvision = new ColorVision(new ColorVisionIOPhotonVision());
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
@@ -536,6 +537,15 @@ public boolean isAligned(){
         }
     }
     return velocityAligned && atTargetPose();
+}
+public Command driveToFuel(){
+    rotationalController.enableContinuousInput(Math.PI, -Math.PI);
+    colorvision.getRotationChange(this);
+    return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
+        2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
+        colorvision.getRotationChange(this).getRadians()), getPose().getRotation()
+    )));
+}
 }
 PathConstraints constraints = new PathConstraints(
         0.25, 1.0,
