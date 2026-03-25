@@ -22,7 +22,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,6 +50,8 @@ public class DriveCommands {
 //should this go in the constructor?
     private NetworkTables networkTables = new NetworkTables();
 
+    private static SlewRateLimiter linearMagnitudeFilter = new SlewRateLimiter(2);
+
     private DriveCommands() {}
 
     private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
@@ -60,7 +61,7 @@ public class DriveCommands {
 
         // Square magnitude for more precise control
         linearMagnitude = linearMagnitude * linearMagnitude;
-
+        linearMagnitudeFilter.calculate(linearMagnitude);
         // Return new linear velocity
         return new Pose2d(new Translation2d(), linearDirection)
                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))

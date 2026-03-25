@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Pickup"
+            "pathName": "Center Rush Right"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot to climb"
+            "pathName": "Center Rush Right Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Right shoot"
           }
         }
       ]

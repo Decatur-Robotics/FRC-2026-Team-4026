@@ -5,19 +5,13 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center Pickup"
+                  "pathName": "Start to depot"
                 }
               },
               {
@@ -30,25 +24,25 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot"
+            "pathName": "Depot Intake"
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Shoot to climb"
+                  "pathName": "Depot to Shoot"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Climb Deploy"
+                  "name": "Shoot"
                 }
               }
             ]

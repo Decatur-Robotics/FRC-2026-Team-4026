@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2nd center rush"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2nd Center rush shoot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

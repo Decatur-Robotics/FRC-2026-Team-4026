@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import static edu.wpi.first.units.Units.*;
 
-import java.lang.Thread.State;
-
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,9 +12,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class Shooter extends SubsystemBase {
 
-    private double velocity;
-    private double voltage;
 
+    private int ballsShot;
+    private boolean shootingBall;
     private ShooterIO io;
     private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
@@ -26,8 +24,8 @@ public class Shooter extends SubsystemBase {
 
 public Shooter (ShooterIO io) {
     this.io = io;
-    velocity = ShooterConstants.FUEL_REST_VELOCITY;
-    voltage = inputs.data.voltage();
+    ballsShot = 0;
+    shootingBall = false;
 }
 
 public double getVelocity() {
@@ -42,6 +40,14 @@ public Command setVelocityCommand(double velocity) {
     return Commands.run(() -> io.setVelocity(velocity));
 }
 
+public Command shootAimCommand(){
+    return Commands.run(() -> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity().get()));
+}
+
+public Command passAimCommand(){
+    return Commands.run(()->io.setVelocity(ShotEstimator.getInstance().getPassingVelocity().get()));
+}
+
 public Command setVoltageCommand(double voltage) {
     return Commands.run(() -> io.setVoltage(voltage));
 }
@@ -50,6 +56,16 @@ public Command setVoltageCommand(double voltage) {
 public void periodic () {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
+    if(getCurrent() > 40){
+        if(shootingBall == false){
+            ballsShot+=1;
+        }
+        shootingBall = true;
+    } else if(getCurrent() < 10){
+        shootingBall = false;
+    }
+
+    Logger.recordOutput("Shooter/Balls Shot", ballsShot);
 }
 
 public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
@@ -58,4 +74,8 @@ public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
     public Command sysIdDynamic (SysIdRoutine.Direction direction) {
         return sysIdRoutine.dynamic(direction);
     }
+
+public int getNumBallsShot(){
+    return ballsShot;
+}
 }

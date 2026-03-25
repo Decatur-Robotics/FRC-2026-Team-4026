@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.3100118623962045,
-        "y": 0.6942704626334513
+        "x": 7.7535587188612105,
+        "y": 0.989
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.401121775448366,
-        "y": 2.153027451363859
+        "x": 7.732040332147095,
+        "y": 1.376330960854093
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.545504151838672,
-        "y": 3.5239383155397386
+        "x": 7.7535587188612105,
+        "y": 2.923
       },
       "prevControl": {
-        "x": 2.0887659984942264,
-        "y": 2.6394798406203215
+        "x": 7.710521945432978,
+        "y": 2.212893238434165
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 0.7,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 89.39690880561945
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Center Rush",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 68.8644218396827
+    "rotation": -90.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -3,10 +3,8 @@ package frc.robot.subsystems.climber;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -15,7 +13,7 @@ import frc.robot.constants.Ports;
 
 public class ClimberTalonFX implements ClimberIO {
 
-	private final TalonFX motor, followMotor;
+	private final TalonFX motor;
 	private TalonFXConfiguration config;
 
     private StatusSignal<Angle> position;
@@ -27,9 +25,6 @@ public class ClimberTalonFX implements ClimberIO {
 	public ClimberTalonFX() {
         
 		this.motor = new TalonFX(Ports.CLIMBER_MOTOR_LEFT);
-		this.followMotor = new TalonFX(Ports.CLIMBER_MOTOR_RIGHT);
-
-        followMotor.setControl(new Follower(Ports.CLIMBER_MOTOR_LEFT, MotorAlignmentValue.Opposed)); // todo ask cad if this is right
 
 		this.config = new TalonFXConfiguration();
 
@@ -57,7 +52,6 @@ public class ClimberTalonFX implements ClimberIO {
     public void updateInputs(ClimberIOInputs inputs) {
         inputs.climberData = new ClimberIOData(
             motor.isConnected(),
-            followMotor.isConnected(),
             position.getValueAsDouble(),
             voltage.getValueAsDouble(),
             current.getValueAsDouble(),

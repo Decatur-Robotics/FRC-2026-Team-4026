@@ -9,11 +9,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import frc.robot.subsystems.superstructure.shooter.ShooterIO.ShooterIOData;
-import frc.robot.subsystems.superstructure.shooter.ShooterIO.ShooterIOInputs;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -24,7 +21,9 @@ public class ShooterIOSim implements ShooterIO {
     private final LinearSystem<N1, N1, N1> flywheelSystem = LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(2), 0.05, 10);
 
     private FlywheelSim shooterSim; 
+    private double velocity;
     private final SimulatedMotorController.GenericMotorController motor;
+    private final SimulatedMotorController.GenericMotorController followerMotor;
 
     private final PIDController controller = new PIDController (0,0,0);
 
@@ -33,8 +32,10 @@ public class ShooterIOSim implements ShooterIO {
     public ShooterIOSim(
     ) {
         motor = new SimulatedMotorController.GenericMotorController(DCMotor.getKrakenX60(1));
-        shooterSim = new FlywheelSim(flywheelSystem, DCMotor.getKrakenX60(2),0.0);
+        followerMotor = new SimulatedMotorController.GenericMotorController(DCMotor.getKrakenX60(1));
+        shooterSim = new FlywheelSim(flywheelSystem, DCMotor.getKrakenX60(3),0.0);
 
+        velocity = 0;
         SimulatedBattery.addElectricalAppliances(this::getSupplyCurrent);
         shooterSim.update(0.0);
 
@@ -52,9 +53,14 @@ public class ShooterIOSim implements ShooterIO {
 
         inputs.data = new ShooterIOData (
             true,
-            shooterSim.getAngularVelocityRPM(),
+            true,
+            velocity,
+            velocity,
+            voltage.in(Volts),
             voltage.in(Volts),
             getSupplyCurrent().in(Amps),
+            getSupplyCurrent().in(Amps),
+            0.0,
             0.0
             );
     
@@ -68,7 +74,7 @@ public class ShooterIOSim implements ShooterIO {
 
     @Override
     public void setVelocity(double velocity){
-        shooterSim.setAngularVelocity(velocity);
+        this.velocity = velocity;
     }
       
 

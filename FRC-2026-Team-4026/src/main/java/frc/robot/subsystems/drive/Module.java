@@ -20,6 +20,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.generated.TunerConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -54,7 +58,7 @@ public class Module {
         int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
         odometryPositions = new SwerveModulePosition[sampleCount];
         for (int i = 0; i < sampleCount; i++) {
-            double positionMeters = inputs.odometryDrivePositionsRad[i] * constants.WheelRadius;
+            double positionMeters = inputs.odometryDrivePositionsRad[i]/TunerConstants.FrontLeft.DriveMotorGearRatio * constants.WheelRadius;
             Rotation2d angle = inputs.odometryTurnPositions[i];
             odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
         }
@@ -95,7 +99,7 @@ public class Module {
 
     /** Returns the current drive position of the module in meters. */
     public double getPositionMeters() {
-        return inputs.drivePositionRad * constants.WheelRadius;
+        return (inputs.drivePositionRad)/TunerConstants.FrontLeft.DriveMotorGearRatio * constants.WheelRadius;
     }
 
     /** Returns the current drive velocity of the module in meters per second. */
@@ -116,6 +120,10 @@ public class Module {
     /** Returns the module positions received this cycle. */
     public SwerveModulePosition[] getOdometryPositions() {
         return odometryPositions;
+    }
+
+    public Command setRotation(Rotation2d rotation){
+        return Commands.runOnce(() -> io.setTurnPosition(rotation));
     }
 
     /** Returns the timestamps of the samples received this cycle. */
