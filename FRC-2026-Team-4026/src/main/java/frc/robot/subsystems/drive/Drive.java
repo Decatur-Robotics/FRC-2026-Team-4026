@@ -24,7 +24,6 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
@@ -55,32 +54,27 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.RobotState;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.leds.Leds;
-import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.ColorVision.ColorVision;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LocalADStarAK;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import org.dyn4j.geometry.Rotation;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
@@ -107,6 +101,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         // 5.25, 0, 0.3); 
     private PIDController rotationalController = new PIDController(
         0.01, 0, 0);
+    private PIDController shootOnMoveController = new PIDController(10, 
+    0, 0);
+    private InterpolatingDoubleTreeMap flightTime;
+    private ColorVision colorVision;
+    private Supplier<Pose2d> futurePose;
+    private boolean isAligningOnMove;
 
     private static final double ROBOT_MASS_KG = 74.088;
     private static final double ROBOT_MOI = 6.883;
@@ -173,7 +173,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             ModuleIO blModuleIO,
             ModuleIO brModuleIO,
             Consumer<Pose2d> resetSimulationPoseCallBack) {
-        colorvision = new ColorVision(new ColorVisionIOPhotonVision());
+        colorVision = new ColorVision(new ColorVisionIOPhotonVision());
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         flightTime = new InterpolatingDoubleTreeMap();
@@ -547,13 +547,13 @@ public boolean isAligned(){
 }
 public Command driveToFuel(){
     rotationalController.enableContinuousInput(Math.PI, -Math.PI);
-    colorvision.getRotationChange(this);
+    colorVision.getRotationChange(this);
     return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
         2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
-        colorvision.getRotationChange(this).getRadians()), getPose().getRotation()
+        colorVision.getRotationChange(this).getRadians()), getPose().getRotation()
     )));
 }
-}
+
 PathConstraints constraints = new PathConstraints(
         0.25, 1.0,
         Units.degreesToRadians(540), Units.degreesToRadians(720));
@@ -613,7 +613,15 @@ public DoubleSupplier autoAlignOnTheMove(){
 }
 
 public Command resetController(){
+    isAligningOnMove = true;
     return Commands.runOnce(() ->shootOnMoveController.reset());
+}
+public Command resetShootOnMove(){
+    isAligningOnMove = false;
+    return Commands.waitSeconds(0);
+}
+public boolean getShootOnMoveBoolean(){
+    return isAligningOnMove;
 }
 
 // public Rotation2d getTargetRotation(){
