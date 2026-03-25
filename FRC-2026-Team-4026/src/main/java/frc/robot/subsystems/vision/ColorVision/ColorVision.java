@@ -13,13 +13,13 @@ public class ColorVision {
 
     public ColorVision(ColorVisionIO io){
         this.io = io;
-        averageYaw = inputs.colorVisionData.yaw();
+        yaw = inputs.colorVisionData.yaw();
 
     }
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("ColorVision", inputs);
-        Logger.recordOutput("averageYaw",inputs.colorVisionData);
+        Logger.recordOutput("yaw",inputs.colorVisionData.yaw());
 
     }
     public Rotation2d getRotationChange(Drive drive){
