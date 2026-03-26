@@ -29,6 +29,8 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.AllianceFlipUtil;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -42,7 +44,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -235,7 +239,7 @@ private enum AutoSide{
           bumperRight.whileTrue(superstructure.alignCommand());
           bumperLeft.whileTrue(drive.driveThroughTrenchCommand());
           x.whileTrue(drive.stopWithXCommand());
-          b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d(-Math.PI))));
+          b.whileTrue(pathFindThroughTrench());
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 ()-> joystick.getY()*0.6,
@@ -334,6 +338,14 @@ private enum AutoSide{
       // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
       // return auto;
 
+  }
+
+  public Command pathFindThroughTrench(){
+      Pose2d trenchPose = new Pose2d(15,7.5,new Rotation2d(-Math.PI));
+      if(AllianceFlipUtil.shouldFlip()){
+          trenchPose = AllianceFlipUtil.apply(trenchPose);
+      }
+      return pathfinderToPose(trenchPose);
   }
 
   public Command pathfinderToPose(Pose2d targetPose) {
