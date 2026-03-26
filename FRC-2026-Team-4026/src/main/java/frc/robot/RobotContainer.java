@@ -14,7 +14,7 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.Leds.Leds;
+import frc.robot.subsystems.superstructure.leds.Leds;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
@@ -233,7 +233,7 @@ private enum AutoSide{
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
           // x.whileTrue(drive.setRotationXCommand());
           bumperRight.whileTrue(superstructure.alignCommand());
-          bumperLeft.whileTrue(drive.alignHubPathpl());
+          bumperLeft.whileTrue(drive.driveThroughTrenchCommand());
           x.whileTrue(drive.stopWithXCommand());
           b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d(-Math.PI))));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(

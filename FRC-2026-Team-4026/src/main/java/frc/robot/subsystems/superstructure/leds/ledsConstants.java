@@ -1,4 +1,4 @@
-package frc.robot.subsystems.superstructure.Leds;
+package frc.robot.subsystems.superstructure.leds;
 
 import frc.robot.util.TeamColor;
 public class LedsConstants {

@@ -9,14 +9,18 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
 import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.superstructure.Leds.Leds;
+import frc.robot.subsystems.superstructure.leds.Leds;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
@@ -117,6 +121,8 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(intake.runIntakeCommand(6), indexer.setVoltageCommand(6));
     }
 
+
+    
     // public Command shootCommand(){
     //     // if(!Robot.isReal()){
             
@@ -181,6 +187,7 @@ public class Superstructure extends SubsystemBase {
     public Command testShootAutoCommand(){
         return Commands.parallel(indexer.setVoltageCommand(8),shooter.setVelocityCommand(45), intake.runIntakeCommand(-4));
     }
+
 
 
 

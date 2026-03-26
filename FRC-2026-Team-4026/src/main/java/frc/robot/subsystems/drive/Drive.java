@@ -520,6 +520,26 @@ public Command autoAlignToHub(){
     
 }
 
+ProfiledPIDController yPidController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(1, 2));
+public void driveThroughTrench(){
+    //left side
+    if(getPose().getY() >=4){
+        if((getPose().getY() > 7.35 && getPose().getY() < 7.45) == false){
+            ChassisSpeeds speeds = new ChassisSpeeds(getChassisSpeeds().vxMetersPerSecond,yPidController.calculate(7.4),getChassisSpeeds().omegaRadiansPerSecond);
+            runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
+        }
+    }
+    //right side
+    if(getPose().getY() < 4){
+        if((getPose().getY() > 0.57 && getPose().getY() < 0.7) == false){
+            ChassisSpeeds speeds = new ChassisSpeeds(getChassisSpeeds().vxMetersPerSecond,yPidController.calculate(0.67),getChassisSpeeds().omegaRadiansPerSecond);
+            runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
+        }
+    }
+}
+public Command driveThroughTrenchCommand(){
+    return Commands.run(()->driveThroughTrench());
+}
 public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose){
     return Commands.run(() -> driveToPose(targetSpeeds, targetPose)).finallyDo(() -> this.targetPose = null);
 }
