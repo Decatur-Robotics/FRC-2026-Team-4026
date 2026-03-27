@@ -26,6 +26,7 @@ public class ColorVisionIOPhotonVision implements ColorVisionIO{
         objects = camera.getAllUnreadResults();
         for (var object : objects){
             if (object.hasTargets()){
+                //gets the yaw of the biggest target and adds the cameras translation
                 yaw = object.getBestTarget().getYaw()+cameraToRobot.getRotation().toRotation2d().getDegrees()
                 +cameraToRobot.getTranslation().toTranslation2d().getAngle().getDegrees();
             
