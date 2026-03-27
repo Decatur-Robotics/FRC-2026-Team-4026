@@ -52,8 +52,10 @@ import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -154,7 +156,7 @@ private enum AutoSide{
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
 
             driveInstance = drive;
-       autonomous = new Autonomous(superstructure);
+       autonomous = new Autonomous(superstructure, drive);
     
     }
  else {
@@ -184,8 +186,10 @@ private enum AutoSide{
                                  robotState = new RobotState(drive);
       superstructure = new Superstructure(intake, indexer, shooter, hood, leds, robotState, drive);
             driveInstance = drive;
-            autonomous = new Autonomous(superstructure);
+            autonomous = new Autonomous(superstructure, drive);
      }
+
+     NamedCommands.registerCommand("Shoot", superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
 
   
 
@@ -262,7 +266,7 @@ private enum AutoSide{
           bumperRight.whileTrue(superstructure.alignCommand()).onFalse(leds.setAllLedsCommand(LedsConstants.BLUE));
           bumperLeft.whileTrue(drive.alignHubPathpl());
           x.whileTrue(drive.stopWithXCommand());
-          b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d(-Math.PI))));
+          b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d())));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 ()-> -joystick.getY()*0.6,
@@ -290,7 +294,8 @@ private enum AutoSide{
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-        triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
+        // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
+        triggerLeft.whileTrue(superstructure.testShootCommand()).onFalse(superstructure.noTestShootCommands());
         triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
         triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
         triggerRight.whileTrue(superstructure.shootCommand()).onFalse(superstructure.storeCommand());
@@ -352,7 +357,13 @@ private enum AutoSide{
    */
   
   public Command getAutonomousCommand() {
-      Logger.recordOutput("Auto", auto.getName());
+      // Logger.recordOutput("Auto", auto.getName());
+      // return auto;
+      // PathPlannerAuto auto = new PathPlannerAuto("Double Center");
+      // auto.activePath("Center Rush Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      // auto.activePath("Center Rush Shoot").onFalse(null);
+      // return auto;
+      Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
       return auto;
       // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right", true);
       // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
