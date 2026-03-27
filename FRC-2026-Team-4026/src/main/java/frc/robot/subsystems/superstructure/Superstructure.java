@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.superstructure.Leds.Leds;
+import frc.robot.subsystems.superstructure.leds.Leds;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
@@ -149,6 +149,14 @@ public class Superstructure extends SubsystemBase {
 
     public Command passCommand(){
         return Commands.parallel(shooter.passAimCommand(), indexer.setVoltageCommand(10));
+    }
+
+    public Command testShootCommands(){
+        return Commands.parallel(shooter.setVelocityCommand(45), indexer.setVoltageCommand(12));
+    }
+
+    public Command stopTestShootCommand(){
+        return Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0));
     }
 
     public Command shootCommand(Supplier<Double> velocity){
