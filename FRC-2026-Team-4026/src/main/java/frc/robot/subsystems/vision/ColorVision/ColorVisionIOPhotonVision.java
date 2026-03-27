@@ -8,14 +8,16 @@ import edu.wpi.first.math.geometry.Transform3d;
 
 public class ColorVisionIOPhotonVision implements ColorVisionIO{
     protected final PhotonCamera camera;
-    protected final Transform3d cameraToRobot = ColorVisionConstants.CAMERA_TO_ROBOT;
+    protected final Transform3d cameraToRobot;
     private List<PhotonPipelineResult> objects;
     private double yaw;
+
  
 
-    public ColorVisionIOPhotonVision(){
+    public ColorVisionIOPhotonVision(String name, Transform3d cameraToRobot){
 
-        camera = new PhotonCamera(ColorVisionConstants.CAMERA_NAME);
+        camera = new PhotonCamera(name);
+        this.cameraToRobot= cameraToRobot;
 
 
     }
@@ -24,7 +26,8 @@ public class ColorVisionIOPhotonVision implements ColorVisionIO{
         objects = camera.getAllUnreadResults();
         for (var object : objects){
             if (object.hasTargets()){
-                yaw = object.getBestTarget().getYaw();
+                yaw = object.getBestTarget().getYaw()+cameraToRobot.getRotation().toRotation2d().getDegrees()
+                +cameraToRobot.getTranslation().toTranslation2d().getAngle().getDegrees();
             
 
             }

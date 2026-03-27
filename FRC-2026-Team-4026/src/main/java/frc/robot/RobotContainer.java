@@ -29,6 +29,11 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.ColorVision.ColorVision;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionConstants;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionIO;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -66,6 +71,7 @@ import frc.robot.constants.Constants;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private ColorVision colorVision;
    private Superstructure superstructure;
   private Indexer indexer;
   private Intake intake;
@@ -112,7 +118,8 @@ private enum AutoSide{
 
       instance = this;
       shootingOnMove = false;
-
+    colorVision = new ColorVision(new ColorVisionIOPhotonVision(ColorVisionConstants.LEFT_CAMERA_NAME, ColorVisionConstants.LEFT_CAMERA_TO_ROBOT),
+     (new ColorVisionIOPhotonVision(ColorVisionConstants.RIGHT_CAMERA_NAME,ColorVisionConstants.RIGHT_CAMERA_TO_ROBOT)));
      if(Constants.currentMode != Constants.Mode.SIM) {
       indexer = new Indexer(new IndexerIOTalonFX());
       intake = new Intake(new IntakeIOTalonFX());

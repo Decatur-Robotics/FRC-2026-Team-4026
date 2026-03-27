@@ -547,7 +547,6 @@ public boolean isAligned(){
 }
 public Command driveToFuel(){
     rotationalController.enableContinuousInput(Math.PI, -Math.PI);
-    colorVision.getRotationChange(this);
     return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
         2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
         colorVision.getRotationChange(this).getRadians()), getPose().getRotation()
@@ -575,8 +574,8 @@ public Supplier<Pose2d> getFuturePose(){
     //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
     //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
     //travelled in a direction added to the ball from our velocity.
-    return () -> getPose().transformBy(new Transform2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond
-    ,new Rotation2d(0)));
+    return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond))
+    ,getPose().getRotation());
 
 }
 public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose){
@@ -585,8 +584,8 @@ public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose){
     //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
     //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
     //travelled in a direction added to the ball from our velocity.
-    return () -> getPose().transformBy(new Transform2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond
-    ,new Rotation2d(0)));
+    return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond))
+    ,getPose().getRotation());
 
 }
 public Supplier<Pose2d> convergentFlightTime(){
