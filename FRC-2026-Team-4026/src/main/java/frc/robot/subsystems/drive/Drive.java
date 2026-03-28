@@ -24,7 +24,6 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
@@ -38,8 +37,10 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -53,31 +54,27 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.RobotState;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.leds.Leds;
-import frc.robot.subsystems.superstructure.leds.LedsConstants;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.ColorVision.ColorVision;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LocalADStarAK;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import org.dyn4j.geometry.Rotation;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
@@ -104,6 +101,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         // 5.25, 0, 0.3); 
     private PIDController rotationalController = new PIDController(
         0.01, 0, 0);
+    private PIDController shootOnMoveController = new PIDController(10, 
+    0, 0);
+    private InterpolatingDoubleTreeMap flightTime;
+    private ColorVision colorVision;
+    private Supplier<Pose2d> futurePose;
+    private boolean isAligningOnMove;
 
     private static final double ROBOT_MASS_KG = 74.088;
     private static final double ROBOT_MOI = 6.883;
@@ -170,8 +173,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             ModuleIO blModuleIO,
             ModuleIO brModuleIO,
             Consumer<Pose2d> resetSimulationPoseCallBack) {
+        colorVision = new ColorVision(new ColorVisionIOPhotonVision());
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
+        flightTime = new InterpolatingDoubleTreeMap();
+        flightTime.put(1.0, 0.5);
+        flightTime.put(1.5, 0.7);
+        flightTime.put(2.0,0.9);
         modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
         modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
         modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
@@ -537,6 +545,15 @@ public boolean isAligned(){
     }
     return velocityAligned && atTargetPose();
 }
+public Command driveToFuel(){
+    rotationalController.enableContinuousInput(Math.PI, -Math.PI);
+    colorVision.getRotationChange(this);
+    return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
+        2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
+        colorVision.getRotationChange(this).getRadians()), getPose().getRotation()
+    )));
+}
+
 PathConstraints constraints = new PathConstraints(
         0.25, 1.0,
         Units.degreesToRadians(540), Units.degreesToRadians(720));
@@ -547,6 +564,64 @@ public Command driveToPosePathPl(Pose2d pose){
 
 public Command alignHubPathpl(){
     return driveToPosePathPl(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d(0)));
+}
+public DoubleSupplier getDistanceToHub(Pose2d pose){
+    return () -> pose.getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+
+}
+public Supplier<Pose2d> getFuturePose(){
+    ChassisSpeeds currentSpeeds = getChassisSpeeds();
+    ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(getPose()).getAsDouble()));
+    //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
+    //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
+    //travelled in a direction added to the ball from our velocity.
+    return () -> getPose().transformBy(new Transform2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond
+    ,new Rotation2d(0)));
+
+}
+public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose){
+    ChassisSpeeds currentSpeeds = getChassisSpeeds();
+    ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(pose.get()).getAsDouble()));
+    //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
+    //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
+    //travelled in a direction added to the ball from our velocity.
+    return () -> getPose().transformBy(new Transform2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond
+    ,new Rotation2d(0)));
+
+}
+public Supplier<Pose2d> convergentFlightTime(){
+
+    return getFuturePose(getFuturePose(getFuturePose(getFuturePose())));
+}
+//Since the ball will travel longer in the air or shorter in the air based on y velocity, we may need to recalculate x and y
+//velocities independently of each other.
+
+public DoubleSupplier autoAlignOnTheMove(){
+    shootOnMoveController.enableContinuousInput(-Math.PI, Math.PI);
+
+
+    futurePose = convergentFlightTime();
+    double wantedAngle;
+    if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+            wantedAngle =  Math.atan2(futurePose.get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (futurePose.get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+        } else {
+            wantedAngle =  Math.atan2(futurePose.get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (futurePose
+            .get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())))+Math.PI;
+        }
+    double rotationSpeed = shootOnMoveController.calculate(getPose().getRotation().getRadians(), new Rotation2d(wantedAngle).getRadians());
+    return () -> rotationSpeed;
+}
+
+public Command resetController(){
+    isAligningOnMove = true;
+    return Commands.runOnce(() ->shootOnMoveController.reset());
+}
+public Command resetShootOnMove(){
+    isAligningOnMove = false;
+    return Commands.waitSeconds(0);
+}
+public boolean getShootOnMoveBoolean(){
+    return isAligningOnMove;
 }
 
 // public Rotation2d getTargetRotation(){

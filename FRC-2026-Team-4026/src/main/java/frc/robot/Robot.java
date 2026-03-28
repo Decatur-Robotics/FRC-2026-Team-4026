@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -14,15 +13,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
-import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.core.Autonomous;
-import frc.robot.subsystems.superstructure.leds.Leds;
-import frc.robot.subsystems.superstructure.leds.LedsConstants;
-import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.LocalADStarAK;
-import frc.robot.constants.Constants;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in

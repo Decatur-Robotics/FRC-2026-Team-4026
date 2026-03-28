@@ -44,5 +44,6 @@ public interface IntakeIO {
     default void setDeployVoltage(double voltage){}
 
     default void coast(){}
+
     
 }

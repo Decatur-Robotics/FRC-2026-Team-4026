@@ -16,22 +16,18 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.superstructure.hood.Hood;
+import frc.robot.subsystems.superstructure.leds.Leds;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
-import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.SuperstructureState;
-import frc.robot.util.TeamColor;
-import frc.robot.subsystems.superstructure.leds.Leds;
-import frc.robot.subsystems.superstructure.leds.LedsConstants;
 
 public class Superstructure extends SubsystemBase {
     private Intake intake;
     private Indexer indexer;
     private Shooter shooter;
-    private Hood hood;
+
     private Leds leds;
     private RobotState robotState;
     private Drive drive;
@@ -46,18 +42,17 @@ public class Superstructure extends SubsystemBase {
     
 
 
-    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Hood hood, Leds leds, RobotState robotState, Drive drive) {
+    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Leds leds, RobotState robotState, Drive drive) {
         this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
-        this.hood = hood;
+
         this.leds = leds;
         this.drive = drive;
 
 
         this.robotState = robotState;
         
-        leds.setAllLedsCommand(LedsConstants.BLUE);
 
         this.targetState = SuperstructureConstants.STARTING_STATE;
     }
@@ -67,7 +62,6 @@ public class Superstructure extends SubsystemBase {
         this.targetState = targetState.copyInstatnce();
         return Commands.parallel(
         shooter.setVelocityCommand(targetState.shooterVelocity),
-        hood.setPositionCommand(targetState.hoodAngle),
         intake.deployIntakeCommand(targetState.intakeDeployed),
         intake.runIntakeCommand(targetState.intakeVoltage),
         indexer.setVoltageCommand(targetState.indexerVoltage));
@@ -96,7 +90,7 @@ public class Superstructure extends SubsystemBase {
     }
     
     public SuperstructureState getCurrentState(){
-        return new SuperstructureState(shooter.getVelocity(), hood.getPosition(), intake.getDeployPosition(), indexer.getMecanumVoltage(), intake.getIntakeVoltage());
+        return new SuperstructureState(shooter.getVelocity(), intake.getDeployPosition(), indexer.getMecanumVoltage(), intake.getIntakeVoltage());
     }
 
     // public boolean isHoodAtTarget(){
@@ -109,7 +103,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command intakeCommand(){
-        return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE));
+        return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulsingCommand());
     }
 
     public Command testShootCommand(){
@@ -159,11 +153,23 @@ public class Superstructure extends SubsystemBase {
     // }
 
     public Command shootCommand(){
-        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10));
+        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.rainbowCommand());
+    }
+
+    public Command passCommand(){
+        return Commands.parallel(shooter.passAimCommand(), indexer.setVoltageCommand(10));
+    }
+
+    public Command testShootCommands(){
+        return Commands.parallel(shooter.setVelocityCommand(45), indexer.setVoltageCommand(12));
+    }
+
+    public Command stopTestShootCommand(){
+        return Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0));
     }
 
     public Command shootCommand(Supplier<Double> velocity){
-        return Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10));
+        return Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10), leds.rainbowCommand());
     }
 
     public Command oscillateShootCommand(){
@@ -180,6 +186,9 @@ public class Superstructure extends SubsystemBase {
 
     public Command pushShootCommand(Supplier<Double> velocity, Supplier<Double> deployPosition){
         return Commands.parallel(shootCommand(velocity), intake.deployIntakeCommand(-deployPosition.get()*15.3+15.3));
+    }
+    public Command shootOnMoveCommand(){
+        return Commands.parallel(shooter.shootOnMoveCommand(drive),indexer.setVoltageCommand(10),intake.runIntakeCommand(-2));
     }
 
     public Command testingShootCommand(){
@@ -221,7 +230,8 @@ public class Superstructure extends SubsystemBase {
             robotState.getDriveRotatoin(),
             Meters.of(0.2),
             MetersPerSecond.of(2),
-            Radians.of(hood.getPosition())
+            //I repleaced the hod angle with this is incorrect
+            Radians.of(12)
         );
 
         fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();
@@ -244,11 +254,9 @@ public class Superstructure extends SubsystemBase {
     return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
  }
  public Command alignCommand(){
-    return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.setAllLedsCommand(LedsConstants.GREEN): leds.setAllLedsCommand(LedsConstants.RED));
+    return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.correctCommand():leds.aligningCommand());
 
  }
- public Command setAllLedsCommand(TeamColor color){
-    return Commands.run(() ->leds.setAllLedsCommand(color));
- }
+
 
 }
