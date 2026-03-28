@@ -29,6 +29,9 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.ColorVision.ColorVision;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionConstants;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVision;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionConstants;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhotonVision;
@@ -109,6 +112,7 @@ private enum AutoSide{
   public static Drive driveInstance;
   private SwerveDriveSimulation driveSimulation;
    private Vision vision;
+   private ColorVision colorVision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private boolean shootingOnMove;
@@ -135,6 +139,7 @@ private enum AutoSide{
                         (pose) -> {});
       robotState = new RobotState(drive);
               vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+              colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME, ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
       superstructure = new Superstructure(intake, indexer, shooter, leds, robotState, drive);
 
             driveInstance = drive;
