@@ -11,7 +11,7 @@ public class ColorVision {
     private final ColorVisionIOInputsAutoLogged inputs = new ColorVisionIOInputsAutoLogged();
     private double yaw;
 
-    public ColorVision(ColorVisionIO... io){
+    public ColorVision(ColorVisionIO io){
         this.io = io;
         yaw = inputs.colorVisionData.yaw();
 

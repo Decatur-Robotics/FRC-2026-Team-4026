@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 
 public class ColorVisionIOPhotonVision implements ColorVisionIO{
     protected final PhotonCamera camera;
-    protected final Transform3d cameraToRobot;
+    private final Transform3d cameraToRobot;
     private List<PhotonPipelineResult> objects;
     private double yaw;
 

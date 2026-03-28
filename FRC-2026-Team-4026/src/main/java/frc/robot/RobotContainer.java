@@ -33,6 +33,10 @@ import frc.robot.subsystems.vision.ColorVision.ColorVision;
 import frc.robot.subsystems.vision.ColorVision.ColorVisionConstants;
 import frc.robot.subsystems.vision.ColorVision.ColorVisionIO;
 import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
+import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVision;
+import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionConstants;
+import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIO;
+import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhotonVision;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -72,6 +76,7 @@ import frc.robot.constants.Constants;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private ColorVision colorVision;
+  private HopperVision hopperVision;
    private Superstructure superstructure;
   private Indexer indexer;
   private Intake intake;
@@ -118,8 +123,8 @@ private enum AutoSide{
 
       instance = this;
       shootingOnMove = false;
-    colorVision = new ColorVision(new ColorVisionIOPhotonVision(ColorVisionConstants.LEFT_CAMERA_NAME, ColorVisionConstants.LEFT_CAMERA_TO_ROBOT),
-     (new ColorVisionIOPhotonVision(ColorVisionConstants.RIGHT_CAMERA_NAME,ColorVisionConstants.RIGHT_CAMERA_TO_ROBOT)));
+    colorVision = new ColorVision(new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME, ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
+    hopperVision = new HopperVision(new HopperVisionIOPhotonVision(HopperVisionConstants.HOPPER_CAMERA_NAME));
      if(Constants.currentMode != Constants.Mode.SIM) {
       indexer = new Indexer(new IndexerIOTalonFX());
       intake = new Intake(new IntakeIOTalonFX());
