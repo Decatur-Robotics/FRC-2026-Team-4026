@@ -2,7 +2,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.robot.constants;
+
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -13,7 +15,31 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+   public static boolean disableHAL = false;
+     public static final boolean tuningMode = false;
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+   
+
+  public static void disableHAL() {
+    disableHAL = true;
+  }
+
+    public static final Mode simMode = Mode.SIM;
+    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+
+    public static enum Mode {
+        /** Running on a real robot. */
+        REAL,
+
+        /** Running a physics simulator. */
+        SIM,
+
+        /** Replaying from a log file. */
+        REPLAY,
+
+        /** Automatically logging to WPILOGWriter */
+        AUTO
+    }
 }
