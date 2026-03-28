@@ -86,12 +86,14 @@ public class Autonomous {
   }
 
   public Command DoubleCenterSmart(){
-            PathPlannerAuto centerSwipe1 = new PathPlannerAuto("Center Test");
-    centerSwipe1.activePath("Center Rush").onFalse(Commands.parallel(superstructure.intakeCommand(), pathfinderToPoseIntake(null)));
-    PathPlannerAuto centerSwipe2 = new PathPlannerAuto("Center Test 2");
-    centerSwipe2.activePath("Center Rush Intake 2").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-    centerSwipe2.activePath("Center Rush 2 Shoot").onFalse(autoShootCommand());
-    return centerSwipe1;
+            PathPlannerAuto centerShoot = new PathPlannerAuto("Center Smart Shoot");
+            centerShoot.activePath("Center rush shoot").onFalse(autoShootCommand());
+        PathPlannerAuto centerSwipe1 = new PathPlannerAuto("Center Rush 1");
+    centerSwipe1.activePath("Center Rush Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+    centerSwipe1.activePath("Center Rush Shoot").onFalse(autoShootCommand());
+    PathPlannerAuto centerSwipe2 = new PathPlannerAuto("Center 2 Smart");
+    centerSwipe2.activePath("Center 2 Smart").onFalse(Commands.sequence(Commands.parallel(drive.driveToFuel(), superstructure.intakeCommand()).until(()->false), pathfinderToPose(centerShoot.getStartingPose())));
+    return Commands.sequence(centerSwipe1, centerSwipe2);
   }
 
   public Command pathfinderToPose(Pose2d targetPose) {
@@ -106,10 +108,6 @@ public class Autonomous {
 
     Command pathfinderCommand = AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
     return pathfinderCommand;
-  }
-
-  public Command smartIntake(){
-    return null;
   }
 
       public Command autoShootCommand(){
