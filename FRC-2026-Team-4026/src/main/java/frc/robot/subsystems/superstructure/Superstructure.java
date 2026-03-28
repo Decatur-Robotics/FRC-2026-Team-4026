@@ -32,6 +32,7 @@ public class Superstructure extends SubsystemBase {
     private RobotState robotState;
     private Drive drive;
 
+
     private boolean isSimulation = Robot.isSimulation();
 
     private SuperstructureState targetState;
@@ -103,6 +104,14 @@ public class Superstructure extends SubsystemBase {
 
     public Command intakeCommand(){
         return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulsingCommand());
+    }
+
+    public Command testShootCommand(){
+        return Commands.parallel(shooter.setVelocityCommand(55), indexer.setVoltageCommand(10));
+    }
+
+    public Command noTestShootCommands(){
+        return Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0));
     }
 
     public Command storeCommand(){
