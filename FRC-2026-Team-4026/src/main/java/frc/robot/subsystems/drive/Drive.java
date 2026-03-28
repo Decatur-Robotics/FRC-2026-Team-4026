@@ -64,6 +64,7 @@ import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.ColorVision.ColorVision;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionConstants;
 import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LocalADStarAK;
@@ -173,7 +174,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             ModuleIO blModuleIO,
             ModuleIO brModuleIO,
             Consumer<Pose2d> resetSimulationPoseCallBack) {
-        colorVision = new ColorVision(new ColorVisionIOPhotonVision());
+        colorVision = new ColorVision(new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME, ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         flightTime = new InterpolatingDoubleTreeMap();
