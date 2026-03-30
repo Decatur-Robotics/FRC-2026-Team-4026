@@ -54,8 +54,8 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployFollowMotor.setControl(new Follower(Ports.DEPLOY_MOTOR_PORT, MotorAlignmentValue.Aligned));
 
         deployPosition = deployMotor.getPosition().getValueAsDouble();
-        
-        //TO DO: get the ratio between the encoder and intake position
+
+        //TODO: get the ratio between the encoder and intake position
         positionRequest = new PositionDutyCycle(deployPosition);
         alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
 
