@@ -82,12 +82,12 @@ public void updateInputs (ShooterIOInputs inputs){
         motor.isConnected(),
         followerMotor.isConnected(),
         motor.getVelocity().getValueAsDouble(),
-        followerMotor.getVelocity().getValueAsDouble(),
         motor.getMotorVoltage().getValueAsDouble(),
-        followerMotor.getMotorVoltage().getValueAsDouble(),
         motor.getSupplyCurrent().getValueAsDouble(),
-        followerMotor.getSupplyCurrent().getValueAsDouble(),
         motor.getDeviceTemp().getValueAsDouble(),
+        followerMotor.getVelocity().getValueAsDouble(),
+        followerMotor.getMotorVoltage().getValueAsDouble(),
+        followerMotor.getSupplyCurrent().getValueAsDouble(),
         followerMotor.getDeviceTemp().getValueAsDouble() );
 }
 
