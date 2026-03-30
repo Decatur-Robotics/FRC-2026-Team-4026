@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.Distance;
 public class ShooterConstants {
 
     public static final double FUEL_REST_VELOCITY = 0.0;
-    public static final double kP = 0.3;
+    public static final double kP = 1.5;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kS = 0.15;

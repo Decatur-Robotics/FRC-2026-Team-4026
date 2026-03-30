@@ -61,7 +61,7 @@ public class ShooterIOSim implements ShooterIO {
             getSupplyCurrent().in(Amps),
             getSupplyCurrent().in(Amps),
             0.0,
-            0.0
+            0.0, 0.0
             );
     
 }
