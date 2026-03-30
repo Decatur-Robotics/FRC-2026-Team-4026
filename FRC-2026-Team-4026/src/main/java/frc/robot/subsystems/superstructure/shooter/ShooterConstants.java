@@ -16,8 +16,8 @@ public class ShooterConstants {
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kS = 0.15;
-    public static final double kV = 0.1;
-    public static final double kA = 0.0;
+    public static final double kV = 0.15;//0.1
+    public static final double kA = 0.015;//0.0
 
     public static final double SHOOTER_CURRENT_LIMIT = 60;
 
