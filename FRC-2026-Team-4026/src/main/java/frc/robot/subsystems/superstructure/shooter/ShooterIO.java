@@ -16,12 +16,12 @@ public record ShooterIOData (
     boolean motorConnected,
     boolean followerMotorConnected,
     double velocity,
-    double followerVelocity,
     double voltage,
-    double followerVoltage,
     double supplyCurrent,
-    double followerSupplyCurrent,
     double temp,
+    double followerVelocity,
+    double followerVoltage,
+    double followerSupplyCurrent,
     double followerTemp
     
 )

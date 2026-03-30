@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.754,
-        "y": 4.933392645314354
+        "x": 2.0619454329774625,
+        "y": 6.9668801897983395
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.839632265717675,
-        "y": 7.515599051008303
+        "x": 3.202419928825624,
+        "y": 7.580154211150653
       },
       "isLocked": false,
       "linkedName": null
@@ -20,24 +20,24 @@
         "y": 7.440284697508897
       },
       "prevControl": {
-        "x": 5.504887307236062,
-        "y": 7.461803084223013
+        "x": 3.5690108626953294,
+        "y": 7.395901713912314
       },
       "nextControl": {
-        "x": 3.2453720679872857,
-        "y": 7.41159163446193
+        "x": 6.882064056939502,
+        "y": 7.547876631079477
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.0619454329774625,
-        "y": 6.9668801897983395
+        "x": 7.785836298932384,
+        "y": 5.073262158956108
       },
       "prevControl": {
-        "x": 3.073309608540926,
-        "y": 7.397247924080664
+        "x": 7.839632265717675,
+        "y": 6.783973902728351
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,11 +46,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0444049733570306,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.3712255772646718,
+      "waypointRelativePos": 1.1758436944937953,
       "rotationDegrees": 0.0
     }
   ],
@@ -58,22 +58,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": true
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -48.45811288337993
+    "velocity": 1.5,
+    "rotation": 89.07595464722712
   },
   "reversed": false,
   "folder": "Center Rush",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -48.81407483429039
   },
   "useDefaultConstraints": false
 }
