@@ -7,6 +7,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -81,8 +82,7 @@ public class Autonomous {
     centerSwipe2.activePath("Center Rush 2 Shoot").onFalse(autoShootCommand());
     PathPlannerAuto depot = new PathPlannerAuto("Depot ");
     depot.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-    depot.activePath("Center Depot Shoot").onFalse(superstructure.oscillateShootCommand());
-    return Commands.parallel(centerSwipe1, centerSwipe2, Commands.parallel(pathfinderToPose(depot.getStartingPose()), autoShootCommand()), depot);
+    return Commands.parallel(centerSwipe1, centerSwipe2, Commands.parallel(drive.driveShootCommand(() -> depot.getStartingPose()), superstructure.shootOnMoveCommand()), depot);
   }
 
   public Command DoubleCenterSmart(){
@@ -96,7 +96,11 @@ public class Autonomous {
     return Commands.sequence(centerSwipe1, centerSwipe2);
   }
 
-  
+  public Command shootOnMoveTestCommand(){
+    return drive.driveShootCommand(()->new Pose2d(3,3,new Rotation2d()));
+  }
+
+
 
   public Command pathfinderToPose(Pose2d targetPose) {
     PathConstraints constraints = new PathConstraints(4.69, 3.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
@@ -115,6 +119,4 @@ public class Autonomous {
       public Command autoShootCommand(){
         return superstructure.oscillateShootCommand().until(() -> !hopperEmpty);
     }
-
-
 }

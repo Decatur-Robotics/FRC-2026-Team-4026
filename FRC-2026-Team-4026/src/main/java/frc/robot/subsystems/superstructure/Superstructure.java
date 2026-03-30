@@ -187,8 +187,9 @@ public class Superstructure extends SubsystemBase {
     public Command pushShootCommand(Supplier<Double> velocity, Supplier<Double> deployPosition){
         return Commands.parallel(shootCommand(velocity), intake.deployIntakeCommand(-deployPosition.get()*15.3+15.3));
     }
+
     public Command shootOnMoveCommand(){
-        return Commands.parallel(shooter.shootOnMoveCommand(drive),indexer.setVoltageCommand(10),intake.runIntakeCommand(-2));
+        return Commands.parallel(shooter.shootOnMoveCommand(drive),indexer.setVoltageCommand(10));
     }
 
     public Command testingShootCommand(){
@@ -253,10 +254,9 @@ public class Superstructure extends SubsystemBase {
  public int getNumBallsStored(){
     return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
  }
+
  public Command alignCommand(){
     return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.correctCommand():leds.aligningCommand());
-
  }
-
-
+ 
 }

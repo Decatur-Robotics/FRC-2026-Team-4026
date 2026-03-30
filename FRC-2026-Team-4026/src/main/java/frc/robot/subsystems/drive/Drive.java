@@ -97,10 +97,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     private Pose2d targetPose;
     private SwerveSetpoint previousSetpoint;
  private PIDController translationalController = new PIDController(
-        0.01, 0, 0);
+        10, 0, 0);
         // 5.25, 0, 0.3); 
     private PIDController rotationalController = new PIDController(
-        0.01, 0, 0);
+        10, 0, 0);
     private PIDController shootOnMoveController = new PIDController(10, 
     0, 0);
     private InterpolatingDoubleTreeMap flightTime;
@@ -563,13 +563,32 @@ public void autoAlign(Supplier<Rotation2d> targetRotation){
 }
 
 public Command autoAlignToHub(){
-
-    return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));
-    
+    return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));   
 }
 
 public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose){
     return Commands.run(() -> driveToPose(targetSpeeds, targetPose)).finallyDo(() -> this.targetPose = null);
+}
+
+public void driveAndShoot(Supplier<Pose2d> targetPose){
+    double targetXVelocity = translationalController.calculate(0, targetPose.get().getX() - getPose().getX());
+        double targetYVelocity = translationalController.calculate(0, targetPose.get().getY() - getPose().getY());
+
+
+        // Use one if statement instead of 3 ternarys
+        ChassisSpeeds speeds;
+        if(this.isAligned()){
+            speeds = new ChassisSpeeds(0,0,0);
+        }
+        else{
+            speeds = new ChassisSpeeds(targetXVelocity,targetYVelocity, autoAlignOnTheMove().getAsDouble());
+        }
+
+        this.runVelocity(speeds);
+}
+
+public Command driveShootCommand(Supplier<Pose2d> pose){
+    return Commands.run(() -> driveAndShoot(pose));
 }
 
 public boolean atTargetPose() {
@@ -659,6 +678,8 @@ public DoubleSupplier autoAlignOnTheMove(){
     double rotationSpeed = shootOnMoveController.calculate(getPose().getRotation().getRadians(), new Rotation2d(wantedAngle).getRadians());
     return () -> rotationSpeed;
 }
+
+
 
 public Command resetController(){
     isAligningOnMove = true;

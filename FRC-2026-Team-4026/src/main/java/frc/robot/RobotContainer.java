@@ -233,8 +233,7 @@ private enum AutoSide{
                 //please set this last button to whatever you want, this is just a placeholder
                 () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove()).getAsBoolean()
             ));
-          
-
+        
 
           // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
           // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
@@ -243,6 +242,7 @@ private enum AutoSide{
           bumperLeft.whileTrue(drive.alignHubPathpl());
           x.whileTrue(drive.stopWithXCommand());
           b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d())));
+          y.whileTrue(Commands.run(() -> drive.driveAndShoot( () -> new Pose2d(3,3,new Rotation2d()))));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 ()-> joystick.getY()*0.6,
@@ -344,8 +344,9 @@ private enum AutoSide{
       // auto.activePath("Center Rush Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
       // auto.activePath("Center Rush Shoot").onFalse(null);
       // return auto;
-      Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
-      return auto;
+      // Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
+      // return auto;
+      return autonomous.shootOnMoveTestCommand();
       // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right", true);
       // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
       // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
