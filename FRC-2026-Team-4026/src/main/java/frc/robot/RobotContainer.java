@@ -14,7 +14,7 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.Leds.Leds;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
@@ -36,6 +36,8 @@ import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVision;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionConstants;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhotonVision;
 
+import java.util.Map;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -51,7 +53,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -76,12 +80,18 @@ import frc.robot.constants.Constants;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private ShuffleboardTab shooterTab;
+  private GenericEntry slider;
+  private GenericEntry kpEntry;
+  private GenericEntry kdEntry;
+
 
   private HopperVision hopperVision;
    private Superstructure superstructure;
   private Indexer indexer;
   private Intake intake;
   private Shooter shooter;
+
 
    private enum AutoType{
   CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"), RushDepot("Center Rush + Depot");
@@ -197,13 +207,21 @@ private enum AutoSide{
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
     autoTab.add("Side", autoSide);
     autoTab.add("Type", autoType);
-    
-
+  shooterTab=Shuffleboard.getTab("shooter");
+    slider = shooterTab
+   .addPersistent("Speed", 1)
+   .withWidget(BuiltInWidgets.kNumberSlider)
+   .withProperties(Map.of("min", 0, "max", 100,"Glyph", "Reddit","Show Glyph", "true","Block increment", 1)) // specify widget properties here
+   .getEntry();
+   kpEntry = shooterTab.addPersistent("kp",1).getEntry();
+   kdEntry = shooterTab.addPersistent("kd",1).getEntry();
+   
     // targetVelocities.put(3.911, 60.0);
     // targetVelocities.put(5.18, 75.0);
      resetSimulationField();
          configurePrimaryBindings();
     configureSecondaryBindings();
+  
   }
 
   /**
@@ -285,7 +303,7 @@ private enum AutoSide{
 
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityCommand(60), indexer.setVoltageCommand(8))).onFalse(Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0)));
+        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityCommand(slider.getDouble(0)), indexer.setVoltageCommand(8))).onFalse(Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0),shooter.updateiovalues(kpEntry.getDouble(0),kdEntry.getDouble(0))));
         y.whileTrue(shooter.sysIdDynamic(Direction.kForward));
         b.whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
         
@@ -408,4 +426,5 @@ private enum AutoSide{
   public Pose2d getDrivePose(){
     return drive.getPose();
   }
+
 }

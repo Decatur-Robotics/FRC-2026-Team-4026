@@ -1,6 +1,8 @@
 package frc.robot.subsystems.superstructure.shooter;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
+
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 
@@ -22,6 +24,13 @@ public class ShooterConstants {
     public static final double SHOOTER_CURRENT_LIMIT = 60;
 
       public static final Slot0Configs SLOT_0_CONFIGS = new Slot0Configs()
+        .withKP(kP) // 0.5
+        .withKI(kI)
+        .withKD(kD)
+        .withKS(kS) // 0.19
+        .withKV(kV) // 0.13
+        .withKA(kA);
+            public static final Slot1Configs SLOT_1_CONFIGS = new Slot1Configs()
         .withKP(kP) // 0.5
         .withKI(kI)
         .withKD(kD)

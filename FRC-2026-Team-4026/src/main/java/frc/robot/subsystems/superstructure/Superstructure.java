@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.superstructure.leds.Leds;
+import frc.robot.subsystems.superstructure.Leds.Leds;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
@@ -28,7 +28,7 @@ public class Superstructure extends SubsystemBase {
     private Indexer indexer;
     private Shooter shooter;
 
-    private Leds leds;
+    private frc.robot.subsystems.superstructure.Leds.Leds leds;
     private RobotState robotState;
     private Drive drive;
 

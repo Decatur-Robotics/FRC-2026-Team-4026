@@ -1,0 +1,27 @@
+[
+  {
+    "name": "/Shuffleboard/shooter/Speed",
+    "type": "double",
+    "value": 52.218430034129696,
+    "properties": {
+      "persistent": true,
+      "retained": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/shooter/kp",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/shooter/kd",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  }
+]
