@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Encoder;
 import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
@@ -54,11 +55,12 @@ public class IntakeIOTalonFX implements IntakeIO{
 
         deployPosition = deployMotor.getPosition().getValueAsDouble();
 
+        //TODO: get the ratio between the encoder and intake position
         positionRequest = new PositionDutyCycle(deployPosition);
         alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
 
-        deployMotor.setPosition(0);
-        deployFollowMotor.setPosition(0);
+        deployMotor.setPosition(encoder.getPosition().getValueAsDouble());
+        deployFollowMotor.setPosition(encoder.getPosition().getValueAsDouble());
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
         intakeMotor.getConfigurator().apply(intakeConfig);
@@ -95,10 +97,18 @@ public class IntakeIOTalonFX implements IntakeIO{
             deployFollowMotor.getPosition(),
             intakeMotor.getSupplyCurrent());
     }
+
+    @Override
+    public void updatePosition(){
+        deployMotor.getPosition().getValueAsDouble();
+        deployFollowMotor.getPosition().getValueAsDouble();
+
+    }
+
     @Override
     public void periodic(){
         if (intakeMotor.hasResetOccurred()){
-          intakeMotor.optimizeBusUtilization(40);
+            intakeMotor.optimizeBusUtilization(40);
         }
         if (deployMotor.hasResetOccurred()){
 
@@ -109,6 +119,7 @@ public class IntakeIOTalonFX implements IntakeIO{
         }
     
     }
+
     @Override
     public void updateInputs(IntakeIOInputs inputs){
 
