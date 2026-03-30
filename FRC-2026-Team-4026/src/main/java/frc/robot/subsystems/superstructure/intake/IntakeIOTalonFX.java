@@ -29,6 +29,7 @@ public class IntakeIOTalonFX implements IntakeIO{
 
     private PositionDutyCycle positionRequest;
     private DynamicMotionMagicExpoVoltage alternatePositionRequest;
+    
     private VoltageOut voltageRequest;
 
     private CANcoder encoder;
@@ -58,9 +59,10 @@ public class IntakeIOTalonFX implements IntakeIO{
         //TODO: get the ratio between the encoder and intake position
         positionRequest = new PositionDutyCycle(deployPosition);
         alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
-
-        deployMotor.setPosition(encoder.getPosition().getValueAsDouble());
-        deployFollowMotor.setPosition(encoder.getPosition().getValueAsDouble());
+        // deployMotor.setPosition(encoder.getPosition().getValueAsDouble());
+        // deployFollowMotor.setPosition(encoder.getPosition().getValueAsDouble());
+        deployMotor.setPosition(0);
+        deployFollowMotor.setPosition(0);
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
         intakeMotor.getConfigurator().apply(intakeConfig);
@@ -139,7 +141,8 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployMotor.getDeviceTemp().getValueAsDouble(),
         deployMotor.getDeviceTemp().getValueAsDouble(),
         deployMotor.getVelocity().getValueAsDouble(),
-        deployMotor.getAcceleration().getValueAsDouble()
+        deployMotor.getAcceleration().getValueAsDouble(),
+        encoder.getPosition().getValueAsDouble()
         );
     }
     @Override
