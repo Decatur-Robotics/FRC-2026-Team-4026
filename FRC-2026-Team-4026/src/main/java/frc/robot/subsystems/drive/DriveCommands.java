@@ -12,9 +12,7 @@
 // GNU General Public License for more details.
 package frc.robot.subsystems.drive;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,8 +26,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.NetworkTables;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -37,10 +33,6 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
 
 
 
@@ -56,7 +48,7 @@ public class DriveCommands {
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
 //should this go in the constructor?
-    private NetworkTables networkTables = new NetworkTables();
+
 
     private static SlewRateLimiter linearMagnitudeFilter = new SlewRateLimiter(2);
 
@@ -304,20 +296,5 @@ public class DriveCommands {
         Rotation2d lastAngle = new Rotation2d();
         double gyroDelta = 0.0;
     }
-    public Command DriveToFuel(Drive drive){
-    //gets the new rotation by getting the heading of the fuel from the camera of the robot then adding it to the current robot heading
-      Supplier<Rotation2d> rotation = () -> new Rotation2d(Math.toRadians(networkTables.getFuelRotation() * -1)
-      + drive.getRotation().getRadians());
-      //gets the x and y like a joystick to move towards the fuel
-      DoubleSupplier x = () -> (Math.cos(rotation.get().getRadians()));
-      DoubleSupplier y = () -> (Math.sin(rotation.get().getRadians()));
-      DoubleSupplier omegaSupplier = () -> 0;
-      //lobotomized setrotation command
-      ProfiledPIDController angleController = new ProfiledPIDController(
-                5.0, 0.0, 0.4, new TrapezoidProfile.Constraints(8.0, 20.0));
 
-      return Commands.run(() -> {angleController.setGoal(rotation.get().getRadians());
-        //I had to add a boolean supplier to this but it shouldnt be using joystick drive anyways. Should be using run velocity?
-      joystickDrive(drive, x, y,omegaSupplier, () ->false);});
-  } 
 }

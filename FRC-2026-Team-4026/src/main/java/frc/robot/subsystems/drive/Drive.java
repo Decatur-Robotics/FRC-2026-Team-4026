@@ -64,6 +64,8 @@ import frc.robot.constants.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.ColorVision.ColorVision;
+import frc.robot.subsystems.vision.ColorVision.ColorVision.ColorVisionConsumer;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionConstants;
 import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LocalADStarAK;
@@ -81,7 +83,7 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Drive extends SubsystemBase implements Vision.VisionConsumer {
+public class Drive extends SubsystemBase implements Vision.VisionConsumer, ColorVision.ColorVisionConsumer {
     // TunerConstants doesn't include these constants, so they are declared locally
     static final double ODOMETRY_FREQUENCY =
             new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
@@ -104,9 +106,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     private PIDController shootOnMoveController = new PIDController(10, 
     0, 0);
     private InterpolatingDoubleTreeMap flightTime;
-    private ColorVision colorVision;
+
     private Supplier<Pose2d> futurePose;
     private boolean isAligningOnMove;
+    private double yaw;
 
     private static final double ROBOT_MASS_KG = 74.088;
     private static final double ROBOT_MOI = 6.883;
@@ -173,7 +176,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             ModuleIO blModuleIO,
             ModuleIO brModuleIO,
             Consumer<Pose2d> resetSimulationPoseCallBack) {
-        colorVision = new ColorVision(new ColorVisionIOPhotonVision());
+       
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         flightTime = new InterpolatingDoubleTreeMap();
@@ -417,6 +420,20 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
         poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
+    @Override
+    public void accept(double yaw){
+        this.yaw = yaw;
+    }
+    public Rotation2d getRotationChange(){
+
+        if (yaw == 0){
+
+            return Rotation2d.fromDegrees(getRotation().getDegrees()+45);
+        }
+        else{
+            return Rotation2d.fromDegrees(yaw + getRotation().getDegrees());
+        }
+    }
 
     /** Returns the maximum linear speed in meters per sec. */
     public double getMaxLinearSpeedMetersPerSec() {
@@ -547,10 +564,9 @@ public boolean isAligned(){
 }
 public Command driveToFuel(){
     rotationalController.enableContinuousInput(Math.PI, -Math.PI);
-    colorVision.getRotationChange(this);
     return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
         2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
-        colorVision.getRotationChange(this).getRadians()), getPose().getRotation()
+        getRotationChange().getRadians()), getRotation()
     )));
 }
 
@@ -575,8 +591,8 @@ public Supplier<Pose2d> getFuturePose(){
     //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
     //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
     //travelled in a direction added to the ball from our velocity.
-    return () -> getPose().transformBy(new Transform2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond
-    ,new Rotation2d(0)));
+    return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond))
+    ,getPose().getRotation());
 
 }
 public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose){
@@ -585,8 +601,8 @@ public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose){
     //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
     //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
     //travelled in a direction added to the ball from our velocity.
-    return () -> getPose().transformBy(new Transform2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond
-    ,new Rotation2d(0)));
+    return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond))
+    ,getPose().getRotation());
 
 }
 public Supplier<Pose2d> convergentFlightTime(){

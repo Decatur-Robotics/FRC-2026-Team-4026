@@ -29,6 +29,13 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.ColorVision.ColorVision;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionConstants;
+import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
+import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVision;
+import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionConstants;
+import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhotonVision;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -69,6 +76,8 @@ import frc.robot.constants.Constants;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+
+  private HopperVision hopperVision;
    private Superstructure superstructure;
   private Indexer indexer;
   private Intake intake;
@@ -106,6 +115,7 @@ private enum AutoSide{
   public static Drive driveInstance;
   private SwerveDriveSimulation driveSimulation;
    private Vision vision;
+   private ColorVision colorVision;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private static RobotContainer instance;
   private boolean shootingOnMove;
@@ -115,7 +125,8 @@ private enum AutoSide{
 
       instance = this;
       shootingOnMove = false;
-
+    
+    hopperVision = new HopperVision(new HopperVisionIOPhotonVision(HopperVisionConstants.HOPPER_CAMERA_NAME));
      if(Constants.currentMode != Constants.Mode.SIM) {
       indexer = new Indexer(new IndexerIOTalonFX());
       intake = new Intake(new IntakeIOTalonFX());
@@ -130,7 +141,8 @@ private enum AutoSide{
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
       robotState = new RobotState(drive);
-              // vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+              vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+              colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME, ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
       superstructure = new Superstructure(intake, indexer, shooter, leds, robotState, drive);
 
             driveInstance = drive;
