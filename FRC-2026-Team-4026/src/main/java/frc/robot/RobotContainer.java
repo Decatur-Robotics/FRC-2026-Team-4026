@@ -80,10 +80,6 @@ import frc.robot.constants.Constants;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private ShuffleboardTab shooterTab;
-  private GenericEntry slider;
-  private GenericEntry kpEntry;
-  private GenericEntry kdEntry;
 
 
   private HopperVision hopperVision;
@@ -207,14 +203,7 @@ private enum AutoSide{
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
     autoTab.add("Side", autoSide);
     autoTab.add("Type", autoType);
-  shooterTab=Shuffleboard.getTab("shooter");
-    slider = shooterTab
-   .addPersistent("Speed", 1)
-   .withWidget(BuiltInWidgets.kNumberSlider)
-   .withProperties(Map.of("min", 0, "max", 100,"Glyph", "Reddit","Show Glyph", "true","Block increment", 1)) // specify widget properties here
-   .getEntry();
-   kpEntry = shooterTab.addPersistent("kp",1).getEntry();
-   kdEntry = shooterTab.addPersistent("kd",1).getEntry();
+
    
     // targetVelocities.put(3.911, 60.0);
     // targetVelocities.put(5.18, 75.0);
@@ -303,7 +292,7 @@ private enum AutoSide{
 
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityCommand(slider.getDouble(0)), indexer.setVoltageCommand(8))).onFalse(Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0),shooter.updateiovalues(kpEntry.getDouble(0),kdEntry.getDouble(0))));
+        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityCommand(shooter.getSpeeds()), indexer.setVoltageCommand(8))).onFalse(Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0)));
         y.whileTrue(shooter.sysIdDynamic(Direction.kForward));
         b.whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
         

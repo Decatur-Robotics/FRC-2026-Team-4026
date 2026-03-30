@@ -20,6 +20,10 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.Elastic;
 
 public class Shooter extends SubsystemBase {
+  private ShuffleboardTab shooterTab;
+  private GenericEntry slider;
+  private GenericEntry kpEntry;
+  private GenericEntry kdEntry;
 
     private int ballsShot;
     private boolean shootingBall;
@@ -31,6 +35,14 @@ public class Shooter extends SubsystemBase {
 
 
 public Shooter (ShooterIO io) {
+      shooterTab=Shuffleboard.getTab("shooter");
+    slider = shooterTab
+   .addPersistent("Speed", 1)
+   .withWidget(BuiltInWidgets.kNumberSlider)
+   .withProperties(Map.of("min", 0, "max", 100,"Glyph", "Reddit","Show Glyph", "true","Block increment", 1)) // specify widget properties here
+   .getEntry();
+   kpEntry = shooterTab.addPersistent("kp",1).getEntry();
+   kdEntry = shooterTab.addPersistent("kd",1).getEntry();
     this.io = io;
     ballsShot = 0;
     shootingBall = false;
@@ -75,6 +87,8 @@ public void periodic () {
     } else if(getCurrent() < 10){
         shootingBall = false;
     }
+    System.out.println(getSpeeds());
+    updateiovalues(kpEntry.getDouble(0), kdEntry.getDouble(0));
 
     Logger.recordOutput("Shooter/Balls Shot", ballsShot);
 }
@@ -92,5 +106,8 @@ public int getNumBallsShot(){
 public Command updateiovalues(double kp, double kd){
     io.updatevalues(kp,kd);
     return Commands.none();
+}
+public double getSpeeds(){
+    return slider.getDouble(0);
 }
 }
