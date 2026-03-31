@@ -285,7 +285,7 @@ private enum AutoSide{
 
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityCommand(60))).onFalse(Commands.parallel(shooter.setVelocityCommand(0)));
+        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityCommand(60))).onFalse(Commands.parallel(shooter.setVoltageCommand(0)));
         y.whileTrue(shooter.sysIdDynamic(Direction.kForward));
         b.whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
         
