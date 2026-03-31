@@ -346,7 +346,8 @@ private enum AutoSide{
       // return auto;
       // Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
       // return auto;
-      return autonomous.shootOnMoveTestCommand();
+      PathPlannerAuto auto = new PathPlannerAuto("1002");
+      return auto;
       // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right", true);
       // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
       // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));

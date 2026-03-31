@@ -96,6 +96,15 @@ public class Autonomous {
     return Commands.sequence(centerSwipe1, centerSwipe2);
   }
 
+  public Command CircuitRunners(){
+        PathPlannerAuto centerSwipe1 = new PathPlannerAuto("Center Rush 1");
+    centerSwipe1.activePath("Center Rush Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+    centerSwipe1.activePath("Center Rush Shoot").onFalse(autoShootCommand());
+    PathPlannerAuto centerSwipe2 = new PathPlannerAuto("1002");
+    centerSwipe2.activePath("1002").whileTrue(superstructure.intakeCommand()).onFalse(autoShootCommand());
+    return Commands.sequence(centerSwipe1, centerSwipe2);
+  }
+
   public Command shootOnMoveTestCommand(){
     return drive.driveShootCommand(()->new Pose2d(3,3,new Rotation2d()));
   }
