@@ -14,7 +14,6 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.leds.Leds;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
@@ -22,6 +21,7 @@ import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.superstructure.leds.Leds;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
@@ -292,7 +292,7 @@ private enum AutoSide{
 
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityCommand(shooter.getSpeeds()), indexer.setVoltageCommand(8))).onFalse(Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0)));
+        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(8))).onFalse(Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0)));
         y.whileTrue(shooter.sysIdDynamic(Direction.kForward));
         b.whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
         

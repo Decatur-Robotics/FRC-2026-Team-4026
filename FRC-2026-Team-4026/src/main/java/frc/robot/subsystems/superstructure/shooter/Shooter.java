@@ -107,7 +107,7 @@ public Command updateiovalues(double kp, double kd){
     io.updatevalues(kp,kd);
     return Commands.none();
 }
-public double getSpeeds(){
-    return slider.getDouble(0);
+public Command setVelocityWithSlider(){
+    return setVelocityCommand(slider.getDouble(0));
 }
 }
