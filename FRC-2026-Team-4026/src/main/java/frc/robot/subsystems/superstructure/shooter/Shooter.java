@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.SignalLogger;
 
@@ -25,6 +26,7 @@ public class Shooter extends SubsystemBase {
   private GenericEntry kpEntry;
   private GenericEntry kdEntry;
 
+
     private int ballsShot;
     private boolean shootingBall;
     private ShooterIO io;
@@ -37,12 +39,12 @@ public class Shooter extends SubsystemBase {
 public Shooter (ShooterIO io) {
       shooterTab=Shuffleboard.getTab("shooter");
     slider = shooterTab
-   .addPersistent("Speed", 1)
+   .add("Speed", 1)
    .withWidget(BuiltInWidgets.kNumberSlider)
    .withProperties(Map.of("min", 0, "max", 100,"Glyph", "Reddit","Show Glyph", "true","Block increment", 1)) // specify widget properties here
    .getEntry();
-   kpEntry = shooterTab.addPersistent("kp",1).getEntry();
-   kdEntry = shooterTab.addPersistent("kd",1).getEntry();
+   kpEntry = shooterTab.add("kp",1).getEntry();
+   kdEntry = shooterTab.add("kd",1).getEntry();
     this.io = io;
     ballsShot = 0;
     shootingBall = false;
@@ -57,6 +59,7 @@ public double getCurrent() {
 }
 
 public Command setVelocityCommand(double velocity) {
+    System.out.println(velocity);
     return Commands.run(() -> io.setVelocity(velocity));
 }
 
@@ -91,6 +94,7 @@ public void periodic () {
     updateiovalues(kpEntry.getDouble(0), kdEntry.getDouble(0));
 
     Logger.recordOutput("Shooter/Balls Shot", ballsShot);
+
 }
 
 public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
@@ -108,6 +112,7 @@ public Command updateiovalues(double kp, double kd){
     return Commands.none();
 }
 public Command setVelocityWithSlider(){
-    return setVelocityCommand(slider.getDouble(0));
+    return Commands.run(() -> setVelocityCommand(slider.getDouble(0)));
 }
+
 }
