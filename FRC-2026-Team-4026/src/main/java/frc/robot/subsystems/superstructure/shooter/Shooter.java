@@ -87,7 +87,7 @@ public void periodic () {
     } else if(getCurrent() < 10){
         shootingBall = false;
     }
-    System.out.println(getSpeeds());
+
     updateiovalues(kpEntry.getDouble(0), kdEntry.getDouble(0));
 
     Logger.recordOutput("Shooter/Balls Shot", ballsShot);
