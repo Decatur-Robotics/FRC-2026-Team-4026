@@ -122,6 +122,10 @@ public class Superstructure extends SubsystemBase {
         // }
     }
 
+    public Command stopShooting(){
+        return Commands.parallel(storeCommand(), shooter.setVoltageCommand(0));
+    }
+
     public Command dumpCommand(){
         return Commands.parallel(intake.runIntakeCommand(6), indexer.setVoltageCommand(6));
     }

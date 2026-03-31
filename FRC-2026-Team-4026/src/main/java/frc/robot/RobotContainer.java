@@ -285,13 +285,13 @@ private enum AutoSide{
 
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityCommand(60))).onFalse(Commands.parallel(shooter.setVoltageCommand(0)));
+        triggerLeft.whileTrue(Commands.parallel(shooter.setVoltageCommand(12))).onFalse(Commands.parallel(shooter.setVoltageCommand(0)));
         y.whileTrue(shooter.sysIdDynamic(Direction.kForward));
         b.whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
         
         triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
         triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
-        triggerRight.whileTrue(drive.getShootOnMoveBoolean()? superstructure.shootOnMoveCommand():superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.whileTrue(drive.getShootOnMoveBoolean()? superstructure.shootOnMoveCommand():superstructure.shootCommand(()->52.0)).onFalse(superstructure.stopShooting());
         triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
