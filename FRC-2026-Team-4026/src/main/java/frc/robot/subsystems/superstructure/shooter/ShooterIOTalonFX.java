@@ -110,10 +110,6 @@ public void updateInputs (ShooterIOInputs inputs){
         motor.getDeviceTemp().getValueAsDouble(),
         followerMotor.getDeviceTemp().getValueAsDouble() );
 }
-@Override
-public void updatevalues(double kp, double kd){
-    this.kP = kp;
-    this.kD =kd;
-}
+
 
 }

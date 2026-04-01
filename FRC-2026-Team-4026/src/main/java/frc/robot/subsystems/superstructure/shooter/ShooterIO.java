@@ -36,6 +36,6 @@ default void periodic ()
 {}
 default void updateInputs (ShooterIOInputs inputs)
 {}
-default void updatevalues(double kp, double kd){}
+
 
 }
