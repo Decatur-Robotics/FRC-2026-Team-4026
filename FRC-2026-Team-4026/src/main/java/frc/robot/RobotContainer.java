@@ -14,7 +14,6 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.leds.Leds;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
@@ -22,6 +21,7 @@ import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.superstructure.leds.Leds;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOSim;
 import frc.robot.subsystems.superstructure.shooter.ShooterIOTalonFX;
@@ -35,6 +35,8 @@ import frc.robot.subsystems.vision.ColorVision.ColorVisionIOPhotonVision;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVision;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionConstants;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhotonVision;
+
+import java.util.Map;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -51,7 +53,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -77,11 +81,13 @@ import frc.robot.constants.Constants;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
+
   private HopperVision hopperVision;
    private Superstructure superstructure;
   private Indexer indexer;
   private Intake intake;
   private Shooter shooter;
+
 
    private enum AutoType{
   CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"), RushDepot("Center Rush + Depot");
@@ -197,13 +203,14 @@ private enum AutoSide{
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
     autoTab.add("Side", autoSide);
     autoTab.add("Type", autoType);
-    
 
+   
     // targetVelocities.put(3.911, 60.0);
     // targetVelocities.put(5.18, 75.0);
      resetSimulationField();
          configurePrimaryBindings();
     configureSecondaryBindings();
+  
   }
 
   /**
@@ -285,9 +292,9 @@ private enum AutoSide{
 
         // bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
-        triggerLeft.whileTrue(Commands.parallel(shooter.setVoltageCommand(12))).onFalse(Commands.parallel(shooter.setVoltageCommand(0)));
-        // y.whileTrue(shooter.sysIdDynamic(Direction.kForward));
-        // b.whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+
+        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(8))).onFalse(Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0)));
+    
         
         triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
         triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
@@ -408,4 +415,5 @@ private enum AutoSide{
   public Pose2d getDrivePose(){
     return drive.getPose();
   }
+
 }
