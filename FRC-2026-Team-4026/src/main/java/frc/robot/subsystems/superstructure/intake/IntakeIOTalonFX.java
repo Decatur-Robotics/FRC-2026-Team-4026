@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure.intake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.VoltageConfigs;
@@ -43,6 +44,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3))
     // .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.DEPLOY_CURRENT_LIMIT));
 ;
+
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
     .withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT));
 

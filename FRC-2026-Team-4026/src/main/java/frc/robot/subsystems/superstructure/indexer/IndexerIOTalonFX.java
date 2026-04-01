@@ -19,6 +19,8 @@ public class IndexerIOTalonFX implements IndexerIO{
     private TalonFXConfiguration config = new TalonFXConfiguration()
     .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(IndexerConstants.INDEXER_CURRENT_LIMIT));
 
+    private TalonFXConfiguration kickConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30));
+
     private VoltageOut voltageRequest;
 
     public IndexerIOTalonFX(){
