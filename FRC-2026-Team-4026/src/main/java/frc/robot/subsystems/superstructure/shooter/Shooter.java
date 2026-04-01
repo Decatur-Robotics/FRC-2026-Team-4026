@@ -29,6 +29,7 @@ public class Shooter extends SubsystemBase {
     private int ballsShot;
     private boolean shootingBall;
     private ShooterIO io;
+    private double sliderVelocity;
     private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
     private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.2).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> SignalLogger.writeString("state", state.toString())),
@@ -40,7 +41,7 @@ public Shooter (ShooterIO io) {
     slider = shooterTab
    .add("Speed", 1)
    .withWidget(BuiltInWidgets.kNumberSlider)
-   .withProperties(Map.of("min", 0, "max", 100,"Glyph", "Reddit","Show Glyph", "true","Block increment", 1)) // specify widget properties here
+   .withProperties(Map.of("min", 0, "max", 100)) // specify widget properties here
    .getEntry();
 
     this.io = io;
@@ -88,6 +89,7 @@ public void periodic () {
     } else if(getCurrent() < 10){
         shootingBall = false;
     }
+    sliderVelocity = slider.getDouble(0);
 
 
 
@@ -107,7 +109,7 @@ public int getNumBallsShot(){
 }
 
 public Command setVelocityWithSlider(){
-    return Commands.run(() -> setVelocityCommand(slider.getDouble(0)));
+    return Commands.run(() ->io.setVelocity(sliderVelocity));
 }
 
 }
