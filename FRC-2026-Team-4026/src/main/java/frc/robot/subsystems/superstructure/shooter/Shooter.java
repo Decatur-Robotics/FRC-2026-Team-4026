@@ -111,5 +111,7 @@ public int getNumBallsShot(){
 public Command setVelocityWithSlider(){
     return Commands.run(() ->io.setVelocity(sliderVelocity));
 }
-
+public double getSlider(){
+    return sliderVelocity;
+}
 }
