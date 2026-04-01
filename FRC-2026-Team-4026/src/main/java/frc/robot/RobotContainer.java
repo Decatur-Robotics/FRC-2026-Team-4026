@@ -294,9 +294,7 @@ private enum AutoSide{
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
 
 
-
-        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(10))).onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
-
+        triggerLeft.whileTrue(Commands.parallel(superstructure.shootWithSlider(), indexer.setVoltageCommand(10))).onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
     
         
         triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
