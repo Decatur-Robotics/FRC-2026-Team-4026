@@ -54,7 +54,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         followerMotor = new TalonFX(Ports.SHOOTER_FOLLOWER_MOTOR);
         followerMotor.setControl(new Follower(Ports.SHOOTER_MOTOR, MotorAlignmentValue.Opposed));      
         config = new TalonFXConfiguration().withSlot0(ShooterConstants.SLOT_0_CONFIGS);
-        config1 = new TalonFXConfiguration().withSlot1(ShooterConstants.SLOT_1_CONFIGS);
+
         motor.getConfigurator().apply(config);
         voltage = motor.getMotorVoltage();
         velocity = motor.getVelocity().getValueAsDouble();
@@ -92,8 +92,7 @@ public void periodic () {
         followerMotor.optimizeBusUtilization();
         followerMotor.getVelocity().setUpdateFrequency(40);
     }
-    config1 = new TalonFXConfiguration().withSlot1(ShooterConstants.SLOT_1_CONFIGS.withKP(kP).withKD(kD));
-    motor.getConfigurator().apply(config1);
+
 }
 
 @Override

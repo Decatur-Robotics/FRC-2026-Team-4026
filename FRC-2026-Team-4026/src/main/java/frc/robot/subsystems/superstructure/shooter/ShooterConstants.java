@@ -30,13 +30,7 @@ public class ShooterConstants {
         .withKS(kS) // 0.19
         .withKV(kV) // 0.13
         .withKA(kA);
-            public static final Slot1Configs SLOT_1_CONFIGS = new Slot1Configs()
-        .withKP(kP) // 0.5
-        .withKI(kI)
-        .withKD(kD)
-        .withKS(kS) // 0.19
-        .withKV(kV) // 0.13
-        .withKA(kA);
+
 
     public static final double LOOK_AHEAD_SECONDS = 0.25;
     public static final Transform3d ROBOT_TO_TURRET = new Transform3d(0, 0, 0, new Rotation3d());
