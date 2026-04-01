@@ -166,12 +166,8 @@ public class Superstructure extends SubsystemBase {
     }   
 
     public Command shootCommand(Supplier<Double> velocity){
-        return Commands.sequence(
-            Commands.parallel(shooter.setVelocityCommand(velocity.get()),leds.shooterWindUpCommand(shooter.getVelocity(), ShotEstimator.getInstance().getTargetVelocity().get())).
-            until(()->shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get()-2),
-            Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10), leds.rainbowCommand())
-        );
-    }
+        return Commands.sequence(shooter.setVelocityCommand(velocity.get()), Commands.waitUntil(() -> shooter.getVelocity() > (velocity.get() - 2.0)), Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10)));
+        }
 
     public Command passCommand(){
         return Commands.sequence(

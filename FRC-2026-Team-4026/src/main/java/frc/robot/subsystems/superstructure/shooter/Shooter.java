@@ -38,7 +38,7 @@ public double getCurrent() {
 }
 
 public Command setVelocityCommand(double velocity) {
-    return Commands.run(() -> io.setVelocity(velocity));
+    return Commands.runOnce(() -> io.setVelocity(velocity));
 }
 
 public Command shootAimCommand(){
