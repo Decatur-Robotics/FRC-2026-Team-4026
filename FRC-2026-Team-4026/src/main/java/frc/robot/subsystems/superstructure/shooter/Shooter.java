@@ -105,10 +105,7 @@ public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
 public int getNumBallsShot(){
     return ballsShot;
 }
-public Command updateiovalues(double kp, double kd){
-    io.updatevalues(kp,kd);
-    return Commands.none();
-}
+
 public Command setVelocityWithSlider(){
     return Commands.run(() -> setVelocityCommand(slider.getDouble(0)));
 }
