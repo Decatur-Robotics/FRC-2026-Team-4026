@@ -21,6 +21,7 @@ import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.intake.Intake;
 import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
+import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 import frc.robot.util.SuperstructureState;
 
 public class Superstructure extends SubsystemBase {
@@ -122,6 +123,10 @@ public class Superstructure extends SubsystemBase {
         // }
     }
 
+    public Command stopShooting(){
+        return Commands.parallel(storeCommand(), shooter.setVoltageCommand(0));
+    }
+
     public Command dumpCommand(){
         return Commands.parallel(intake.runIntakeCommand(6), indexer.setVoltageCommand(6));
     }
@@ -153,11 +158,27 @@ public class Superstructure extends SubsystemBase {
     // }
 
     public Command shootCommand(){
-        return Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.rainbowCommand());
+        return Commands.sequence(
+            Commands.parallel(shooter.shootAimCommand(),leds.shooterWindUpCommand(shooter.getVelocity(), ShotEstimator.getInstance().getTargetVelocity().get())).
+            until(()->shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get()-2),
+            Commands.parallel(shooter.shootAimCommand(),indexer.setVoltageCommand(10),leds.rainbowCommand())
+        );
+    }   
+
+    public Command shootCommand(Supplier<Double> velocity){
+        return Commands.sequence(
+            Commands.parallel(shooter.setVelocityCommand(velocity.get()),leds.shooterWindUpCommand(shooter.getVelocity(), ShotEstimator.getInstance().getTargetVelocity().get())).
+            until(()->shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get()-2),
+            Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10), leds.rainbowCommand())
+        );
     }
 
     public Command passCommand(){
-        return Commands.parallel(shooter.passAimCommand(), indexer.setVoltageCommand(10));
+        return Commands.sequence(
+            Commands.parallel(shooter.passAimCommand(),leds.shooterWindUpCommand(shooter.getVelocity(), ShotEstimator.getInstance().getTargetVelocity().get())).
+            until(()->shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get()-2),
+            Commands.parallel(shooter.passAimCommand(), indexer.setVoltageCommand(10))
+        );
     }
 
     public Command testShootCommands(){
@@ -168,9 +189,7 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0));
     }
 
-    public Command shootCommand(Supplier<Double> velocity){
-        return Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10), leds.rainbowCommand());
-    }
+
 
     public Command oscillateShootCommand(){
         return Commands.parallel(shootCommand(), intake.oscillateIntakeCommand());

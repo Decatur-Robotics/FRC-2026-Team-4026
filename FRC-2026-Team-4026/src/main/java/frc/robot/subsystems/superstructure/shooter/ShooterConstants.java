@@ -14,12 +14,12 @@ import edu.wpi.first.units.measure.Distance;
 public class ShooterConstants {
 
     public static final double FUEL_REST_VELOCITY = 0.0;
-    public static final double kP = 0.3;
+    public static final double kP = 0.5;
     public static final double kI = 0.0;
-    public static final double kD = 0.0;
+    public static final double kD = 0.013;
     public static final double kS = 0.15;
-    public static final double kV = 0.1;
-    public static final double kA = 0.0;
+    public static final double kV = 0.12;
+    public static final double kA = 10.0;
 
     public static final double SHOOTER_CURRENT_LIMIT = 60;
 

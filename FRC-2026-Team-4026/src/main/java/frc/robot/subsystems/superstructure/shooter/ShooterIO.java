@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public interface ShooterIO {
 @AutoLog
 public class ShooterIOInputs { 
-    public ShooterIOData data = new ShooterIOData (false,false,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
+    public ShooterIOData data = new ShooterIOData (false,false,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
     public Voltage leftVoltage;
 }
 
@@ -18,6 +18,7 @@ public record ShooterIOData (
     boolean followerMotorConnected,
     double velocity,
     double voltage,
+    double acceleration,
     double supplyCurrent,
     double temp,
     double followerVelocity,

@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -101,12 +102,13 @@ public void updateInputs (ShooterIOInputs inputs){
         motor.isConnected(),
         followerMotor.isConnected(),
         motor.getVelocity().getValueAsDouble(),
-        followerMotor.getVelocity().getValueAsDouble(),
         motor.getMotorVoltage().getValueAsDouble(),
-        followerMotor.getMotorVoltage().getValueAsDouble(),
+        motor.getAcceleration().getValueAsDouble(),
         motor.getSupplyCurrent().getValueAsDouble(),
-        followerMotor.getSupplyCurrent().getValueAsDouble(),
         motor.getDeviceTemp().getValueAsDouble(),
+        followerMotor.getVelocity().getValueAsDouble(),
+        followerMotor.getMotorVoltage().getValueAsDouble(),
+        followerMotor.getSupplyCurrent().getValueAsDouble(),
         followerMotor.getDeviceTemp().getValueAsDouble() );
 }
 
