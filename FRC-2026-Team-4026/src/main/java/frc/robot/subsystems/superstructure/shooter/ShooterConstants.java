@@ -1,6 +1,8 @@
 package frc.robot.subsystems.superstructure.shooter;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
+
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 
@@ -28,6 +30,7 @@ public class ShooterConstants {
         .withKS(kS) // 0.19
         .withKV(kV) // 0.13
         .withKA(kA);
+
 
     public static final double LOOK_AHEAD_SECONDS = 0.25;
     public static final Transform3d ROBOT_TO_TURRET = new Transform3d(0, 0, 0, new Rotation3d());

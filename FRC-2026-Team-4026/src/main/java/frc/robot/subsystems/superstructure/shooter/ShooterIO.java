@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure.shooter;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public interface ShooterIO {
 @AutoLog
@@ -36,5 +37,6 @@ default void periodic ()
 {}
 default void updateInputs (ShooterIOInputs inputs)
 {}
+
 
 }

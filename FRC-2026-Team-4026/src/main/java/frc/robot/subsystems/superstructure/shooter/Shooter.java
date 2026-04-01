@@ -4,14 +4,26 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Map;
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.Elastic;
 
 public class Shooter extends SubsystemBase {
+  private ShuffleboardTab shooterTab;
+  private GenericEntry slider;
+
 
 
     private int ballsShot;
@@ -24,6 +36,13 @@ public class Shooter extends SubsystemBase {
 
 
 public Shooter (ShooterIO io) {
+      shooterTab=Shuffleboard.getTab("shooter");
+    slider = shooterTab
+   .add("Speed", 1)
+   .withWidget(BuiltInWidgets.kNumberSlider)
+   .withProperties(Map.of("min", 0, "max", 100,"Glyph", "Reddit","Show Glyph", "true","Block increment", 1)) // specify widget properties here
+   .getEntry();
+
     this.io = io;
     ballsShot = 0;
     shootingBall = false;
@@ -38,7 +57,8 @@ public double getCurrent() {
 }
 
 public Command setVelocityCommand(double velocity) {
-    return Commands.runOnce(() -> io.setVelocity(velocity));
+    System.out.println(velocity);
+    return Commands.run(() -> io.setVelocity(velocity));
 }
 
 public Command shootAimCommand(){
@@ -69,7 +89,10 @@ public void periodic () {
         shootingBall = false;
     }
 
+
+
     Logger.recordOutput("Shooter/Balls Shot", ballsShot);
+
 }
 
 public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
@@ -82,4 +105,9 @@ public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
 public int getNumBallsShot(){
     return ballsShot;
 }
+
+public Command setVelocityWithSlider(){
+    return Commands.run(() -> setVelocityCommand(slider.getDouble(0)));
+}
+
 }

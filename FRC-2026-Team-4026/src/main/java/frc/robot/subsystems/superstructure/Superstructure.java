@@ -29,7 +29,7 @@ public class Superstructure extends SubsystemBase {
     private Indexer indexer;
     private Shooter shooter;
 
-    private Leds leds;
+    private frc.robot.subsystems.superstructure.leds.Leds leds;
     private RobotState robotState;
     private Drive drive;
 
