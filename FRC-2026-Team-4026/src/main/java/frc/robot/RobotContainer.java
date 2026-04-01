@@ -294,12 +294,12 @@ private enum AutoSide{
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
 
 
-        triggerLeft.whileTrue(Commands.parallel(superstructure.shootWithSlider(), indexer.setVoltageCommand(8))).onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
+        triggerLeft.whileTrue(Commands.parallel(superstructure.shootWithSlider(), indexer.setVoltageCommand(10))).onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
     
         
         triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
         triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
-        triggerRight.whileTrue(drive.getShootOnMoveBoolean()? superstructure.shootOnMoveCommand():superstructure.shootCommand(()->50.0)).onFalse(superstructure.stopShooting());
+        triggerRight.whileTrue(drive.getShootOnMoveBoolean()? superstructure.shootOnMoveCommand():superstructure.shootCommand(()->39.0)).onFalse(superstructure.stopShooting());
         triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
