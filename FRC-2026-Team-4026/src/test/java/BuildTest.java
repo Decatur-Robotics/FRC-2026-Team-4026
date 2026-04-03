@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.indexer.IndexerIO;
-import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 
 class BuildTest {
@@ -15,7 +14,6 @@ class BuildTest {
     
     @Test
     void testIndexerIOInstantiation() {
-        // Test that IndexerIOSim can be instantiated
         assertDoesNotThrow(() -> {
             IndexerIO indexerIO = new IndexerIOSim();
             assertNotNull(indexerIO);
@@ -24,11 +22,19 @@ class BuildTest {
     
     @Test
     void testIndexerInstantiation() {
-        // Test that Indexer can be instantiated with IndexerIOSim
         assertDoesNotThrow(() -> {
             IndexerIO indexerIO = new IndexerIOSim();
             Indexer indexer = new Indexer(indexerIO);
             assertNotNull(indexer);
+        });
+    }
+    
+    @Test
+    void testRobotContainerInstantiation() {
+        // Test that RobotContainer can be instantiated (main entry point)
+        assertDoesNotThrow(() -> {
+            RobotContainer container = new RobotContainer();
+            assertNotNull(container);
         });
     }
 }
