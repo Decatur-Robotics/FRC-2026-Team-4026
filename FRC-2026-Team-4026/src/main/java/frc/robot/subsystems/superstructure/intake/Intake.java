@@ -151,7 +151,7 @@ public class Intake extends SubsystemBase{
     }
     public Command setSlowPositionCommand(double position){
         return Commands.runOnce(() -> io.setSlowPosition(position));
-
+    }
     public Command updatePosition(){
         return Commands.runOnce(() -> io.updatePosition());
     }
