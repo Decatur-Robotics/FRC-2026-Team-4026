@@ -83,7 +83,7 @@ public class RobotContainer {
 
 
   private HopperVision hopperVision;
-   private Superstructure superstructure;
+  private Superstructure superstructure;
   private Indexer indexer;
   private Intake intake;
   private Shooter shooter;

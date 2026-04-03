@@ -149,6 +149,8 @@ public class Intake extends SubsystemBase{
     public int getNumBallsIntaked(){
         return ballsIntaked;
     }
+    public Command setSlowPositionCommand(double position){
+        return Commands.runOnce(() -> io.setSlowPosition(position));
 
     public Command updatePosition(){
         return Commands.runOnce(() -> io.updatePosition());
