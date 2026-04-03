@@ -31,7 +31,7 @@ public class Indexer extends SubsystemBase{
             setVoltageCommand(6);
         }
     }
-    
+    // Sets the voltage of the indexer.
     public Command setVoltageCommand(double voltage){
         
     return this.runOnce(() -> {
