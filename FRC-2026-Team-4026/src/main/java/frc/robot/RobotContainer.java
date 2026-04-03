@@ -78,7 +78,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   private HopperVision hopperVision;
-   private Superstructure superstructure;
+  private Superstructure superstructure;
   private Indexer indexer;
   private Intake intake;
   private Shooter shooter;

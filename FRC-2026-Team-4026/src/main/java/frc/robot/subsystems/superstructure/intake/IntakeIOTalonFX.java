@@ -3,11 +3,14 @@ package frc.robot.subsystems.superstructure.intake;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.DynamicMotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -36,7 +39,10 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Current> deployCurrent;
     private StatusSignal<Current> deployFollowCurrent;
     
-
+    // private TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(0.5, 4);
+    // private TrapezoidProfile.State state = new TrapezoidProfile.State(0,0);
+    private final MotionMagicVoltage requestVoltage = new MotionMagicVoltage(1);
+ 
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
     .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3))
     // .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.DEPLOY_CURRENT_LIMIT));
@@ -44,7 +50,16 @@ public class IntakeIOTalonFX implements IntakeIO{
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
     .withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT));
 
+    
+    
+
     public IntakeIOTalonFX(){
+    var TalonFXConfigs = new TalonFXConfiguration();
+
+    final var MotionMagicConfigs = TalonFXConfigs.MotionMagic;
+    MotionMagicConfigs.MotionMagicCruiseVelocity = 5;
+    MotionMagicConfigs.MotionMagicAcceleration = 10;
+
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
 
         deployMotor = new TalonFX(Ports.DEPLOY_MOTOR_PORT);
@@ -166,7 +181,10 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployMotor.setControl(new CoastOut());
     }
 
+    public void setSlowPosition(){
+        deployMotor.setControl(requestVoltage);
 
+    }
 
 
 }
