@@ -24,12 +24,21 @@ public class ShotEstimator extends SubsystemBase{
     public ShotEstimator(){
         this.drive = RobotContainer.getDrive();
         targetVelocities = new InterpolatingDoubleTreeMap();
-        targetVelocities.put(2.057, 37.0);
-        targetVelocities.put(2.62, 39.0);
-        targetVelocities.put(2.87, 41.0);
-        targetVelocities.put(3.386, 45.0);
-        targetVelocities.put(4.21, 54.0);
-        targetVelocities.put(4.97, 57.0);
+        // targetVelocities.put(2.057, 37.0);
+        // targetVelocities.put(2.62, 39.0);
+        // targetVelocities.put(2.87, 41.0);
+        // targetVelocities.put(3.386, 45.0);
+        // targetVelocities.put(4.21, 54.0);
+        // targetVelocities.put(4.97, 57.0);
+
+        targetVelocities.put(3.195, 36.67);
+        targetVelocities.put(2.441, 34.67);
+        targetVelocities.put(4.301, 40.0);
+        targetVelocities.put(5.014, 45.0);
+        targetVelocities.put(4.318, 48.3);
+
+
+
     }
 
     @Override

@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure.intake;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
@@ -150,6 +151,9 @@ public class Intake extends SubsystemBase{
     }
     public Command setSlowPositionCommand(double position){
         return Commands.runOnce(() -> io.setSlowPosition(position));
+
+    public Command updatePosition(){
+        return Commands.runOnce(() -> io.updatePosition());
     }
 }
 
