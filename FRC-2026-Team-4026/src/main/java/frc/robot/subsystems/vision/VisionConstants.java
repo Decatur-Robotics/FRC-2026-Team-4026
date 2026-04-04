@@ -21,10 +21,10 @@ public class VisionConstants {
     
 
          public static final Transform3d ROBOT_TO_CAMERA_FRONT_LEFT = new Transform3d(
-        new Translation3d(Units.inchesToMeters(12),Units.inchesToMeters(10),0.24), 
+        new Translation3d(Units.inchesToMeters(12),Units.inchesToMeters(12),0.24), 
         new Rotation3d(0, -0.34,Math.PI/12));
     public static final Transform3d ROBOT_TO_CAMERA_FRONT_RIGHT = new Transform3d(
-        new Translation3d(Units.inchesToMeters(12),-Units.inchesToMeters(10),0.24), 
+        new Translation3d(Units.inchesToMeters(12),-Units.inchesToMeters(12),0.24), 
         new Rotation3d(0, -0.34,-Math.PI/12));
 
           public static final Transform3d ROBOT_TO_CAMERA_BACK = new Transform3d(
