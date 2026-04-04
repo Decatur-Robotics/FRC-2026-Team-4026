@@ -46,7 +46,7 @@ public interface IntakeIO {
 
     default void coast(){}
 
-    default void setSlowPosition(double position){}
+    default void setSlowPosition(){}
     default void updatePosition(){}
     
 }

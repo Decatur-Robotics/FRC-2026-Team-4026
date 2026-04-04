@@ -111,11 +111,11 @@ public class Leds extends SubsystemBase {
     }
 
     public Command correctCommand(){
-       return run(()->LEDPattern.solid(Color.kGreen).breathe(Seconds.of(0.25)).applyTo(buffer));
+       return runOnce(()->LEDPattern.solid(Color.kGreen).breathe(Seconds.of(0.25)).applyTo(buffer));
     }
 
     public Command aligningCommand(){
-        return run(()->LEDPattern.solid(Color.kRed).breathe(Seconds.of(1)).applyTo(buffer));
+        return runOnce(()->LEDPattern.solid(Color.kRed).breathe(Seconds.of(1)).applyTo(buffer));
     }
 
     public void changeShiftCommand(){
