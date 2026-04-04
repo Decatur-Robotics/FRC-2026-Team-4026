@@ -67,6 +67,8 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
+        long periodicStartTime = Logger.getRealTimestamp();
+
         for (int i = 0; i < io.length; i++) {
             io[i].updateInputs(inputs[i]);
             Logger.processInputs("Vision/Camera" + Integer.toString(i), inputs[i]);
@@ -81,6 +83,7 @@ public class Vision extends SubsystemBase {
 
         // Loop over cameras
         for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
+            long cameraStartTime = Logger.getRealTimestamp();
             // Update disconnected alert
             disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
 
@@ -150,7 +153,7 @@ public class Vision extends SubsystemBase {
                         VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
             }
 
-            // Log camera datadata
+            // Log camera data
             Logger.recordOutput(
                     "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
                     tagPoses.toArray(new Pose3d[tagPoses.size()]));
@@ -166,6 +169,10 @@ public class Vision extends SubsystemBase {
                     if(tagDistance.size()>0){
                         Logger.recordOutput("Vision/Distance", tagDistance.get(0));
                     }
+
+            // Log camera processing time
+            long cameraProcessingTime = Logger.getRealTimestamp() - cameraStartTime;
+            Logger.recordOutput("Vision/Camera" + Integer.toString(cameraIndex) + "/ProcessingTimeUs", cameraProcessingTime);
 
             allTagPoses.addAll(tagPoses);
             allRobotPoses.addAll(robotPoses);
@@ -184,8 +191,17 @@ public class Vision extends SubsystemBase {
                 "Vision/Summary/RobotPosesRejected",
                 allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
+        // Log total periodic processing time
+        long totalProcessingTime = Logger.getRealTimestamp() - periodicStartTime;
+        Logger.recordOutput("Vision/TotalPeriodicTimeUs", totalProcessingTime);
+        Logger.recordOutput("Vision/TotalPeriodicTimeMs", totalProcessingTime / 1000.0);
 
-        
+        // Log warning if processing is taking too long (>15ms is concerning for 20ms loop)
+        if (totalProcessingTime > 15000) {
+            Logger.recordOutput("Vision/PerformanceWarning", true);
+        } else {
+            Logger.recordOutput("Vision/PerformanceWarning", false);
+        }
     }
 
     @FunctionalInterface
