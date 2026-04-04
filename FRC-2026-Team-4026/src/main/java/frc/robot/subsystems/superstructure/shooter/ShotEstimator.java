@@ -34,6 +34,7 @@ public class ShotEstimator extends SubsystemBase{
         targetVelocities.put(2.486, 35.5);
         targetVelocities.put(2.99, 38.0);
         targetVelocities.put(3.6, 40.0);
+        targetVelocities.put(4.0, 42.5);
         targetVelocities.put(4.518, 45.5);
         targetVelocities.put(5.026, 48.0);
         targetVelocities.put(5.83, 54.2);
