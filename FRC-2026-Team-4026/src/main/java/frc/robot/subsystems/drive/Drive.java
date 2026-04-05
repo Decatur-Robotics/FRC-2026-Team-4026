@@ -555,13 +555,8 @@ public boolean atTargetPose() {
 }
 
 public boolean isAligned(){
-    boolean velocityAligned = true;
-    for(SwerveModuleState module : getModuleStates()){
-        if(module.speedMetersPerSecond > 0.1){
-            velocityAligned = false;
-        }
-    }
-    return velocityAligned && atTargetPose();
+
+    return (Math.abs(robotAngle-(getPose().getRotation().getRadians())) < 3);
 }
 public Command driveToFuel(){
     rotationalController.enableContinuousInput(Math.PI, -Math.PI);
