@@ -587,9 +587,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         return atTranslation && atRotation;
     }
 
+    /**
+     * are we aligned with the hub?
+     * @return true/false
+     */
     public boolean isAligned() {
-
-        return (Math.abs(robotAngle - (getPose().getRotation().getRadians())) < 3);
+        return (Math.abs(robotAngle - (getPose().getRotation().getRadians())) < Math.toRadians(3));
     }
 
     public Command driveToFuel() {
