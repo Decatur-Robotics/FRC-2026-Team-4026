@@ -37,6 +37,8 @@ import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVision;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionConstants;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhotonVision;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import java.util.Map;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -381,6 +383,11 @@ private enum AutoSide{
       // return auto;
 
       PathPlannerAuto auto1 = new PathPlannerAuto("Double Center Right");
+      PathPlannerAuto auto2 = new PathPlannerAuto("Center Rush Right");
+      PathPlannerAuto auto3 = new PathPlannerAuto("Center Rush Right 2"); 
+
+      
+      // auto1.activePath("Center Rush Right shoot").onFalse(Commands.sequence(superstructure.oscillateShootCommand(), Commands.waitTime(Seconds.of(3))));
             Logger.recordOutput("Auto?", auto1.activePath("Center Rush Right"));
       return auto1;
 
