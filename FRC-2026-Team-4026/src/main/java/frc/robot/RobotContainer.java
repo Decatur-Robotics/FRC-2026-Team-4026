@@ -382,13 +382,12 @@ private enum AutoSide{
       // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
       // return auto;
 
-      PathPlannerAuto auto1 = new PathPlannerAuto("Double Center Right");
-      PathPlannerAuto auto2 = new PathPlannerAuto("Center Rush Right");
-      PathPlannerAuto auto3 = new PathPlannerAuto("Center Rush Right 2"); 
+      PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right");
+      // PathPlannerAuto auto2 = new PathPlannerAuto("Center Rush Right");
+      // PathPlannerAuto auto3 = new PathPlannerAuto("Center Rush Right 2"); 
 
       
       // auto1.activePath("Center Rush Right shoot").onFalse(Commands.sequence(superstructure.oscillateShootCommand(), Commands.waitTime(Seconds.of(3))));
-            Logger.recordOutput("Auto?", auto1.activePath("Center Rush Right"));
       return auto1;
 
   }
