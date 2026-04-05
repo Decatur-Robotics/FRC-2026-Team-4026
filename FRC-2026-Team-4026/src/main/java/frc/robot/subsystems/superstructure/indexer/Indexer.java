@@ -10,6 +10,7 @@ public class Indexer extends SubsystemBase{
     private IndexerIO io;
     private boolean isEStopped = false;
     private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
+    private double desiredVoltage = 10.0;
 
     public Indexer(IndexerIO io) {
         this.io = io;

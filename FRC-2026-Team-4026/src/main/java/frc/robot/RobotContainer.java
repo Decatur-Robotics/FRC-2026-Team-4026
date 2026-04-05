@@ -14,6 +14,7 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.leds.Leds;
 import frc.robot.subsystems.superstructure.indexer.Indexer;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOTalonFX;
@@ -37,6 +38,7 @@ import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionConstant
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhotonVision;
 
 import java.util.Map;
+import frc.robot.util.LoggedTunableNumber;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -48,6 +50,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -59,6 +62,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -132,12 +136,14 @@ private enum AutoSide{
       shootingOnMove = false;
     
     hopperVision = new HopperVision(new HopperVisionIOPhotonVision(HopperVisionConstants.HOPPER_CAMERA_NAME));
+      ShuffleboardTab tab = Shuffleboard.getTab("SmartDashboard");
      if(Constants.currentMode != Constants.Mode.SIM) {
       indexer = new Indexer(new IndexerIOTalonFX());
       intake = new Intake(new IntakeIOTalonFX());
       shooter = new Shooter(new ShooterIOTalonFX());
       // climber = new Climber(new ClimberTalonFX());
       driveSimulation = null;
+      tab.add("Indexer Voltage", indexer.setVoltageCommand(0)).withWidget(BuiltInWidgets.kNumberSlider);
       this.drive = new Drive(
         new GyroIOPigeon2(),
                         new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
@@ -161,6 +167,7 @@ private enum AutoSide{
       driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(), new Pose2d(3.6, 6, new Rotation2d()));
       intake = new Intake(new IntakeIOSim(driveSimulation));
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+      tab.add("Indexer Voltage", indexer.setVoltageCommand(0)).withWidget(BuiltInWidgets.kNumberSlider);
       //climber = new Climber(new ClimberIOSim());
       drive = new Drive(
                         new GyroIOSim(driveSimulation.getGyroSimulation()),
