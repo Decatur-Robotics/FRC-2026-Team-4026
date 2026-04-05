@@ -28,7 +28,7 @@ public class Indexer extends SubsystemBase {
         }
         if (getMecanumCurrent() >= IndexerConstants.INDEXER_CURRENT_LIMIT) { // hit our current limit
             // are we stalled?
-            if (getMecanumVelocity() == 0 || getBeltVelocity() == 0) ||getKickVelocity() == 0){
+            if (getMecanumVelocity() == 0 || getBeltVelocity() == 0 || getKickVelocity() == 0){
                 if (!antiJamRunning) {
                     antiJamRunning = true;
                     // TODO move this definition outside of periodic
@@ -41,47 +41,47 @@ public class Indexer extends SubsystemBase {
                 }
             }
         }
-
-        public Command setVoltageCommand ( double voltage){
-
-            return this.runOnce(() -> {
-                io.setVoltage(voltage);
-            });
-        }
-
-        public double getMecanumCurrent () {
-            return inputs.indexerData.mecanumCurrent();
-        }
-
-        public double getBeltCurrent () {
-            return inputs.indexerData.beltCurrent();
-        }
-        public double getKickCurrent () {
-            return inputs.indexerData.kickCurrent();
-        }
-
-        public double getMecanumVoltage () {
-            return inputs.indexerData.mecanumVoltage();
-        }
-
-        public double getBeltVoltage () {
-            return inputs.indexerData.beltVoltage();
-        }
-
-        public double getKickVoltage () {
-            return inputs.indexerData.kickVoltage();
-        }
-
-
-        public double getMecanumVelocity () {
-            return inputs.indexerData.mecanumVelocity();
-        }
-
-        public double getBeltVelocity () {
-            return inputs.indexerData.beltVelocity();
-        }
-
-        public double getKickVelocity () {
-            return inputs.indexerData.kickVelocity();
-        }
     }
+
+    public Command setVoltageCommand(double voltage){
+        return this.runOnce(() -> {
+            io.setVoltage(voltage);
+        });
+    }
+
+    public double getMecanumCurrent() {
+        return inputs.indexerData.mecanumCurrent();
+    }
+
+    public double getBeltCurrent() {
+        return inputs.indexerData.beltCurrent();
+    }
+
+    public double getKickCurrent() {
+        return inputs.indexerData.kickCurrent();
+    }
+
+    public double getMecanumVoltage() {
+        return inputs.indexerData.mecanumVoltage();
+    }
+
+    public double getBeltVoltage() {
+        return inputs.indexerData.beltVoltage();
+    }
+
+    public double getKickVoltage() {
+        return inputs.indexerData.kickVoltage();
+    }
+
+    public double getMecanumVelocity() {
+        return inputs.indexerData.mecanumVelocity();
+    }
+
+    public double getBeltVelocity() {
+        return inputs.indexerData.beltVelocity();
+    }
+
+    public double getKickVelocity() {
+        return inputs.indexerData.kickVelocity();
+    }
+}

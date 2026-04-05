@@ -268,8 +268,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command alignCommand() {
-        //return Commands.parallel(drive.autoAlignToHub(), drive.isAligned() ? leds.correctCommand() : leds.aligningCommand());return Commands.parallel(drive.autoAlignToHub(), Commands.sequence(leds.aligningCommand(), Commands.waitUntil(() -> drive.isAligned()), leds.correctCommand()));
-
+        return Commands.parallel(drive.autoAlignToHub(), Commands.sequence(leds.aligningCommand(), Commands.waitUntil(() -> drive.isAligned()), leds.correctCommand()));
     }
 
 

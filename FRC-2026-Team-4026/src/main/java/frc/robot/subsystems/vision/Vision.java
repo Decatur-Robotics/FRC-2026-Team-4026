@@ -191,8 +191,8 @@ public class Vision extends SubsystemBase {
                 "Vision/Summary/RobotPosesRejected",
                 allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
-        // Log total periodic processing time
-        long totalProcessingTime = Logger.getRealTimestamp() - periodicStartTime;
+        // Log total periodic processing time (convert nanoseconds to microseconds)
+        long totalProcessingTime = (System.nanoTime() - periodicStartTime) / 1000;
         Logger.recordOutput("Vision/TotalPeriodicTimeUs", totalProcessingTime);
         Logger.recordOutput("Vision/TotalPeriodicTimeMs", totalProcessingTime / 1000.0);
 

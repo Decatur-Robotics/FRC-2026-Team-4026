@@ -222,7 +222,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
     @Override
     public void periodic() {
-        long periodicStartTime = Logger.getRealTimestamp();
+        long periodicStartTime = System.nanoTime();
 
         if(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)){
              robotAngle =  Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
@@ -285,8 +285,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         // Update gyro alert
         gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
 
-        // Log periodic processing time
-        long totalProcessingTime = Logger.getRealTimestamp() - periodicStartTime;
+        // Log periodic processing time (convert nanoseconds to microseconds)
+        long totalProcessingTime = (System.nanoTime() - periodicStartTime) / 1000;
         Logger.recordOutput("Drive/PeriodicTimeUs", totalProcessingTime);
         Logger.recordOutput("Drive/PeriodicTimeMs", totalProcessingTime / 1000.0);
         Logger.recordOutput("Drive/OdometrySampleCount", sampleCount);
