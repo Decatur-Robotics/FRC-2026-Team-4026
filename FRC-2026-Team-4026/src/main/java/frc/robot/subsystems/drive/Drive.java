@@ -180,10 +180,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         flightTime = new InterpolatingDoubleTreeMap();
-        flightTime.put(3.081, 0.5);
-        flightTime.put(2.6, 0.5);
-        flightTime.put(3.8,0.5);
-        flightTime.put(4.7, 0.5);
+        flightTime.put(3.081, 1.2);
+        flightTime.put(2.6, 1.2);
+        flightTime.put(3.8,1.2);
+        flightTime.put(4.7, 1.2);
         modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
         modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
         modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
