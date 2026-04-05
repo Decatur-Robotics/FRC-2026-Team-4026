@@ -1,5 +1,7 @@
 package frc.robot.core;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
@@ -9,6 +11,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -113,7 +116,7 @@ public class Autonomous {
   }
 
       public Command autoShootCommand(){
-        return superstructure.oscillateShootCommand().until(() -> !hopperEmpty);
+        return Commands.sequence(superstructure.oscillateShootCommand(), Commands.waitTime(Seconds.of(3)));
     }
 
 

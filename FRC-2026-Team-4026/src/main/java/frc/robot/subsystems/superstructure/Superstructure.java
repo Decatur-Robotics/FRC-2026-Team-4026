@@ -104,6 +104,10 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), shooter.setVoltageCommand(0), leds.pulsingCommand());
     }
 
+    public Command altIntakeCommand(){
+        return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12), shooter.setVoltageCommand(getNumBallsStored()));
+    }
+
     public Command testShootCommand(){
         return Commands.parallel(shooter.setVelocityCommand(55), indexer.setVoltageCommand(10));
     }
