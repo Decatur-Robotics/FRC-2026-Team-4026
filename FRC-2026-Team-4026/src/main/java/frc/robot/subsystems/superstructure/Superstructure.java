@@ -10,7 +10,6 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,7 +29,6 @@ public class Superstructure extends SubsystemBase {
     private Shooter shooter;
 
     private frc.robot.subsystems.superstructure.leds.Leds leds;
-    private RobotState robotState;
     private Drive drive;
 
 
@@ -43,7 +41,7 @@ public class Superstructure extends SubsystemBase {
     
 
 
-    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Leds leds, RobotState robotState, Drive drive) {
+    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Leds leds, Drive drive) {
         this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
@@ -52,7 +50,6 @@ public class Superstructure extends SubsystemBase {
         this.drive = drive;
 
 
-        this.robotState = robotState;
         
 
         this.targetState = SuperstructureConstants.STARTING_STATE;
@@ -104,7 +101,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command intakeCommand(){
-        return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), leds.pulsingCommand());
+        return Commands.parallel(setState(SuperstructureConstants.INTAKE_STATE), shooter.setVoltageCommand(0), leds.pulsingCommand());
     }
 
     public Command testShootCommand(){
@@ -238,10 +235,10 @@ public class Superstructure extends SubsystemBase {
     public void shootFuel(){
 
         RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
-            robotState.getDrivePose(),
+            drive.getPose().getTranslation(),
             new Translation2d(0,0),
-            robotState.getChassisSpeed(),
-            robotState.getDriveRotatoin(),
+            drive.getChassisSpeeds(),
+            drive.getRotation(),
             Meters.of(0.2),
             MetersPerSecond.of(2),
             //I repleaced the hod angle with this is incorrect

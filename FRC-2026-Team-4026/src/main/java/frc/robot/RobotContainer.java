@@ -112,7 +112,6 @@ private enum AutoSide{
        private SendableChooser<AutoSide> autoSide;
   private SendableChooser<AutoType> autoType;
   //  public ShotEstimator shotEstimator;
-  private RobotState robotState;
       private InterpolatingDoubleTreeMap targetVelocities;
   //private final Climber climber;
   private Leds leds = new Leds();
@@ -146,10 +145,9 @@ private enum AutoSide{
                         new ModuleIOTalonFXReal(TunerConstants.BackLeft),
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
                         (pose) -> {});
-      robotState = new RobotState(drive);
               vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
               colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME, ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
-      superstructure = new Superstructure(intake, indexer, shooter, leds, robotState, drive);
+      superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
 
             driveInstance = drive;
        autonomous = new Autonomous(superstructure, drive);
@@ -179,8 +177,7 @@ private enum AutoSide{
                                       new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
                                       new VisionIOPhotonVisionSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose)
                                     );
-                                 robotState = new RobotState(drive);
-      superstructure = new Superstructure(intake, indexer, shooter, leds, robotState, drive);
+      superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
             driveInstance = drive;
             autonomous = new Autonomous(superstructure, drive);
      }
