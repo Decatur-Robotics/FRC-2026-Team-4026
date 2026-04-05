@@ -316,6 +316,7 @@ private enum AutoSide{
        down.whileTrue(intake.setSlowPositionCommand());
        
         bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
+        bumperLeft.and(a).whileTrue(superstructure.passIntakeCommand());
 
 
   }

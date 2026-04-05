@@ -165,8 +165,12 @@ public class Superstructure extends SubsystemBase {
         return Commands.sequence(
             Commands.parallel(shooter.passAimCommand(),leds.shooterWindUpCommand(shooter.getVelocity(), ShotEstimator.getInstance().getTargetVelocity().get())).
             until(()->shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get()-0.5),
-            Commands.parallel(shooter.passAimCommand(), indexer.setVoltageCommand(10), intake.runIntakeCommand(-0.5))
+            Commands.parallel(shooter.passAimCommand(), indexer.setVoltageCommand(10))
         );
+    }
+
+    public Command passIntakeCommand(){
+        return Commands.parallel(passCommand(), intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12));
     }
 
     public Command testShootCommands(){
