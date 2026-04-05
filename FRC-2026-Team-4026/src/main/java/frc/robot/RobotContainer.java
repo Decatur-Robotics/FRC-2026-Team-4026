@@ -245,7 +245,7 @@ private enum AutoSide{
                 drive,
                 ()-> -joystick.getY(),
                 ()-> -joystick.getX(),
-                ()-> -joystick.getTwist(),
+                ()-> -joystick.getTwist()*0.8,
                 //please set this last button to whatever you want, this is just a placeholder
                 () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove()).getAsBoolean()
             ));
@@ -365,12 +365,12 @@ private enum AutoSide{
       // auto.activePath("Center Rush Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
       // auto.activePath("Center Rush Shoot").onFalse(null);
       // return auto;
-      Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
-      return auto;
-      // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right", true);
-      // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+      // Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
       // return auto;
+      PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
+      auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+      return auto;
 
   }
 

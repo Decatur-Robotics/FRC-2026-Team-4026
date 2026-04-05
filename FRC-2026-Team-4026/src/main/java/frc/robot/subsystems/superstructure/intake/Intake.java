@@ -98,7 +98,7 @@ public class Intake extends SubsystemBase{
     }
 
     public Command deployIntakeCommand(double position){
-        return Commands.run(() -> io.setDeployPosition(position));
+        return Commands.runOnce(() -> io.setDeployPosition(position));
     }
 
     public Command altDeployIntakeCommand(double position){
