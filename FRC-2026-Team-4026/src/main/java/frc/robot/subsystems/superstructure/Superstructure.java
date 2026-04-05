@@ -67,7 +67,6 @@ public class Superstructure extends SubsystemBase {
 
     @Override
     public void periodic(){
-        drive.isAligned();
         Logger.recordOutput("Is Aligned", drive.isAligned());
     }
 
@@ -270,7 +269,12 @@ public class Superstructure extends SubsystemBase {
  }
  public Command alignCommand(){
     // return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.correctCommand():leds.aligningCommand());
-    return Commands.parallel(drive.autoAlignToHub(), Commands.sequence(leds.aligningCommand(), Commands.waitUntil(() -> drive.isAligned()), leds.correctCommand()));
+    return Commands.parallel(drive.autoAlignToHub(),
+            Commands.sequence(leds.aligningCommand(),
+                    Commands.waitUntil(() -> drive.isAligned()),
+                    leds.correctCommand()
+            )
+    );
 
  }
 
