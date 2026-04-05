@@ -115,49 +115,52 @@ public class RobotContainer {
     }
 
 
-      private PathPlannerAuto auto;
-       private SendableChooser<AutoSide> autoSide;
-  private SendableChooser<AutoType> autoType;
-  //  public ShotEstimator shotEstimator;
-      private InterpolatingDoubleTreeMap targetVelocities;
-  //private final Climber climber;
-  private Leds leds = new Leds();
-      private Double robotDistance;
-  public Drive drive;
-  public static Drive driveInstance;
-  private SwerveDriveSimulation driveSimulation;
-   private Vision vision;
-   private ColorVision colorVision;
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  private static RobotContainer instance;
-  private boolean shootingOnMove;
+    private PathPlannerAuto auto;
+    private SendableChooser<AutoSide> autoSide;
+    private SendableChooser<AutoType> autoType;
+    //  public ShotEstimator shotEstimator;
+    private InterpolatingDoubleTreeMap targetVelocities;
+    //private final Climber climber;
+    private Leds leds = new Leds();
+    private Double robotDistance;
+    public Drive drive;
+    public static Drive driveInstance;
+    private SwerveDriveSimulation driveSimulation;
+    private Vision vision;
+    private ColorVision colorVision;
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    private static RobotContainer instance;
+    private boolean shootingOnMove;
 
     private Autonomous autonomous;
 
     public RobotContainer() {
 
-      instance = this;
-      shootingOnMove = false;
-    
-    hopperVision = new HopperVision(new HopperVisionIOPhotonVision(HopperVisionConstants.HOPPER_CAMERA_NAME));
-      ShuffleboardTab tab = Shuffleboard.getTab("SmartDashboard");
-     if(Constants.currentMode != Constants.Mode.SIM) {
-      indexer = new Indexer(new IndexerIOTalonFX());
-      intake = new Intake(new IntakeIOTalonFX());
-      shooter = new Shooter(new ShooterIOTalonFX());
-      // climber = new Climber(new ClimberTalonFX());
-      driveSimulation = null;
-      tab.add("Indexer Voltage", indexer.setVoltageCommand(0)).withWidget(BuiltInWidgets.kNumberSlider);
-      this.drive = new Drive(
-        new GyroIOPigeon2(),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
-                        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                        (pose) -> {});
-              vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
-              colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME, ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
-      superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
+        instance = this;
+        shootingOnMove = false;
+
+        hopperVision = new HopperVision(new HopperVisionIOPhotonVision(HopperVisionConstants.HOPPER_CAMERA_NAME));
+        ShuffleboardTab tab = Shuffleboard.getTab("SmartDashboard");
+        if (Constants.currentMode != Constants.Mode.SIM) {
+            indexer = new Indexer(new IndexerIOTalonFX());
+            intake = new Intake(new IntakeIOTalonFX());
+            shooter = new Shooter(new ShooterIOTalonFX());
+            // climber = new Climber(new ClimberTalonFX());
+            driveSimulation = null;
+            tab.add("Indexer Voltage", indexer.setVoltageCommand(0)).withWidget(BuiltInWidgets.kNumberSlider);
+            this.drive = new Drive(
+                    new GyroIOPigeon2(),
+                    new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+                    new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+                    new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+                    new ModuleIOTalonFXReal(TunerConstants.BackRight),
+                    (pose) -> {
+                    });
+            vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+            colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME, ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
+            superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
 
             driveInstance = drive;
             autonomous = new Autonomous(superstructure, drive);
@@ -259,7 +262,7 @@ public class RobotContainer {
                         drive,
                         () -> -joystick.getY(),
                         () -> -joystick.getX(),
-                        () -> -joystick.getTwist()*0.8,
+                        () -> -joystick.getTwist() * 0.8,
                         triggerRight::getAsBoolean
                 ));
 
@@ -308,8 +311,8 @@ public class RobotContainer {
 
         triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
         triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
-        triggerRight.whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand() : superstructure.shootCommand() ).onFalse(superstructure.storeCommand());
-        triggerRight.and(a).whileTrue(drive.getShootOnMoveBoolean()? superstructure.shootOnMoveCommand():superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand() : superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.and(a).whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand() : superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
@@ -318,7 +321,7 @@ public class RobotContainer {
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
         right.whileTrue(intake.oscillateIntakeCommand());
         up.whileTrue(indexer.setVoltageCommand(-10)).onFalse(indexer.setVoltageCommand(0));
-       down.whileTrue(intake.setSlowPositionCommand());
+        down.whileTrue(intake.setSlowPositionCommand());
 
         bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
 
@@ -379,8 +382,8 @@ public class RobotContainer {
         //Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
         //return auto;
         PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
-         auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-         auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+        auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+        auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
         return auto;
 
     }
