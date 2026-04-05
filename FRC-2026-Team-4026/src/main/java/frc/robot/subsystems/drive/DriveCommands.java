@@ -61,7 +61,7 @@ public class DriveCommands {
 
         // Square magnitude for more precise control
         linearMagnitude = linearMagnitude * linearMagnitude;
-        linearMagnitude = linearMagnitudeFilter.calculate(linearMagnitude);
+        // linearMagnitude = linearMagnitudeFilter.calculate(linearMagnitude);
         // Return new linear velocity
         return new Pose2d(new Translation2d(), linearDirection)
                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))

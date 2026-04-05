@@ -21,6 +21,7 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.subsystems.superstructure.shooter.Shooter;
 import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
 
@@ -64,6 +65,20 @@ public class Autonomous {
   public void setAuto(){
 
   }
+
+  // public Command DoubleCenterLoop(){
+  //         PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right");
+  //     auto1.activePath("Center Rush Right Intake").whileTrue(Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12))).onFalse(intake.runIntakeCommand(0));
+
+  //     PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test");
+  //     auto2.activePath("Center Rush Right 2").onTrue(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0), intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION)));
+  //     auto2.activePath("Center Rush 2 1002").whileTrue(Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12))).onFalse(intake.runIntakeCommand(0));
+  //     // PathPlannerAuto auto3 = new PathPlannerAuto("Center Rush Right 2"); 
+
+      
+  //     // auto1.activePath("Center Rush Right shoot").onFalse(Commands.sequence(superstructure.oscillateShootCommand(), Commands.waitTime(Seconds.of(3))));
+  //     return Commands.sequence(auto1, Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), intake.oscillateIntakeCommand()), Commands.waitSeconds(3), auto2, superstructure.oscillateShootCommand());
+  // }
 
   public Command DoubleCenterSwipe(){
     PathPlannerAuto centerSwipe1 = new PathPlannerAuto("Center Rush 1");
