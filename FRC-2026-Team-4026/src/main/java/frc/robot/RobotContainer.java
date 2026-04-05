@@ -374,10 +374,14 @@ private enum AutoSide{
       // return auto;
       // Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
       // return auto;
-      PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
-      auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-      auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
-      return auto;
+      // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
+      // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+      // return auto;
+
+      PathPlannerAuto auto1 = new PathPlannerAuto("Double Center Right");
+            Logger.recordOutput("Auto?", auto1.activePath("Center Rush Right"));
+      return auto1;
 
   }
 

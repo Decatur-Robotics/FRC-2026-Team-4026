@@ -73,13 +73,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 87.87890360333853
   },
   "reversed": false,
   "folder": "Center Rush",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": -90.44414443311187
   },
   "useDefaultConstraints": false

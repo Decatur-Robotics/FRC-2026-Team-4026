@@ -20,24 +20,24 @@
         "y": 0.6081969157769855
       },
       "prevControl": {
-        "x": 5.277512376079555,
-        "y": 0.6536192795835096
+        "x": 5.279278850523442,
+        "y": 0.5987882996702183
       },
       "nextControl": {
-        "x": 3.7941755634638206,
-        "y": 0.5328825622775801
+        "x": 3.439122182680902,
+        "y": 0.6297153024911031
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.685978647686834,
-        "y": 0.7803440094899179
+        "x": 2.5891459074733105,
+        "y": 0.9524911032028467
       },
       "prevControl": {
-        "x": 2.6967378410438925,
-        "y": 0.5006049822064069
+        "x": 3.0625504151838676,
+        "y": 0.8126215895610915
       },
       "nextControl": null,
       "isLocked": false,
@@ -67,12 +67,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.37000151517929
+    "rotation": 56.219773965408024
   },
   "reversed": false,
   "folder": "Center Rush",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 86.09950625761806
   },
   "useDefaultConstraints": false
