@@ -43,7 +43,7 @@ public class Robot extends LoggedRobot {
 
     if(isReal()){
         //Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-        // Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(AKIT_LOG_PATH, "_real"))); // Save outputs to a new log
+        Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Save outputs to a new log
         Logger.addDataReceiver(new NT4Publisher());
     }
         // Publish data to NetworkTables

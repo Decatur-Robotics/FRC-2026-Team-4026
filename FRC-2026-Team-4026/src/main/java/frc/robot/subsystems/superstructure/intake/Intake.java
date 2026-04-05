@@ -43,11 +43,6 @@ public class Intake extends SubsystemBase{
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Intake", inputs);
-        Logger.recordOutput("Deploy Position", getDeployPosition());
-        Logger.recordOutput("Deploy Voltage", getDeployVoltage());
-        Logger.recordOutput("Intake Voltage", getIntakeVoltage());
-        Logger.recordOutput("Deploy Current", getDeployCurrent());
-        Logger.recordOutput("Intake Current", getIntakeCurrent());
 
         if(getIntakeCurrent() > 50){
             if(intakingBalls == false){
