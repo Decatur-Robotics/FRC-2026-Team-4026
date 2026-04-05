@@ -243,8 +243,8 @@ private enum AutoSide{
          drive.setDefaultCommand(
               DriveCommands.joystickDrive(
                 drive,
-                ()-> joystick.getY(),
-                ()-> joystick.getX(),
+                ()-> -joystick.getY(),
+                ()-> -joystick.getX(),
                 ()-> -joystick.getTwist(),
                 //please set this last button to whatever you want, this is just a placeholder
                 () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove()).getAsBoolean()
@@ -261,8 +261,8 @@ private enum AutoSide{
           b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d())));
           triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
-                ()-> joystick.getY()*0.6,
-                ()-> joystick.getX()*0.6,
+                ()-> -joystick.getY()*0.6,
+                ()-> -joystick.getX()*0.6,
                 ()-> -joystick.getTwist()*0.6,
                 () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove()).getAsBoolean()));
           //  b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
