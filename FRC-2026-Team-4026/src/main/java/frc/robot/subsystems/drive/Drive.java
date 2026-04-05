@@ -98,13 +98,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     // PathPlanner config constants
     private Pose2d targetPose;
     private SwerveSetpoint previousSetpoint;
-    private PIDController translationalController = new PIDController(
-            0.01, 0, 0);
-    // 5.25, 0, 0.3);
+ private PIDController translationalController = new PIDController(
+        0.01, 0, 0);
+        // 5.25, 0, 0.3); 
     private PIDController rotationalController = new PIDController(
-            0.01, 0, 0);
-    private PIDController shootOnMoveController = new PIDController(10,
-            0, 0);
+        0.01, 0, 0);
+    private PIDController shootOnMoveController = new PIDController(10, 
+    0, 0);
     private InterpolatingDoubleTreeMap flightTime;
 
     private Supplier<Pose2d> futurePose;
@@ -146,9 +146,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
                         KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
                         WHEEL_COF));
     }
-
     private double robotAngle;
-    double robotDistance = 0;
+        double robotDistance = 0;
     static final Lock odometryLock = new ReentrantLock();
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -160,11 +159,11 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
     private Rotation2d rawGyroRotation = new Rotation2d();
     private final SwerveModulePosition[] lastModulePositions = // For delta tracking
-            new SwerveModulePosition[]{
-                    new SwerveModulePosition(),
-                    new SwerveModulePosition(),
-                    new SwerveModulePosition(),
-                    new SwerveModulePosition()
+            new SwerveModulePosition[] {
+                new SwerveModulePosition(),
+                new SwerveModulePosition(),
+                new SwerveModulePosition(),
+                new SwerveModulePosition()
             };
     private final SwerveDrivePoseEstimator poseEstimator =
             new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
@@ -177,13 +176,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
             ModuleIO blModuleIO,
             ModuleIO brModuleIO,
             Consumer<Pose2d> resetSimulationPoseCallBack) {
-
+       
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         flightTime = new InterpolatingDoubleTreeMap();
         flightTime.put(3.081, 1.2);
         flightTime.put(2.6, 1.2);
-        flightTime.put(3.8, 1.2);
+        flightTime.put(3.8,1.2);
         flightTime.put(4.7, 1.2);
         modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
         modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
@@ -223,16 +222,16 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
     @Override
     public void periodic() {
-        try {
-            if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-                robotAngle = Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
-            } else {
-                robotAngle = Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
-            }
-        } catch (NoSuchElementException e) {
-            robotAngle = Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+        try{
+        if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+             robotAngle =  Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+        } else {
+             robotAngle =  Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
         }
-
+        } catch(NoSuchElementException e){
+            robotAngle =  Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+        }
+        
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
         Logger.recordOutput("RobotAngle", robotAngle);
         odometryLock.lock(); // Prevents odometry updates while reading data
@@ -252,8 +251,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
         // Log empty setpoint states when disabled
         if (DriverStation.isDisabled()) {
-            Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[]{});
-            Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[]{});
+            Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
+            Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
         }
 
         // Update odometry
@@ -291,10 +290,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
     private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
     SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(
-            PP_CONFIG,
-            Units.rotationsToRadians(DriveConstants.MAX_ANGULAR_VELOCITY)
+        PP_CONFIG,
+        Units.rotationsToRadians(DriveConstants.MAX_ANGULAR_VELOCITY)
     );
-
     /**
      * Runs the drive at the desired velocity.
      *
@@ -319,18 +317,14 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
     }
 
-    /**
-     * Runs the drive in a straight line with the specified drive output.
-     */
+    /** Runs the drive in a straight line with the specified drive output. */
     public void runCharacterization(double output) {
         for (int i = 0; i < 4; i++) {
             modules[i].runCharacterization(output);
         }
     }
 
-    /**
-     * Stops the drive.
-     */
+    /** Stops the drive. */
     public void stop() {
         runVelocity(new ChassisSpeeds());
     }
@@ -348,27 +342,21 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         stop();
     }
 
-    public Command stopWithXCommand() {
+    public Command stopWithXCommand(){
         return Commands.run(() -> stopWithX());
     }
 
-    /**
-     * Returns a command to run a quasistatic test in the specified direction.
-     */
+    /** Returns a command to run a quasistatic test in the specified direction. */
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.quasistatic(direction));
     }
 
-    /**
-     * Returns a command to run a dynamic test in the specified direction.
-     */
+    /** Returns a command to run a dynamic test in the specified direction. */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.dynamic(direction));
     }
 
-    /**
-     * Returns the module states (turn angles and drive velocities) for all of the modules.
-     */
+    /** Returns the module states (turn angles and drive velocities) for all of the modules. */
     @AutoLogOutput(key = "SwerveStates/Measured")
     private SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
@@ -378,9 +366,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         return states;
     }
 
-    /**
-     * Returns the module positions (turn angles and drive positions) for all of the modules.
-     */
+    /** Returns the module positions (turn angles and drive positions) for all of the modules. */
     private SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] states = new SwerveModulePosition[4];
         for (int i = 0; i < 4; i++) {
@@ -389,17 +375,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         return states;
     }
 
-    /**
-     * Returns the measured chassis speeds of the robot.
-     */
+    /** Returns the measured chassis speeds of the robot. */
     @AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
     public ChassisSpeeds getChassisSpeeds() {
         return kinematics.toChassisSpeeds(getModuleStates());
     }
 
-    /**
-     * Returns the position of each module in radians.
-     */
+    /** Returns the position of each module in radians. */
     public double[] getWheelRadiusCharacterizationPositions() {
         double[] values = new double[4];
         for (int i = 0; i < 4; i++) {
@@ -408,9 +390,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         return values;
     }
 
-    /**
-     * Returns the average velocity of the modules in rotations/sec (Phoenix native units).
-     */
+    /** Returns the average velocity of the modules in rotations/sec (Phoenix native units). */
     public double getFFCharacterizationVelocity() {
         double output = 0.0;
         for (int i = 0; i < 4; i++) {
@@ -419,267 +399,247 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         return output;
     }
 
-    /**
-     * Returns the current odometry pose.
-     */
+    /** Returns the current odometry pose. */
     @AutoLogOutput(key = "Odometry/Robot")
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }
 
-    /**
-     * Returns the current odometry rotation.
-     */
+    /** Returns the current odometry rotation. */
     public Rotation2d getRotation() {
         return getPose().getRotation();
     }
 
-    /**
-     * Resets the current odometry pose.
-     */
+    /** Resets the current odometry pose. */
     public void resetOdometry(Pose2d pose) {
         resetSimulationPoseCallBack.accept(pose);
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
     }
 
-    /**
-     * Adds a new timestamped vision measurement.
-     */
+    /** Adds a new timestamped vision measurement. */
     @Override
     public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
         poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
-
     @Override
-    public void accept(double yaw) {
+    public void accept(double yaw){
         this.yaw = yaw;
     }
+    public Rotation2d getRotationChange(){
 
-    public Rotation2d getRotationChange() {
+        if (yaw == 0){
 
-        if (yaw == 0) {
-
-            return Rotation2d.fromDegrees(getRotation().getDegrees() + 45);
-        } else {
+            return Rotation2d.fromDegrees(getRotation().getDegrees()+45);
+        }
+        else{
             return Rotation2d.fromDegrees(yaw + getRotation().getDegrees());
         }
     }
 
-    /**
-     * Returns the maximum linear speed in meters per sec.
-     */
+    /** Returns the maximum linear speed in meters per sec. */
     public double getMaxLinearSpeedMetersPerSec() {
         return TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     }
 
-    /**
-     * Returns the maximum angular speed in radians per sec.
-     */
+    /** Returns the maximum angular speed in radians per sec. */
     public double getMaxAngularSpeedRadPerSec() {
         return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
     }
 
-    /**
-     * Returns an array of module translations.
-     */
+    /** Returns an array of module translations. */
     public static Translation2d[] getModuleTranslations() {
-        return new Translation2d[]{
-                new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
-                new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY),
-                new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
-                new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
+        return new Translation2d[] {
+            new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
+            new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY),
+            new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
+            new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
         };
     }
-
-    public void setRotationX() {
+public void setRotationX () {
         modules[0].setRotation(new Rotation2d(0.787));
         modules[1].setRotation(new Rotation2d(2.355));
         modules[2].setRotation(new Rotation2d(0.787));
         modules[3].setRotation(new Rotation2d(2.355));
     }
 
-    public Command setRotationXCommand() {
-        return Commands.runOnce(() -> setRotationX());
+public Command setRotationXCommand () {
+    return Commands.runOnce(() -> setRotationX());
+}
+
+public void driveRobotRelative(ChassisSpeeds speeds){
+    previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, 0.02);
+    runVelocity(previousSetpoint.robotRelativeSpeeds());
+}
+
+public Command driveToPoseAuto(Supplier<Pose2d> targetPose){
+    return Commands.run(() -> driveToPose(() -> new ChassisSpeeds(0,0,0), targetPose));
+}
+
+
+
+
+
+public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
+    this.targetPose = targetPose.get();
+    double targetRotation = targetSpeeds.get().omegaRadiansPerSecond;
+
+    if(targetSpeeds.get().omegaRadiansPerSecond == 0){
+        targetRotation = rotationalController.calculate(getPose().getRotation().getRadians(), this.targetPose.getRotation().getRadians());
     }
 
-    public void driveRobotRelative(ChassisSpeeds speeds) {
-        previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, 0.02);
-        runVelocity(previousSetpoint.robotRelativeSpeeds());
+    boolean isNotDriving = targetSpeeds.get().vxMetersPerSecond == 0 && targetSpeeds.get().vyMetersPerSecond == 0;
+    if(isNotDriving) {
+        double targetTranlslationX = translationalController.calculate(0, Math.abs(getPose().getX() - this.targetPose.getX()));
+        double targetTranlslationY = translationalController.calculate(0, Math.abs(getPose().getY() - this.targetPose.getY()));
+        double distance = translationalController.calculate(0, getPose().getTranslation().getDistance(targetPose.get().getTranslation()));
+        Translation2d targetTranlslation = new Translation2d(targetTranlslationX, targetTranlslationY);
+        // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : targetTranlslationX,
+        //      isAligned() ? 0 : targetTranlslationY,
+        //      isAligned() ? 0 : targetRotation);
+        // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
+        //      0,
+        //      isAligned() ? 0 : targetRotation);
+
+        ChassisSpeeds speeds = new ChassisSpeeds(0,
+             0,
+             isAligned() ? 0 : targetRotation*0.25);
+
+        Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();
+           System.out.println("travelRotation:" + travelRotation);
+           System.out.println("targetPose:" + targetPose);
+        this.runVelocity(speeds);
+        // driveRobotRelative(speeds);
+
+
     }
-
-    public Command driveToPoseAuto(Supplier<Pose2d> targetPose) {
-        return Commands.run(() -> driveToPose(() -> new ChassisSpeeds(0, 0, 0), targetPose));
-    }
-
-
-    public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
-        this.targetPose = targetPose.get();
-        double targetRotation = targetSpeeds.get().omegaRadiansPerSecond;
-
-        if (targetSpeeds.get().omegaRadiansPerSecond == 0) {
-            targetRotation = rotationalController.calculate(getPose().getRotation().getRadians(), this.targetPose.getRotation().getRadians());
-        }
-
-        boolean isNotDriving = targetSpeeds.get().vxMetersPerSecond == 0 && targetSpeeds.get().vyMetersPerSecond == 0;
-        if (isNotDriving) {
-            double targetTranlslationX = translationalController.calculate(0, Math.abs(getPose().getX() - this.targetPose.getX()));
-            double targetTranlslationY = translationalController.calculate(0, Math.abs(getPose().getY() - this.targetPose.getY()));
-            double distance = translationalController.calculate(0, getPose().getTranslation().getDistance(targetPose.get().getTranslation()));
-            Translation2d targetTranlslation = new Translation2d(targetTranlslationX, targetTranlslationY);
-            // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : targetTranlslationX,
-            //      isAligned() ? 0 : targetTranlslationY,
-            //      isAligned() ? 0 : targetRotation);
-            // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
-            //      0,
-            //      isAligned() ? 0 : targetRotation);
-
-            ChassisSpeeds speeds = new ChassisSpeeds(0,
-                    0,
-                    isAligned() ? 0 : targetRotation * 0.25);
-
-            Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();
-            System.out.println("travelRotation:" + travelRotation);
-            System.out.println("targetPose:" + targetPose);
-            this.runVelocity(speeds);
-            // driveRobotRelative(speeds);
-
-
-        } else {
+        else {
             ChassisSpeeds speeds = new ChassisSpeeds(targetSpeeds.get().vxMetersPerSecond, targetSpeeds.get().vyMetersPerSecond, targetRotation);
             this.runVelocity(speeds);
             // driveRobotRelative(speeds);
         }
 
+    
+}
 
+private ProfiledPIDController angleController = new ProfiledPIDController(5, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 4));
+public void autoAlign(Supplier<Rotation2d> targetRotation){
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+    double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), targetRotation.get().getRadians());
+    ChassisSpeeds speeds = new ChassisSpeeds(0, 0, rotationSpeed);
+    runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
+    Logger.recordOutput("Target Rotation", targetRotation.get());
+    Logger.recordOutput("autoAling Robot", getPose().getRotation());
+}
+
+public Command autoAlignToHub(){
+
+    return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));
+    
+}
+
+public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose){
+    return Commands.run(() -> driveToPose(targetSpeeds, targetPose)).finallyDo(() -> this.targetPose = null);
+}
+
+public boolean atTargetPose() {
+    if (targetPose == null) {
+        return false;
     }
+    //I need to make these constants
+    double translationTolerance = 0.001; 
+    double rotationTolerance = 0.1; 
+    boolean atTranslation = Math.abs(translationalController.getError()) < translationTolerance;
+    boolean atRotation = Math.abs(rotationalController.getError()) < rotationTolerance;
+    return atTranslation && atRotation;
+}
 
-    private ProfiledPIDController angleController = new ProfiledPIDController(5, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 4));
-
-    public void autoAlign(Supplier<Rotation2d> targetRotation) {
-        angleController.enableContinuousInput(-Math.PI, Math.PI);
-
-        double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), targetRotation.get().getRadians());
-        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, rotationSpeed);
-        runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
-        Logger.recordOutput("Target Rotation", targetRotation.get());
-        Logger.recordOutput("autoAling Robot", getPose().getRotation());
-    }
-
-    public Command autoAlignToHub() {
-
-        return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));
-
-    }
-
-    public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
-        return Commands.run(() -> driveToPose(targetSpeeds, targetPose)).finallyDo(() -> this.targetPose = null);
-    }
-
-    public boolean atTargetPose() {
-        if (targetPose == null) {
-            return false;
+public boolean isAligned(){
+    boolean velocityAligned = true;
+    for(SwerveModuleState module : getModuleStates()){
+        if(module.speedMetersPerSecond > 0.1){
+            velocityAligned = false;
         }
-        //I need to make these constants
-        double translationTolerance = 0.001;
-        double rotationTolerance = 0.1;
-        boolean atTranslation = Math.abs(translationalController.getError()) < translationTolerance;
-        boolean atRotation = Math.abs(rotationalController.getError()) < rotationTolerance;
-        return atTranslation && atRotation;
     }
+    return velocityAligned && atTargetPose();
+}
+public Command driveToFuel(){
+    rotationalController.enableContinuousInput(Math.PI, -Math.PI);
+    return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
+        2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
+        getRotationChange().getRadians()), getRotation()
+    )));
+}
 
-    public boolean isAligned() {
-        boolean velocityAligned = true;
-        for (SwerveModuleState module : getModuleStates()) {
-            if (module.speedMetersPerSecond > 0.1) {
-                velocityAligned = false;
-            }
-        }
-        return velocityAligned && atTargetPose();
-    }
+PathConstraints constraints = new PathConstraints(
+        0.25, 1.0,
+        Units.degreesToRadians(540), Units.degreesToRadians(720));
 
-    public Command driveToFuel() {
-        rotationalController.enableContinuousInput(Math.PI, -Math.PI);
-        return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
-                2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
-                        getRotationChange().getRadians()), getRotation()
-        )));
-    }
+public Command driveToPosePathPl(Pose2d pose){
+    return AutoBuilder.pathfindToPose(pose, constraints);
+}
 
-    PathConstraints constraints = new PathConstraints(
-            0.25, 1.0,
-            Units.degreesToRadians(540), Units.degreesToRadians(720));
+public Command alignHubPathpl(){
+    return driveToPosePathPl(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d(0)));
+}
+public DoubleSupplier getDistanceToHub(Pose2d pose){
+    return () -> pose.getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
 
-    public Command driveToPosePathPl(Pose2d pose) {
-        return AutoBuilder.pathfindToPose(pose, constraints);
-    }
+}
+public Supplier<Pose2d> getFuturePose(){
+    ChassisSpeeds currentSpeeds = getChassisSpeeds();
+    ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(getPose()).getAsDouble()));
+    //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
+    //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
+    //travelled in a direction added to the ball from our velocity.
+    return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond))
+    ,getPose().getRotation());
 
-    public Command alignHubPathpl() {
-        return driveToPosePathPl(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d(0)));
-    }
+}
+public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose){
+    ChassisSpeeds currentSpeeds = getChassisSpeeds();
+    ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(pose.get()).getAsDouble()));
+    //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
+    //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
+    //travelled in a direction added to the ball from our velocity.
+    return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond,travelledDistance.vyMetersPerSecond))
+    ,getPose().getRotation());
 
-    public DoubleSupplier getDistanceToHub(Pose2d pose) {
-        return () -> pose.getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+}
+public Supplier<Pose2d> convergentFlightTime(){
 
-    }
-
-    public Supplier<Pose2d> getFuturePose() {
-        ChassisSpeeds currentSpeeds = getChassisSpeeds();
-        ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(getPose()).getAsDouble()));
-        //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
-        //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
-        //travelled in a direction added to the ball from our velocity.
-        return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond, travelledDistance.vyMetersPerSecond))
-                , getPose().getRotation());
-
-    }
-
-    public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose) {
-        ChassisSpeeds currentSpeeds = getChassisSpeeds();
-        ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(pose.get()).getAsDouble()));
-        //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
-        //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
-        //travelled in a direction added to the ball from our velocity.
-        return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond, travelledDistance.vyMetersPerSecond))
-                , getPose().getRotation());
-
-    }
-
-    public Supplier<Pose2d> convergentFlightTime() {
-
-        return getFuturePose(getFuturePose(getFuturePose(getFuturePose())));
-    }
+    return getFuturePose(getFuturePose(getFuturePose(getFuturePose())));
+}
 //Since the ball will travel longer in the air or shorter in the air based on y velocity, we may need to recalculate x and y
 //velocities independently of each other.
 
-    public DoubleSupplier autoAlignOnTheMove() {
-        shootOnMoveController.enableContinuousInput(-Math.PI, Math.PI);
+public DoubleSupplier autoAlignOnTheMove(){
+    shootOnMoveController.enableContinuousInput(-Math.PI, Math.PI);
 
 
-        futurePose = convergentFlightTime();
-        double wantedAngle;
-        if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-            wantedAngle = Math.atan2(futurePose.get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (futurePose.get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+    futurePose = convergentFlightTime();
+    double wantedAngle;
+    if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+            wantedAngle =  Math.atan2(futurePose.get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (futurePose.get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
         } else {
-            wantedAngle = Math.atan2(futurePose.get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (futurePose
-                    .get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
+            wantedAngle =  Math.atan2(futurePose.get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (futurePose
+            .get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())))+Math.PI;
         }
-        double rotationSpeed = shootOnMoveController.calculate(getPose().getRotation().getRadians(), new Rotation2d(wantedAngle).getRadians());
-        return () -> rotationSpeed;
-    }
+    double rotationSpeed = shootOnMoveController.calculate(getPose().getRotation().getRadians(), new Rotation2d(wantedAngle).getRadians());
+    return () -> rotationSpeed;
+}
 
-    public Command resetController() {
-        isAligningOnMove = true;
-        return Commands.runOnce(() -> shootOnMoveController.reset());
-    }
-
-    public Command resetShootOnMove() {
-        isAligningOnMove = false;
-        return Commands.waitSeconds(0);
-    }
-
-    public boolean getShootOnMoveBoolean() {
-        return isAligningOnMove;
-    }
+public Command resetController(){
+    isAligningOnMove = true;
+    return Commands.runOnce(() ->shootOnMoveController.reset());
+}
+public Command resetShootOnMove(){
+    isAligningOnMove = false;
+    return Commands.waitSeconds(0);
+}
+public boolean getShootOnMoveBoolean(){
+    return isAligningOnMove;
+}
 
 // public Rotation2d getTargetRotation(){
 //        return new Rotation2d(robotAngle);

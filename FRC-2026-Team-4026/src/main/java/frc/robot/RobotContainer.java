@@ -40,7 +40,6 @@ import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhoton
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.Map;
-
 import frc.robot.util.LoggedTunableNumber;
 
 import org.ironmaple.simulation.SimulatedArena;
@@ -86,155 +85,151 @@ import frc.robot.constants.Constants;
 //test
 
 public class RobotContainer {
-    // The robot's subsystems and commands are defined here...
+  // The robot's subsystems and commands are defined here...
 
 
-    private HopperVision hopperVision;
-    private Superstructure superstructure;
-    private Indexer indexer;
-    private Intake intake;
-    private Shooter shooter;
+  private HopperVision hopperVision;
+  private Superstructure superstructure;
+  private Indexer indexer;
+  private Intake intake;
+  private Shooter shooter;
 
 
-    private enum AutoType {
-        CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"), RushDepot("Center Rush + Depot");
+   private enum AutoType{
+  CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"), RushDepot("Center Rush + Depot");
 
-        private String autoName;
+  private String autoName;
+  private AutoType(String autoName){
+    this.autoName = autoName;
+  }
+}
 
-        private AutoType(String autoName) {
-            this.autoName = autoName;
-        }
-    }
+private enum AutoSide{
+  Left("Left"), Center("Center"), Right("Right");
 
-    private enum AutoSide {
-        Left("Left"), Center("Center"), Right("Right");
-
-        private String autoName;
-
-        private AutoSide(String autoName) {
-            this.autoName = autoName;
-        }
-    }
+  private String autoName;
+  private AutoSide(String autoName){
+    this.autoName = autoName;
+  }
+}
 
 
-    private PathPlannerAuto auto;
-    private SendableChooser<AutoSide> autoSide;
-    private SendableChooser<AutoType> autoType;
-    //  public ShotEstimator shotEstimator;
-    private InterpolatingDoubleTreeMap targetVelocities;
-    //private final Climber climber;
-    private Leds leds = new Leds();
-    private Double robotDistance;
-    public Drive drive;
-    public static Drive driveInstance;
-    private SwerveDriveSimulation driveSimulation;
-    private Vision vision;
-    private ColorVision colorVision;
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
-    private static RobotContainer instance;
-    private boolean shootingOnMove;
+      private PathPlannerAuto auto;
+       private SendableChooser<AutoSide> autoSide;
+  private SendableChooser<AutoType> autoType;
+  //  public ShotEstimator shotEstimator;
+      private InterpolatingDoubleTreeMap targetVelocities;
+  //private final Climber climber;
+  private Leds leds = new Leds();
+      private Double robotDistance;
+  public Drive drive;
+  public static Drive driveInstance;
+  private SwerveDriveSimulation driveSimulation;
+   private Vision vision;
+   private ColorVision colorVision;
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  private static RobotContainer instance;
+  private boolean shootingOnMove;
 
-    private Autonomous autonomous;
+   private Autonomous autonomous;
+  public RobotContainer() {
 
-    public RobotContainer() {
-
-        instance = this;
-        shootingOnMove = false;
-
-        hopperVision = new HopperVision(new HopperVisionIOPhotonVision(HopperVisionConstants.HOPPER_CAMERA_NAME));
-        ShuffleboardTab tab = Shuffleboard.getTab("SmartDashboard");
-        if (Constants.currentMode != Constants.Mode.SIM) {
-            indexer = new Indexer(new IndexerIOTalonFX());
-            intake = new Intake(new IntakeIOTalonFX());
-            shooter = new Shooter(new ShooterIOTalonFX());
-            // climber = new Climber(new ClimberTalonFX());
-            driveSimulation = null;
-            tab.add("Indexer Voltage", indexer.setVoltageCommand(0)).withWidget(BuiltInWidgets.kNumberSlider);
-            this.drive = new Drive(
-                    new GyroIOPigeon2(),
-                    new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-                    new ModuleIOTalonFXReal(TunerConstants.FrontRight),
-                    new ModuleIOTalonFXReal(TunerConstants.BackLeft),
-                    new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                    (pose) -> {
-                    });
-            vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
-            colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME, ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
-            superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
+      instance = this;
+      shootingOnMove = false;
+    
+    hopperVision = new HopperVision(new HopperVisionIOPhotonVision(HopperVisionConstants.HOPPER_CAMERA_NAME));
+      ShuffleboardTab tab = Shuffleboard.getTab("SmartDashboard");
+     if(Constants.currentMode != Constants.Mode.SIM) {
+      indexer = new Indexer(new IndexerIOTalonFX());
+      intake = new Intake(new IntakeIOTalonFX());
+      shooter = new Shooter(new ShooterIOTalonFX());
+      // climber = new Climber(new ClimberTalonFX());
+      driveSimulation = null;
+      tab.add("Indexer Voltage", indexer.setVoltageCommand(0)).withWidget(BuiltInWidgets.kNumberSlider);
+      this.drive = new Drive(
+        new GyroIOPigeon2(),
+                        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+                        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+                        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+                        new ModuleIOTalonFXReal(TunerConstants.BackRight),
+                        (pose) -> {});
+              vision = new Vision(drive, new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT), new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+              colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME, ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
+      superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
 
             driveInstance = drive;
-            autonomous = new Autonomous(superstructure, drive);
+       autonomous = new Autonomous(superstructure, drive);
+    
+    }
+ else {
 
-        } else {
 
-
-            indexer = new Indexer(new IndexerIOSim());
-            shooter = new Shooter(new ShooterIOSim());
-            driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(), new Pose2d(3.6, 6, new Rotation2d()));
-            intake = new Intake(new IntakeIOSim(driveSimulation));
-            SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-            tab.add("Indexer Voltage", indexer.setVoltageCommand(0)).withWidget(BuiltInWidgets.kNumberSlider);
-            //climber = new Climber(new ClimberIOSim());
-            drive = new Drive(
-                    new GyroIOSim(driveSimulation.getGyroSimulation()),
-                    new ModuleIOTalonFXSim(
-                            TunerConstants.FrontLeft, driveSimulation.getModules()[0]),
-                    new ModuleIOTalonFXSim(
-                            TunerConstants.FrontRight, driveSimulation.getModules()[1]),
-                    new ModuleIOTalonFXSim(
-                            TunerConstants.BackLeft, driveSimulation.getModules()[2]),
-                    new ModuleIOTalonFXSim(
-                            TunerConstants.BackRight, driveSimulation.getModules()[3]),
-                    driveSimulation::setSimulationWorldPose);
-            new Vision(drive, new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-                    new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
-                    new VisionIOPhotonVisionSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose)
-            );
-            superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
+      indexer = new Indexer(new IndexerIOSim());
+      shooter = new Shooter(new ShooterIOSim());
+      driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(), new Pose2d(3.6, 6, new Rotation2d()));
+      intake = new Intake(new IntakeIOSim(driveSimulation));
+      SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+      tab.add("Indexer Voltage", indexer.setVoltageCommand(0)).withWidget(BuiltInWidgets.kNumberSlider);
+      //climber = new Climber(new ClimberIOSim());
+      drive = new Drive(
+                        new GyroIOSim(driveSimulation.getGyroSimulation()),
+                        new ModuleIOTalonFXSim(
+                                TunerConstants.FrontLeft, driveSimulation.getModules()[0]),
+                        new ModuleIOTalonFXSim(
+                                TunerConstants.FrontRight, driveSimulation.getModules()[1]),
+                        new ModuleIOTalonFXSim(
+                                TunerConstants.BackLeft, driveSimulation.getModules()[2]),
+                        new ModuleIOTalonFXSim(
+                                TunerConstants.BackRight, driveSimulation.getModules()[3]),
+                        driveSimulation::setSimulationWorldPose);
+      new Vision(drive, new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_LEFT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOPhotonVisionSim(VisionConstants.CAMERA_FRONT_RIGHT_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose),
+                                      new VisionIOPhotonVisionSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(), driveSimulation::getSimulatedDriveTrainPose)
+                                    );
+      superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
             driveInstance = drive;
             autonomous = new Autonomous(superstructure, drive);
-        }
+     }
 
-        NamedCommands.registerCommand("Shoot", superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
+     NamedCommands.registerCommand("Shoot", superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
 
+  
 
-        autoSide = new SendableChooser<>();
-        autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
-        autoSide.addOption(AutoSide.Center.autoName, AutoSide.Center);
-        autoSide.addOption(AutoSide.Right.autoName, AutoSide.Right);
+               autoSide = new SendableChooser<>();
+                   autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
+    autoSide.addOption(AutoSide.Center.autoName, AutoSide.Center);
+    autoSide.addOption(AutoSide.Right.autoName, AutoSide.Right);
 
-        autoType = new SendableChooser<>();
-        autoType.setDefaultOption(AutoType.CenterRush.autoName, AutoType.CenterRush);
-        autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
-        autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
-        autoType.addOption(AutoType.DoubleCenter.autoName, AutoType.DoubleCenter);
-        autoType.addOption(AutoType.RushDepot.autoName, AutoType.RushDepot);
-        ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
-        autoTab.add("Side", autoSide);
-        autoTab.add("Type", autoType);
+    autoType = new SendableChooser<>();
+    autoType.setDefaultOption(AutoType.CenterRush.autoName, AutoType.CenterRush);
+    autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
+    autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
+    autoType.addOption(AutoType.DoubleCenter.autoName, AutoType.DoubleCenter);
+    autoType.addOption(AutoType.RushDepot.autoName, AutoType.RushDepot);
+    ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
+    autoTab.add("Side", autoSide);
+    autoTab.add("Type", autoType);
 
+   
+    // targetVelocities.put(3.911, 60.0);
+    // targetVelocities.put(5.18, 75.0);
+     resetSimulationField();
+         configurePrimaryBindings();
+    configureSecondaryBindings();
+  
+  }
 
-        // targetVelocities.put(3.911, 60.0);
-        // targetVelocities.put(5.18, 75.0);
-        resetSimulationField();
-        configurePrimaryBindings();
-        configureSecondaryBindings();
-
-    }
-
-    /**
-     * Use this method to define your trigger->command mappings. Triggers can be created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-     * predicate, or via the named factories in {@link
-     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-     * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-     * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-     * joysticks}.
-     */
-    private void configurePrimaryBindings() {
-        Joystick joystick = new Joystick(0);
+  /**
+   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * predicate, or via the named factories in {@link
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
+   */
+  private void configurePrimaryBindings() {
+    Joystick joystick = new Joystick(0);
 
         JoystickButton start = new JoystickButton(joystick, LogitechControllerButtons.start);
         JoystickButton back = new JoystickButton(joystick, LogitechControllerButtons.back);
@@ -243,46 +238,47 @@ public class RobotContainer {
         POVButton up = new POVButton(joystick, LogitechControllerButtons.up);
         POVButton left = new POVButton(joystick, LogitechControllerButtons.left);
         POVButton right = new POVButton(joystick, LogitechControllerButtons.right);
-        JoystickButton a = new JoystickButton(joystick, LogitechControllerButtons.a);
-        JoystickButton b = new JoystickButton(joystick, LogitechControllerButtons.b);
+        JoystickButton a = new JoystickButton(joystick, LogitechControllerButtons.a); 
+        JoystickButton b = new JoystickButton(joystick, LogitechControllerButtons.b); 
         JoystickButton x = new JoystickButton(joystick, LogitechControllerButtons.x);
         JoystickButton y = new JoystickButton(joystick, LogitechControllerButtons.y);
         JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
         JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
         JoystickButton bumperLeft = new JoystickButton(joystick, LogitechControllerButtons.bumperLeft);
-        JoystickButton bumperRight = new JoystickButton(joystick, (LogitechControllerButtons.bumperRight));
-
-
-        // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-        drive.setDefaultCommand(
-                DriveCommands.joystickDrive(
-                        drive,
-                        () -> -joystick.getY(),
-                        () -> -joystick.getX(),
-                        () -> -joystick.getTwist() * 0.8,
-                        //please set this last button to whatever you want, this is just a placeholder
-                        () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove()).getAsBoolean()
-                ));
-
-
-        // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
-        // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
-        // x.whileTrue(drive.setRotationXCommand());
-        bumperRight.whileTrue(superstructure.alignCommand());
-        bumperLeft.whileTrue(drive.alignHubPathpl());
-        x.whileTrue(drive.stopWithXCommand());
-        b.whileTrue(pathfinderToPose(new Pose2d(15, 7.3, new Rotation2d())));
-        triggerLeft.whileTrue(DriveCommands.joystickDrive(
+        JoystickButton bumperRight = new JoystickButton(joystick,(LogitechControllerButtons.bumperRight));
+        
+        
+            // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+         drive.setDefaultCommand(
+              DriveCommands.joystickDrive(
                 drive,
-                () -> -joystick.getY() * 0.6,
-                () -> -joystick.getX() * 0.6,
-                () -> -joystick.getTwist() * 0.6,
-                () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove()).getAsBoolean()));
-        //  b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
-    }
+                ()-> -joystick.getY(),
+                ()-> -joystick.getX(),
+                ()-> -joystick.getTwist()*0.8,
+                //please set this last button to whatever you want, this is just a placeholder
+                () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove()).getAsBoolean()
+            ));
+          
 
-    public void configureSecondaryBindings() {
-        Joystick joystick = new Joystick(1);
+
+          // y.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(3.5, 6, new Rotation2d(0, 0)))));
+          // a.whileTrue(drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0, 0)))));
+          // x.whileTrue(drive.setRotationXCommand());
+          bumperRight.whileTrue(superstructure.alignCommand());
+          bumperLeft.whileTrue(drive.alignHubPathpl());
+          x.whileTrue(drive.stopWithXCommand());
+          b.whileTrue(pathfinderToPose(new Pose2d(15,7.3,new Rotation2d())));
+          triggerLeft.whileTrue(DriveCommands.joystickDrive(
+                drive,
+                ()-> -joystick.getY()*0.6,
+                ()-> -joystick.getX()*0.6,
+                ()-> -joystick.getTwist()*0.6,
+                () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove()).getAsBoolean()));
+          //  b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new Pose2d( 2.5,  6, new Rotation2d(0,0))));
+  }
+
+  public void configureSecondaryBindings() {
+    Joystick joystick = new Joystick(1);
 
         JoystickButton start = new JoystickButton(joystick, LogitechControllerButtons.start);
         JoystickButton back = new JoystickButton(joystick, LogitechControllerButtons.back);
@@ -304,107 +300,108 @@ public class RobotContainer {
         // triggerLeft.whileTrue(superstructure.shootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
 
 
-        triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(10))).onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
-
-
+                triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(10))).onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
+    
+        
         triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0)).onFalse(superstructure.storeCommand());
         triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
-        triggerRight.whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand() : superstructure.shootCommand()).onFalse(superstructure.storeCommand());
-        triggerRight.and(a).whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand() : superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.whileTrue(drive.getShootOnMoveBoolean()? superstructure.shootOnMoveCommand():superstructure.shootCommand()).onFalse(superstructure.storeCommand());
+        triggerRight.and(a).whileTrue(drive.getShootOnMoveBoolean()? superstructure.shootOnMoveCommand():superstructure.shootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
         a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
         y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
-        b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
+       b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
         x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
-        right.whileTrue(intake.oscillateIntakeCommand());
-        up.whileTrue(indexer.setVoltageCommand(-10)).onFalse(indexer.setVoltageCommand(0));
-        down.whileTrue(intake.setSlowPositionCommand());
-
+       right.whileTrue(intake.oscillateIntakeCommand());
+       up.whileTrue(indexer.setVoltageCommand(-10)).onFalse(indexer.setVoltageCommand(0));
+       down.whileTrue(intake.setSlowPositionCommand());
+       
         bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
         bumperLeft.and(a).whileTrue(superstructure.passIntakeCommand());
 
 
-    }
+  }
 
-    public void chooseAuto() {
-        if (autoSide.getSelected() == AutoSide.Left) {
-            if (autoType.getSelected() == AutoType.CenterRush) {
-                auto = new PathPlannerAuto("Center Rush Right", true);
-                auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-                auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
-            } else if (autoType.getSelected() == AutoType.Depot) {
-                auto = new PathPlannerAuto("Depot Auto");
+  public void chooseAuto(){
+     if(autoSide.getSelected() == AutoSide.Left){
+        if(autoType.getSelected() == AutoType.CenterRush){
+          auto = new PathPlannerAuto("Center Rush Right", true);
+          auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+          auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+        } else if(autoType.getSelected() == AutoType.Depot){
+            auto = new PathPlannerAuto("Depot Auto");
                 auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
                 auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
-            } else if (autoType.getSelected() == AutoType.Preload) {
+        } else if(autoType.getSelected() == AutoType.Preload){
                 superstructure.shootCommand();
-            } else if (autoType.getSelected() == AutoType.DoubleCenter) {
-                auto = new PathPlannerAuto("Double Center Swipe Auto");
-                auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-                auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
-                // auto.condition(() -> superstructure.getNumBallsStored() < 5).onTrue();
-            }
-        } else if (autoSide.getSelected() == AutoSide.Center) {
-            auto = new PathPlannerAuto("Center Depot Auto");
+        } else if(autoType.getSelected() == AutoType.DoubleCenter){
+          auto = new PathPlannerAuto("Double Center Swipe Auto");
+          auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+          auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
+          // auto.condition(() -> superstructure.getNumBallsStored() < 5).onTrue();
+        }
+     } else if(autoSide.getSelected() == AutoSide.Center){
+                  auto = new PathPlannerAuto("Center Depot Auto");
             auto.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
             auto.activePath("Center Depot Shoot").onFalse(superstructure.shootCommand());
-        } else if (autoSide.getSelected() == AutoSide.Right) {
-            if (autoType.getSelected() == AutoType.CenterRush) {
-                auto = new PathPlannerAuto("Center Rush Right");
-                auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-                auto.activePath("Center Rush Right shoot").onFalse(superstructure.oscillateShootCommand());
-            } else if (autoType.getSelected() == AutoType.Depot) {
-                auto = new PathPlannerAuto("HP Auto Right");
+     } else if(autoSide.getSelected() == AutoSide.Right){
+        if(autoType.getSelected() == AutoType.CenterRush){
+            auto = new PathPlannerAuto("Center Rush Right");
+        auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+        auto.activePath("Center Rush Right shoot").onFalse(superstructure.oscillateShootCommand());
+        } else if(autoType.getSelected() == AutoType.Depot){
+            auto = new PathPlannerAuto("HP Auto Right");
                 auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
                 auto.activePath("HP Shoot").onFalse(superstructure.shootCommand());
-            } else if (autoType.getSelected() == AutoType.Preload) {
-                superstructure.shootCommand();
-            }
+        } else if(autoType.getSelected() == AutoType.Preload){
+            superstructure.shootCommand();
         }
-    }
+     }
+  }
+
+  
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  
+  public Command getAutonomousCommand() {
+      // Logger.recordOutput("Auto", auto.getName());
+      // return auto;
+      // PathPlannerAuto auto = new PathPlannerAuto("Double Center");
+      // auto.activePath("Center Rush Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      // auto.activePath("Center Rush Shoot").onFalse(null);
+      // return auto;
+      // Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
+      // return auto;
+      // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
+      // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
+      // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+      // return auto;
+
+      PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right");
+
+      PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test");
+      // PathPlannerAuto auto3 = new PathPlannerAuto("Center Rush Right 2"); 
+
+      
+      // auto1.activePath("Center Rush Right shoot").onFalse(Commands.sequence(superstructure.oscillateShootCommand(), Commands.waitTime(Seconds.of(3))));
+      return Commands.sequence(auto1, Commands.waitSeconds(2), auto2);
+
+  }
+
+  public Command pathfinderToPose(Pose2d targetPose) {
+    PathConstraints constraints = new PathConstraints(4.69, 3.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+    Command pathfinderCommand = AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
+    return pathfinderCommand;
+  }
 
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-
-    public Command getAutonomousCommand() {
-        // Logger.recordOutput("Auto", auto.getName());
-        // return auto;
-        // PathPlannerAuto auto = new PathPlannerAuto("Double Center");
-        // auto.activePath("Center Rush Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-        // auto.activePath("Center Rush Shoot").onFalse(null);
-        // return auto;
-        // Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new PathPlannerAuto("Center Test 2"));
-        // return auto;
-        // PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
-        // auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-        // auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
-        // return auto;
-
-        PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right");
-
-        PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test");
-        // PathPlannerAuto auto3 = new PathPlannerAuto("Center Rush Right 2");
-
-
-        // auto1.activePath("Center Rush Right shoot").onFalse(Commands.sequence(superstructure.oscillateShootCommand(), Commands.waitTime(Seconds.of(3))));
-        return Commands.sequence(auto1, Commands.waitSeconds(2), auto2);
-
-    }
-
-    public Command pathfinderToPose(Pose2d targetPose) {
-        PathConstraints constraints = new PathConstraints(4.69, 3.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
-
-        Command pathfinderCommand = AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
-        return pathfinderCommand;
-    }
-
-
-    public void resetSimulationField() {
+  public void resetSimulationField() {
         if (Constants.currentMode != Constants.Mode.SIM) return;
 
         driveSimulation.setSimulationWorldPose(new Pose2d(3.55, 6, new Rotation2d()));
@@ -412,32 +409,32 @@ public class RobotContainer {
     }
 
 
-    public void updateSimulation() {
-        if (Constants.currentMode != Constants.Mode.SIM) return;
+  public void updateSimulation(){
+    if(Constants.currentMode != Constants.Mode.SIM) return;
+      
+    SimulatedArena.getInstance().simulationPeriodic();
+    Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+    Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
+  }
 
-        SimulatedArena.getInstance().simulationPeriodic();
-        Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
-        Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
-    }
-
-    public void distanceUpdate() {
+    public void distanceUpdate(){
         configureSecondaryBindings();
-    }
+  }
 
-    public double getTargetVelocity() {
-        return targetVelocities.get(robotDistance);
-    }
+   public double getTargetVelocity(){
+    return targetVelocities.get(robotDistance);
+ }
+ 
+  public static RobotContainer getInstance(){
+    return instance;
+  }
 
-    public static RobotContainer getInstance() {
-        return instance;
-    }
+  public static Drive getDrive(){
+    return driveInstance;
+  }
 
-    public static Drive getDrive() {
-        return driveInstance;
-    }
-
-    public Pose2d getDrivePose() {
-        return drive.getPose();
-    }
+  public Pose2d getDrivePose(){
+    return drive.getPose();
+  }
 
 }
