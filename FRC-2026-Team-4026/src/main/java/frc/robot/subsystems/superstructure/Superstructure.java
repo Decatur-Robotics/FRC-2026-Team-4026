@@ -38,7 +38,6 @@ public class Superstructure extends SubsystemBase {
 
     //This is for making out robot both harder to defend and makes the chance of robot damage lower
     private boolean defenseMode = false;
-    
 
 
     public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Leds leds, Drive drive) {
@@ -50,44 +49,44 @@ public class Superstructure extends SubsystemBase {
         this.drive = drive;
 
 
-        
+
 
         this.targetState = SuperstructureConstants.STARTING_STATE;
     }
 
-    public Command setState(SuperstructureState targetState){
+    public Command setState(SuperstructureState targetState) {
 
         this.targetState = targetState.copyInstatnce();
         return Commands.parallel(
-        shooter.setVelocityCommand(targetState.shooterVelocity),
-        intake.deployIntakeCommand(targetState.intakeDeployed),
-        intake.runIntakeCommand(targetState.intakeVoltage),
-        indexer.setVoltageCommand(targetState.indexerVoltage));
+                shooter.setVelocityCommand(targetState.shooterVelocity),
+                intake.deployIntakeCommand(targetState.intakeDeployed),
+                intake.runIntakeCommand(targetState.intakeVoltage),
+                indexer.setVoltageCommand(targetState.indexerVoltage));
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         drive.isAligned();
         Logger.recordOutput("Is Aligned", drive.isAligned());
     }
 
-    public void toggleDefenseMode(){
-        if(defenseMode){
+    public void toggleDefenseMode() {
+        if (defenseMode) {
             defenseMode = false;
         } else {
             defenseMode = true;
         }
     }
 
-    public Command toggleDefenseModeCommand(){
+    public Command toggleDefenseModeCommand() {
         return Commands.run(() -> toggleDefenseMode());
     }
 
-    public boolean getDefenseMode(){
+    public boolean getDefenseMode() {
         return defenseMode;
     }
-    
-    public SuperstructureState getCurrentState(){
+
+    public SuperstructureState getCurrentState() {
         return new SuperstructureState(shooter.getVelocity(), intake.getDeployPosition(), indexer.getMecanumVoltage(), intake.getIntakeVoltage());
     }
 
@@ -96,11 +95,11 @@ public class Superstructure extends SubsystemBase {
     // }
 
 
-    public Command startingCommand(){
+    public Command startingCommand() {
         return Commands.parallel(setState(SuperstructureConstants.STARTING_STATE));
     }
 
-    public Command intakeCommand(){
+    public Command intakeCommand() {
         return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12), shooter.setVoltageCommand(0), leds.pulsingCommand());
     }
 
@@ -108,25 +107,26 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12), shooter.setVoltageCommand(getNumBallsStored()));
     }
 
-    public Command testShootCommand(){
+    public Command testShootCommand() {
         return Commands.parallel(shooter.setVelocityCommand(55), indexer.setVoltageCommand(10));
     }
 
-    public Command noTestShootCommands(){
+    public Command noTestShootCommands() {
         return Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0));
     }
 
-    public Command storeCommand(){
+    public Command storeCommand() {
+
         return Commands.parallel(setState(SuperstructureConstants.STORING_STATE), shooter.setVoltageCommand(0), intake.runIntakeCommand(0));
     }
 
-    public Command dumpCommand(){
+    public Command dumpCommand() {
         return Commands.parallel(intake.runIntakeCommand(6), indexer.setVoltageCommand(6));
     }
 
     // public Command shootCommand(){
     //     // if(!Robot.isReal()){
-            
+
     //     // }
     //     // if(defenseMode && RobotState.CURRENT_LIMITS_EXCEEDED || defenseMode && RobotState.BATTERY_BROWNOUT_PROTECTION){
     //     //     return Commands.parallel(setState(new SuperstructureState(0.0,0.0,0.0,0.0,0.0)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 0));
@@ -135,7 +135,7 @@ public class Superstructure extends SubsystemBase {
     //     //     // if (RobotState.BATTERY_BROWNOUT_PROTECTION){
     //     //         return Commands.parallel(setState( new SuperstructureState(robotState.getTargetVelocity() < SuperstructureConstants.VELOCITY_BROWNOUT_LIMIT ? robotState.getTargetVelocity() : 0.0,  
     //     //         robotState.getTargetAim(), 1.0, 6, 6)), leds.flashAllLedsCommand(ledsConstants.YELLOW, 10));
-                
+
     //     //     // }
     //     //    }
 
@@ -150,30 +150,31 @@ public class Superstructure extends SubsystemBase {
     //     }
     // }
 
-    public Command shootCommand(){
+    public Command shootCommand() {
         return Commands.sequence(
-            Commands.parallel(shooter.shootAimCommand(),leds.shooterWindUpCommand(shooter.getVelocity(), ShotEstimator.getInstance().getTargetVelocity().get())).
-            until(()->shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get()-2),
-            Commands.parallel(shooter.shootAimCommand(),indexer.setVoltageCommand(10),leds.rainbowCommand(), intake.runIntakeCommand(-0.5))
-        );
-    }   
-
-    public Command shootCommand(Supplier<Double> velocity){
-        return Commands.sequence(shooter.setVelocityCommand(velocity.get()), Commands.waitUntil(() -> shooter.getVelocity() > (velocity.get() - 2.0)), Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10), intake.runIntakeCommand(-0.5)));
-        }
-    public Command passCommand(){
-        return Commands.sequence(
-            Commands.parallel(shooter.passAimCommand(),leds.shooterWindUpCommand(shooter.getVelocity(), ShotEstimator.getInstance().getTargetVelocity().get())).
-            until(()->shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get()-0.5),
-            Commands.parallel(shooter.passAimCommand(), indexer.setVoltageCommand(10), intake.runIntakeCommand(-0.5))
+                Commands.parallel(shooter.shootAimCommand(), leds.shooterWindUpCommand(shooter.getVelocity(), ShotEstimator.getInstance().getTargetVelocity().get())).
+                        until(() -> shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get() - 2),
+                Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.rainbowCommand(), intake.runIntakeCommand(-0.5))
         );
     }
 
-    public Command testShootCommands(){
+    public Command shootCommand(Supplier<Double> velocity) {
+        return Commands.sequence(shooter.setVelocityCommand(velocity.get()), Commands.waitUntil(() -> shooter.getVelocity() > (velocity.get() - 2.0)), Commands.parallel(shooter.setVelocityCommand(velocity.get()), indexer.setVoltageCommand(10), intake.runIntakeCommand(-0.5)));
+    }
+
+    public Command passCommand() {
+        return Commands.sequence(
+                Commands.parallel(shooter.passAimCommand(), leds.shooterWindUpCommand(shooter.getVelocity(), ShotEstimator.getInstance().getTargetVelocity().get())).
+                        until(() -> shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get() - 0.5),
+                Commands.parallel(shooter.passAimCommand(), indexer.setVoltageCommand(10), intake.runIntakeCommand(-0.5))
+        );
+    }
+
+    public Command testShootCommands() {
         return Commands.parallel(shooter.setVelocityCommand(45), indexer.setVoltageCommand(12));
     }
 
-    public Command stopTestShootCommand(){
+    public Command stopTestShootCommand() {
         return Commands.parallel(shooter.setVelocityCommand(0), indexer.setVoltageCommand(0));
     }
 
@@ -186,38 +187,36 @@ public class Superstructure extends SubsystemBase {
     }
 
 
-
-    public Command oscillateShootCommand(){
+    public Command oscillateShootCommand() {
         return Commands.parallel(shootCommand(), intake.oscillateIntakeCommand());
     }
 
-    public Command oscillateShootCommand(Supplier<Double> velocity){
-         return Commands.parallel(shootCommand(velocity), intake.oscillateIntakeCommand());
+    public Command oscillateShootCommand(Supplier<Double> velocity) {
+        return Commands.parallel(shootCommand(velocity), intake.oscillateIntakeCommand());
     }
 
-    public Command pushShootCommand(Supplier<Double> deployPosition){
-        return Commands.parallel(shootCommand(), intake.deployIntakeCommand(-deployPosition.get()*15.3+15.3));
+    public Command pushShootCommand(Supplier<Double> deployPosition) {
+        return Commands.parallel(shootCommand(), intake.deployIntakeCommand(-deployPosition.get() * 15.3 + 15.3));
     }
 
-    public Command pushShootCommand(Supplier<Double> velocity, Supplier<Double> deployPosition){
-        return Commands.parallel(shootCommand(velocity), intake.deployIntakeCommand(-deployPosition.get()*15.3+15.3));
-    }
-    public Command shootOnMoveCommand(){
-        return Commands.parallel(shooter.shootOnMoveCommand(drive),indexer.setVoltageCommand(10),intake.runIntakeCommand(-2));
+    public Command pushShootCommand(Supplier<Double> velocity, Supplier<Double> deployPosition) {
+        return Commands.parallel(shootCommand(velocity), intake.deployIntakeCommand(-deployPosition.get() * 15.3 + 15.3));
     }
 
-    public Command testingShootCommand(){
+    public Command shootOnMoveCommand() {
+        return Commands.parallel(shooter.shootOnMoveCommand(drive), indexer.setVoltageCommand(10), intake.runIntakeCommand(-2));
+    }
+
+    public Command testingShootCommand() {
         return setState(new SuperstructureState(1, 0.0, 0, 12, 0.0));
     }
-    
-    public Command testShootAutoCommand(){
-        return Commands.parallel(indexer.setVoltageCommand(8),shooter.setVelocityCommand(45), intake.runIntakeCommand(-4));
+
+    public Command testShootAutoCommand() {
+        return Commands.parallel(indexer.setVoltageCommand(8), shooter.setVelocityCommand(45), intake.runIntakeCommand(-4));
     }
 
 
-
-
-    public Command noTestShootCommand(){
+    public Command noTestShootCommand() {
         return Commands.parallel(indexer.setVoltageCommand(0), shooter.setVoltageCommand(0));
     }
     // public Command passCommand(){
@@ -233,46 +232,45 @@ public class Superstructure extends SubsystemBase {
     //     //  return setState(new SuperstructureState(ShotEstimator.getInstance(drive).getTargetVelocity().get() + 10, 0, 8.0));
     //     // }
     //     }
-            
 
 
-    public void shootFuel(){
+    public void shootFuel() {
 
         RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
-            drive.getPose().getTranslation(),
-            new Translation2d(0,0),
-            drive.getChassisSpeeds(),
-            drive.getRotation(),
-            Meters.of(0.2),
-            MetersPerSecond.of(2),
-            //I repleaced the hod angle with this is incorrect
-            Radians.of(12)
+                drive.getPose().getTranslation(),
+                new Translation2d(0, 0),
+                drive.getChassisSpeeds(),
+                drive.getRotation(),
+                Meters.of(0.2),
+                MetersPerSecond.of(2),
+                //I repleaced the hod angle with this is incorrect
+                Radians.of(12)
         );
 
         fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();
         SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
-}
+    }
 
- public Command shootFuelCommand(){
-        return Commands.runOnce(()->shootFuel());
- }
+    public Command shootFuelCommand() {
+        return Commands.runOnce(() -> shootFuel());
+    }
 
- public Command retractIntakeCommand(){
-    return Commands.runOnce(()-> intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
- }
+    public Command retractIntakeCommand() {
+        return Commands.runOnce(() -> intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
+    }
 
- public Command deployIntakeCommand(){
-    return Commands.runOnce(()-> intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
- }
+    public Command deployIntakeCommand() {
+        return Commands.runOnce(() -> intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
+    }
 
- public int getNumBallsStored(){
-    return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
- }
- public Command alignCommand(){
-    // return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.correctCommand():leds.aligningCommand());
-    return Commands.parallel(drive.autoAlignToHub(), Commands.sequence(leds.aligningCommand(), Commands.waitUntil(() -> drive.isAligned()), leds.correctCommand()));
+    public int getNumBallsStored() {
+        return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
+    }
 
- }
+    public Command alignCommand() {
+        //return Commands.parallel(drive.autoAlignToHub(), drive.isAligned() ? leds.correctCommand() : leds.aligningCommand());return Commands.parallel(drive.autoAlignToHub(), Commands.sequence(leds.aligningCommand(), Commands.waitUntil(() -> drive.isAligned()), leds.correctCommand()));
+
+    }
 
 
 }

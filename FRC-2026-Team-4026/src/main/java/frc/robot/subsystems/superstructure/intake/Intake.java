@@ -15,20 +15,18 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import static edu.wpi.first.units.Units.*;
 
 
-
-public class Intake extends SubsystemBase{
+public class Intake extends SubsystemBase {
 
     private IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> SignalLogger.writeString("state", state.toString())),
-    new SysIdRoutine.Mechanism((volts) -> io.setDeployVoltage(volts.in(Volts)),null, this));
-        private boolean osillatingIntakeGoingUp;
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5), Seconds.of(10), (state) -> SignalLogger.writeString("state", state.toString())), new SysIdRoutine.Mechanism((volts) -> io.setDeployVoltage(volts.in(Volts)), null, this));
+    private boolean osillatingIntakeGoingUp;
 
     private int ballsIntaked;
     private boolean intakingBalls;
     private Timer oscillatingTimer;
 
-    public Intake(IntakeIO io){
+    public Intake(IntakeIO io) {
         this.io = io;
         ballsIntaked = 0;
         intakingBalls = false;
@@ -40,110 +38,125 @@ public class Intake extends SubsystemBase{
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Intake", inputs);
 
-        if(getIntakeCurrent() > 50){
-            if(intakingBalls == false){
+        if (getIntakeCurrent() > 50) {
+            if (intakingBalls == false) {
                 ballsIntaked += 3;
-            } else if (getIntakeCurrent() > 45){
-                if(intakingBalls == false){
-                    ballsIntaked += 2;
-                }
-            } else if (getIntakeCurrent() > 40){
-                if(intakingBalls == false){
-                    ballsIntaked++;
-                }
+                intakingBalls = true;
             }
-            intakingBalls = true;
-        } else if(getIntakeCurrent() < 25){
+        } else if (getIntakeCurrent() > 45) {
+            if (intakingBalls == false) {
+                ballsIntaked += 2;
+                intakingBalls = true;
+            }
+        } else if (getIntakeCurrent() > 40) {
+            if (intakingBalls == false) {
+                ballsIntaked++;
+                intakingBalls = true;
+            }
+        } else if (getIntakeCurrent() < 25) {
             intakingBalls = false;
         }
 
         Logger.recordOutput("Balls Intaked", ballsIntaked);
     }
 
-    public double getDeployPosition(){
+    public double getDeployPosition() {
 
         return inputs.intakeData.deployPosition();
     }
 
-    public double getDeployVoltage(){
+    public double getDeployVoltage() {
 
         return inputs.intakeData.deployVoltage();
     }
-    public double getIntakeVoltage(){
+
+    public double getIntakeVoltage() {
         return inputs.intakeData.intakeVoltage();
     }
-    public double getDeployCurrent(){
+
+    public double getDeployCurrent() {
 
         return inputs.intakeData.deployCurrent();
 
     }
-    public double getIntakeCurrent(){
+
+    public double getIntakeCurrent() {
         return inputs.intakeData.intakeCurrent();
     }
 
-    public Command slamIntakeCommand(double position){
+    public Command slamIntakeCommand(double position) {
         return Commands.runOnce(() -> io.setDeployVoltage(position));
     }
 
-    public Command setDeployVoltageCommand(double voltage){
+    public Command setDeployVoltageCommand(double voltage) {
         return Commands.runOnce(() -> io.setDeployVoltage(voltage));
     }
 
-    public Command coastCommand(){
+    public Command coastCommand() {
         return Commands.runOnce(() -> io.coast());
     }
 
-    public Command deployIntakeCommand(double position){
+    public Command deployIntakeCommand(double position) {
         return Commands.runOnce(() -> io.setDeployPosition(position));
     }
 
-    public Command altDeployIntakeCommand(double position){
+    public Command altDeployIntakeCommand(double position) {
         return Commands.runOnce(() -> io.setAltDeployPosition(position));
     }
-    public Command runIntakeCommand(double voltage){
 
-        return Commands.startEnd(()-> io.setIntakeVoltage(voltage), () -> io.stopIntake());
-        
-    }
-    public Command zeroCommand(double position){
+    public Command runIntakeCommand(double voltage) {
 
-        return Commands.runOnce(() -> {io.setIntakeVoltage(0); io.setDeployPosition(position);});
+        return Commands.startEnd(() -> io.setIntakeVoltage(voltage), () -> io.stopIntake());
 
     }
 
-    public void oscillatingIntake(){
-        if (osillatingIntakeGoingUp){
+    public Command zeroCommand(double position) {
+
+        return Commands.runOnce(() -> {
+            io.setIntakeVoltage(0);
+            io.setDeployPosition(position);
+        });
+
+    }
+
+    public void oscillatingIntake() {
+        if (osillatingIntakeGoingUp) {
             io.setDeployPosition(IntakeConstants.HALFWAY_INTAKE_POSITION);
-            if(getDeployPosition() < IntakeConstants.HALFWAY_INTAKE_POSITION + 1){
+            if (getDeployPosition() < IntakeConstants.HALFWAY_INTAKE_POSITION + 1) {
                 osillatingIntakeGoingUp = false;
             }
         }
-        if (!osillatingIntakeGoingUp){
-            io.setDeployPosition(IntakeConstants.DEPLOY_INTAKE_POSITION);     
+        if (!osillatingIntakeGoingUp) {
+            io.setDeployPosition(IntakeConstants.DEPLOY_INTAKE_POSITION);
+
         }
     }
 
-    public Command oscillateIntakeCommand(){
+    public Command oscillateIntakeCommand() {
         return Commands.run(() -> oscillatingIntake());
     }
-    public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return sysIdRoutine.quasistatic(direction);
     }
-    public Command sysIdDynamic (SysIdRoutine.Direction direction) {
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return sysIdRoutine.dynamic(direction);
     }
 
-    public int getNumBallsIntaked(){
+    public int getNumBallsIntaked() {
         return ballsIntaked;
     }
-    public Command setSlowPositionCommand(){
+
+    public Command setSlowPositionCommand() {
         return Commands.runOnce(() -> io.setSlowPosition());
     }
-    public Command updatePosition(){
+
+    public Command updatePosition() {
         return Commands.runOnce(() -> io.updatePosition());
     }
 }

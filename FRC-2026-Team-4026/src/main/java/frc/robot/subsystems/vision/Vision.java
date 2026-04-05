@@ -67,7 +67,7 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        long periodicStartTime = Logger.getRealTimestamp();
+        long periodicStartTime = System.nanoTime();
 
         for (int i = 0; i < io.length; i++) {
             io[i].updateInputs(inputs[i]);
@@ -83,7 +83,7 @@ public class Vision extends SubsystemBase {
 
         // Loop over cameras
         for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
-            long cameraStartTime = Logger.getRealTimestamp();
+            long cameraStartTime = System.nanoTime();
             // Update disconnected alert
             disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
 
@@ -170,8 +170,8 @@ public class Vision extends SubsystemBase {
                         Logger.recordOutput("Vision/Distance", tagDistance.get(0));
                     }
 
-            // Log camera processing time
-            long cameraProcessingTime = Logger.getRealTimestamp() - cameraStartTime;
+            // Log camera processing time (convert nanoseconds to microseconds)
+            long cameraProcessingTime = (System.nanoTime() - cameraStartTime) / 1000;
             Logger.recordOutput("Vision/Camera" + Integer.toString(cameraIndex) + "/ProcessingTimeUs", cameraProcessingTime);
 
             allTagPoses.addAll(tagPoses);

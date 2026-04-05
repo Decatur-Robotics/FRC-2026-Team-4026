@@ -222,16 +222,14 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
     @Override
     public void periodic() {
-        try{
-        if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+        long periodicStartTime = Logger.getRealTimestamp();
+
+        if(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)){
              robotAngle =  Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
         } else {
              robotAngle =  Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
         }
-        } catch(NoSuchElementException e){
-            robotAngle =  Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
-        }
-        
+
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
         Logger.recordOutput("RobotAngle", robotAngle);
         odometryLock.lock(); // Prevents odometry updates while reading data
@@ -286,6 +284,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
         // Update gyro alert
         gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+
+        // Log periodic processing time
+        long totalProcessingTime = Logger.getRealTimestamp() - periodicStartTime;
+        Logger.recordOutput("Drive/PeriodicTimeUs", totalProcessingTime);
+        Logger.recordOutput("Drive/PeriodicTimeMs", totalProcessingTime / 1000.0);
+        Logger.recordOutput("Drive/OdometrySampleCount", sampleCount);
     }
 
     private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
@@ -619,7 +623,7 @@ public DoubleSupplier autoAlignOnTheMove(){
 
     futurePose = convergentFlightTime();
     double wantedAngle;
-    if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+    if(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)){
             wantedAngle =  Math.atan2(futurePose.get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (futurePose.get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
         } else {
             wantedAngle =  Math.atan2(futurePose.get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (futurePose

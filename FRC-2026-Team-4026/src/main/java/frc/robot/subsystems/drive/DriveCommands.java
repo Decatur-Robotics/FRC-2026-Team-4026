@@ -61,7 +61,8 @@ public class DriveCommands {
 
         // Square magnitude for more precise control
         linearMagnitude = linearMagnitude * linearMagnitude;
-        linearMagnitudeFilter.calculate(linearMagnitude);
+        // Apply slew rate limiting for smoother acceleration
+        linearMagnitude = linearMagnitudeFilter.calculate(linearMagnitude);
         // Return new linear velocity
         return new Pose2d(new Translation2d(), linearDirection)
                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
@@ -88,8 +89,7 @@ public class DriveCommands {
                             linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                             linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                             omega * drive.getMaxAngularSpeedRadPerSec());
-                    boolean isFlipped = DriverStation.getAlliance().isPresent()
-                            && DriverStation.getAlliance().get() == Alliance.Red;
+                    boolean isFlipped = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
                     drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
                             speeds,
                             isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
@@ -97,8 +97,7 @@ public class DriveCommands {
                     // Get linear velocity
                     Translation2d linearVelocity =
                             getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-                    boolean isFlipped = DriverStation.getAlliance().isPresent()
-                            && DriverStation.getAlliance().get() == Alliance.Red;
+                    boolean isFlipped = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
                     // Apply rotation deadband
                     //autoAlignOnTheMove returns a double of rotation in radians
                     //drive.getFuturePose()).getAsDouble()
@@ -153,8 +152,7 @@ public class DriveCommands {
                                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                                     linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                                     omega);
-                            boolean isFlipped = DriverStation.getAlliance().isPresent()
-                                    && DriverStation.getAlliance().get() == Alliance.Red;
+                            boolean isFlipped = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
                             drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
                                     speeds,
                                     isFlipped
