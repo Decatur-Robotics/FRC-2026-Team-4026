@@ -555,7 +555,7 @@ public boolean atTargetPose() {
 
 public boolean isAligned(){
 
-    return (Math.abs(Math.abs(robotAngle)-Math.abs(getPose().getRotation().getRadians())) < 1);
+    return (Math.abs(robotAngle-(getPose().getRotation().getRadians())) < 3);
 }
 public Command driveToFuel(){
     rotationalController.enableContinuousInput(Math.PI, -Math.PI);
