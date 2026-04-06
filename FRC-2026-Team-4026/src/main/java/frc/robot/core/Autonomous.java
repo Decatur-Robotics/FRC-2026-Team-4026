@@ -2,6 +2,8 @@ package frc.robot.core;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
@@ -21,21 +23,17 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.intake.IntakeConstants;
-import frc.robot.subsystems.superstructure.shooter.Shooter;
-import frc.robot.subsystems.superstructure.shooter.ShotEstimator;
+
 
 public class Autonomous {
   private Drive drive;
   private Superstructure superstructure;
-  private Command auto;
-      private Boolean hopperFull = false;
-    private Boolean hopperEmpty = true;
   private enum AutoType{
+    CenterRush("Center Rush"),
     DoubleCenter("Double Center"),
     DoubleDepot("Double Center + Depot"),
-    Orbit("Orbit"),
-    OrbitPass("Orbit Pass");
+    Passing("Passing"),
+    Disrupt("Disrupt");
     private String autoType;
     private AutoType(String autoType){
       this.autoType = autoType;
@@ -48,13 +46,7 @@ public class Autonomous {
       this.side = side;
     }
   }
-  private enum Smart{
-    Yes("Yes"), No("No");
-    private String smart;
-    private Smart(String smart){
-      this.smart = smart;
-    }
-  }
+
 
 
   public Autonomous(Superstructure superstructure, Drive drive){
@@ -66,29 +58,58 @@ public class Autonomous {
 
   }
 
-  // public Command DoubleCenterLoop(){
-  //         PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right");
-  //     auto1.activePath("Center Rush Right Intake").whileTrue(Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12))).onFalse(intake.runIntakeCommand(0));
+  public Command DoubleCenterLoop(){
+        PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right");
+    auto1
+        .activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand())
+        .onFalse(superstructure.storeCommand());
 
-  //     PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test");
-  //     auto2.activePath("Center Rush Right 2").onTrue(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0), intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION)));
-  //     auto2.activePath("Center Rush 2 1002").whileTrue(Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12))).onFalse(intake.runIntakeCommand(0));
-  //     // PathPlannerAuto auto3 = new PathPlannerAuto("Center Rush Right 2"); 
-
-      
-  //     // auto1.activePath("Center Rush Right shoot").onFalse(Commands.sequence(superstructure.oscillateShootCommand(), Commands.waitTime(Seconds.of(3))));
-  //     return Commands.sequence(auto1, Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), intake.oscillateIntakeCommand()), Commands.waitSeconds(3), auto2, superstructure.oscillateShootCommand());
-  // }
-
-  public Command DoubleCenterSwipe(){
-    PathPlannerAuto centerSwipe1 = new PathPlannerAuto("Center Rush 1");
-    centerSwipe1.activePath("Center Rush Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-    centerSwipe1.activePath("Center Rush Shoot").onFalse(autoShootCommand());
-    PathPlannerAuto centerSwipe2 = new PathPlannerAuto("Center Test 2");
-    centerSwipe2.activePath("Center Rush Intake 2").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-    centerSwipe2.activePath("Center Rush 2 Shoot").onFalse(autoShootCommand());
-    return Commands.sequence(centerSwipe1, centerSwipe2);
+    PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test");
+    auto2
+        .activePath("Center Rush 2 1002").whileTrue(superstructure.intakeCommand())
+        .onFalse(superstructure.storeCommand());
+    return Commands.sequence(auto1,
+        superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)), superstructure.storeCommand().withTimeout(0.1), auto2, superstructure.oscillateShootCommand());
   }
+
+  public Command DoubleCenterLoopLeft(){
+    PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right", true);
+    auto1
+        .activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand())
+        .onFalse(superstructure.storeCommand());
+
+    PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test", true);
+    auto2
+        .activePath("Center Rush 2 1002").whileTrue(superstructure.intakeCommand())
+        .onFalse(superstructure.storeCommand());
+    return Commands.sequence(auto1,
+        superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)), superstructure.storeCommand().withTimeout(0.1), auto2, superstructure.oscillateShootCommand());
+  }
+
+  public Command passingAuto(){
+    PathPlannerAuto auto = new PathPlannerAuto("Passing");
+    auto.activePath("Passing Intake 1").onTrue(superstructure.intakeCommand());
+    auto.activePath("Passing Shoot 1").whileTrue(superstructure.passIntakeCommand())
+    .onFalse(superstructure.intakeCommand());
+    auto.activePath("Passing Shoot 2").whileTrue(superstructure.passIntakeCommand())
+    .onFalse(superstructure.intakeCommand());
+    auto.activePath("Passing Shoot 3").whileTrue(superstructure.passIntakeCommand());
+    return auto;
+  }
+
+    public Command passingAutoLeft(){
+    PathPlannerAuto auto = new PathPlannerAuto("Passing", true);
+    auto.activePath("Passing Intake 1").onTrue(superstructure.intakeCommand());
+    auto.activePath("Passing Shoot 1").whileTrue(superstructure.passIntakeCommand())
+    .onFalse(superstructure.intakeCommand());
+    auto.activePath("Passing Shoot 2").whileTrue(superstructure.passIntakeCommand())
+    .onFalse(superstructure.intakeCommand());
+    auto.activePath("Passing Shoot 3").whileTrue(superstructure.passIntakeCommand());
+    return auto;
+  }
+
+  
+
 
   public Command DoubleCenterDepot(){
         PathPlannerAuto centerSwipe1 = new PathPlannerAuto("Center Rush 1");
@@ -103,15 +124,6 @@ public class Autonomous {
     return Commands.parallel(centerSwipe1, centerSwipe2, Commands.parallel(pathfinderToPose(depot.getStartingPose()), autoShootCommand()), depot);
   }
 
-  public Command DoubleCenterSmart(){
-            PathPlannerAuto centerSwipe1 = new PathPlannerAuto("Center Test");
-    centerSwipe1.activePath("Center Rush").onFalse(Commands.parallel(superstructure.intakeCommand(), pathfinderToPoseIntake(null)));
-    PathPlannerAuto centerSwipe2 = new PathPlannerAuto("Center Test 2");
-    centerSwipe2.activePath("Center Rush Intake 2").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-    centerSwipe2.activePath("Center Rush 2 Shoot").onFalse(autoShootCommand());
-    return centerSwipe1;
-  }
-
   public Command pathfinderToPose(Pose2d targetPose) {
     PathConstraints constraints = new PathConstraints(4.69, 3.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
@@ -124,10 +136,6 @@ public class Autonomous {
 
     Command pathfinderCommand = AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
     return pathfinderCommand;
-  }
-
-  public Command smartIntake(){
-    return null;
   }
 
       public Command autoShootCommand(){

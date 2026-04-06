@@ -165,7 +165,7 @@ public class RobotContainer {
               VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
       colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME,
           ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
-      superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
+      superstructure = new Superstructure(intake, indexer, shooter, leds);
 
       driveInstance = drive;
       autonomous = new Autonomous(superstructure, drive);
@@ -197,7 +197,7 @@ public class RobotContainer {
               driveSimulation::getSimulatedDriveTrainPose),
           new VisionIOPhotonVisionSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(),
               driveSimulation::getSimulatedDriveTrainPose));
-      superstructure = new Superstructure(intake, indexer, shooter, leds, drive);
+      superstructure = new Superstructure(intake, indexer, shooter, leds);
       driveInstance = drive;
       autonomous = new Autonomous(superstructure, drive);
     }
@@ -277,7 +277,7 @@ public class RobotContainer {
     // Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0,
     // 0)))));
     // x.whileTrue(drive.setRotationXCommand());
-    bumperRight.whileTrue(superstructure.alignCommand());
+    bumperRight.whileTrue(superstructure.alignCommand(drive));
     bumperLeft.whileTrue(drive.alignHubPathpl());
     x.whileTrue(drive.stopWithXCommand());
     b.whileTrue(pathfinderToPose(new Pose2d(15, 7.3, new Rotation2d())));
@@ -321,10 +321,10 @@ public class RobotContainer {
         .onFalse(superstructure.storeCommand());
     triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
     triggerRight
-        .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand() : superstructure.shootCommand())
+        .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive) : superstructure.shootCommand())
         .onFalse(superstructure.storeCommand());
     triggerRight.and(a)
-        .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand() : superstructure.shootCommand())
+        .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive) : superstructure.shootCommand())
         .onFalse(superstructure.storeCommand());
     triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
     triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
