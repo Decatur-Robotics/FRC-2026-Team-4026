@@ -399,7 +399,7 @@ public class RobotContainer {
     // Command auto = Commands.sequence(new PathPlannerAuto("Center Test"), new
     // PathPlannerAuto("Center Test 2"));
     // return auto;
-    PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right");
+    PathPlannerAuto auto = new PathPlannerAuto("Center Rush Right", true);
     auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
     auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
     return auto;
