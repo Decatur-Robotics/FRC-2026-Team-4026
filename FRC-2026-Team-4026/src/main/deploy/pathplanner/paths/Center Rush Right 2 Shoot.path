@@ -8,36 +8,36 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.2903084223013055,
-        "y": 0.43604982206405696
+        "x": 6.236512455516015,
+        "y": 0.22086595492289351
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.71946619217082,
-        "y": 0.6081969157769855
+        "x": 5.11755634638197,
+        "y": 0.5759193357058121
       },
       "prevControl": {
-        "x": 5.279278850523442,
-        "y": 0.5987882996702183
+        "x": 5.806144721233689,
+        "y": 0.5759193357058121
       },
       "nextControl": {
-        "x": 3.439122182680902,
-        "y": 0.6297153024911031
+        "x": 3.8370315228804888,
+        "y": 0.5759193357058122
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5891459074733105,
-        "y": 0.9524911032028467
+        "x": 1.8360023724792414,
+        "y": 0.974009489916964
       },
       "prevControl": {
-        "x": 3.0625504151838676,
-        "y": 0.8126215895610915
+        "x": 2.2771293001186237,
+        "y": 0.7265480427046258
       },
       "nextControl": null,
       "isLocked": false,
@@ -72,8 +72,8 @@
   "reversed": false,
   "folder": "Center Rush",
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 1.5,
     "rotation": 86.09950625761806
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

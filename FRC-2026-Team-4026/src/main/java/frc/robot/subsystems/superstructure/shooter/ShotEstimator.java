@@ -45,15 +45,15 @@ public class ShotEstimator extends SubsystemBase{
 
     @Override
     public void periodic(){
-        if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+        if(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)){
             robotDistance = drive.getPose().getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
             passingDistance = drive.getPose().getTranslation().getDistance(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX()));
         } else{
             robotDistance = drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));
-            passingDistance =  drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX())));        
+            passingDistance =  drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX())));
         }
 
-        
+
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
         Logger.recordOutput("ShotEstimator/Velocity", getTargetVelocity().get());
     }
