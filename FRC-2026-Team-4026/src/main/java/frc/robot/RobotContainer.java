@@ -418,7 +418,7 @@ public class RobotContainer {
             .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12)))
         .onFalse(intake.runIntakeCommand(0));
     return Commands.sequence(auto1,
-        superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)), auto2, superstructure.oscillateShootCommand());
+        superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)), superstructure.storeCommand().withTimeout(0.1), auto2, superstructure.oscillateShootCommand());
 
   }
 
