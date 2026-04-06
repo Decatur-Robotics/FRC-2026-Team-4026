@@ -107,7 +107,6 @@ public class Intake extends SubsystemBase{
     public Command runIntakeCommand(double voltage){
 
         return Commands.startEnd(()-> io.setIntakeVoltage(voltage), () -> io.stopIntake());
-        
     }
     public Command zeroCommand(double position){
 

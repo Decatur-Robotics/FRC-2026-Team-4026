@@ -63,7 +63,7 @@ public Command setVelocityCommand(double velocity) {
 }
 
 public Command shootAimCommand(){
-    return Commands.run(() -> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity().get()));
+    return Commands.runOnce(() -> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity().get()));
 }
 public Command shootOnMoveCommand(Drive drive){
     return Commands.run(()-> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity(drive.getDistanceToHub(drive.convergentFlightTime().get()).getAsDouble()).get()));
