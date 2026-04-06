@@ -1,0 +1,85 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Passing"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Copy of Passing Intake 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Rotate 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Shoot 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Rotate 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Intake 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Rotate 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Shoot 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Rotate 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Intake 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Rotate 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Passing Shoot 3"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
