@@ -117,7 +117,7 @@ public class RobotContainer {
         }
     }
 
-  private Command autoCommand;
+    private Command autoCommand;
     private SendableChooser<AutoSide> autoSide;
     private SendableChooser<AutoType> autoType;
     // public ShotEstimator shotEstimator;
@@ -166,7 +166,7 @@ public class RobotContainer {
                             VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
             colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME,
                     ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
-      superstructure = new Superstructure(intake, indexer, shooter, leds);
+            superstructure = new Superstructure(intake, indexer, shooter, leds);
 
             driveInstance = drive;
             autonomous = new Autonomous(superstructure, drive);
@@ -198,7 +198,7 @@ public class RobotContainer {
                             driveSimulation::getSimulatedDriveTrainPose),
                     new VisionIOPhotonVisionSim(VisionConstants.CAMERA_BACK_NAME, new Transform3d(),
                             driveSimulation::getSimulatedDriveTrainPose));
-      superstructure = new Superstructure(intake, indexer, shooter, leds);
+            superstructure = new Superstructure(intake, indexer, shooter, leds);
             driveInstance = drive;
             autonomous = new Autonomous(superstructure, drive);
         }
@@ -278,7 +278,7 @@ public class RobotContainer {
         // Pose2d(drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0,
         // 0)))));
         // x.whileTrue(drive.setRotationXCommand());
-    bumperRight.whileTrue(superstructure.alignCommand(drive));
+        bumperRight.whileTrue(superstructure.alignCommand(drive));
         bumperLeft.whileTrue(drive.alignHubPathpl());
         x.whileTrue(drive.stopWithXCommand());
         b.whileTrue(pathfinderToPose(new Pose2d(15, 7.3, new Rotation2d())));
@@ -322,10 +322,10 @@ public class RobotContainer {
                 .onFalse(superstructure.storeCommand());
         triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
         triggerRight
-        .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive) : superstructure.shootCommand())
+                .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive) : superstructure.shootCommand())
                 .onFalse(superstructure.storeCommand());
         triggerRight.and(a)
-        .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive) : superstructure.shootCommand())
+                .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive) : superstructure.shootCommand())
                 .onFalse(superstructure.storeCommand());
         triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand()).onFalse(superstructure.storeCommand());
         triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
@@ -343,51 +343,52 @@ public class RobotContainer {
     }
 
     public void chooseAuto() {
-    boolean isLeft = autoSide.getSelected() == AutoSide.Left;
-    boolean isRight = !isLeft;
+        boolean isLeft = autoSide.getSelected() == AutoSide.Left;
+        boolean isRight = !isLeft;
 
-    // Columbus Auto
-    if (autoType.getSelected() == AutoType.CenterRush) {
-      PathPlannerAuto auto = new PathPlannerAuto("Columbus Auto", isLeft);
-      auto.activePath("Center Rush Intake Col").whileTrue(superstructure.intakeCommand())
-          .onFalse(superstructure.storeCommand());
-      auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
-      autoCommand = auto;
+        // Columbus Auto
+        if (autoType.getSelected() == AutoType.CenterRush) {
+            PathPlannerAuto auto = new PathPlannerAuto("Columbus Auto", isLeft);
+            auto.activePath("Center Rush Intake Col").whileTrue(superstructure.intakeCommand())
+                    .onFalse(superstructure.storeCommand());
+            auto.activePath("Center Rush Right shoot")
+                    .onFalse(Commands.sequence(drive.autoAlignToHub().withTimeout(3), Commands.parallel(superstructure.oscillateShootCommand())));
+            autoCommand = auto;
+        }
+
+        // only do depot on the left - probably can be removed
+        if (autoType.getSelected() == AutoType.Depot && isLeft) {
+            PathPlannerAuto auto = new PathPlannerAuto("Depot Auto");
+            auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand())
+                    .onFalse(superstructure.storeCommand());
+            auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
+            autoCommand = auto;
+        }
+
+        if (autoType.getSelected() == AutoType.DoubleCenter) {
+            PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right", isLeft);
+            auto1
+                    .activePath("Center Rush Right Intake").whileTrue(Commands
+                            .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
+                                    intake.runIntakeCommand(-8)))
+                    .onFalse(intake.runIntakeCommand(0));
+
+            PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test", isLeft);
+            auto2
+                    .activePath("Center Rush 2 1002").whileTrue(Commands
+                            .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
+                                    intake.runIntakeCommand(-8)))
+                    .onFalse(intake.runIntakeCommand(0));
+            autoCommand = Commands.sequence(auto1,
+                    superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)),
+                    superstructure.storeCommand().withTimeout(0.1), auto2, superstructure.oscillateShootCommand());
+        }
+
+        // Dalton auto, sit still and shoot
+        if (autoType.getSelected() == AutoType.Preload) {
+            superstructure.shootCommand();
+        }
     }
-
-    // only do depot on the left - probably can be removed
-    if (autoType.getSelected() == AutoType.Depot && isLeft) {
-      PathPlannerAuto auto = new PathPlannerAuto("Depot Auto");
-      auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand())
-          .onFalse(superstructure.storeCommand());
-      auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
-      autoCommand = auto;
-    }
-
-    if (autoType.getSelected() == AutoType.DoubleCenter) {
-      PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right", isLeft);
-      auto1
-          .activePath("Center Rush Right Intake").whileTrue(Commands
-              .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
-                  intake.runIntakeCommand(-8)))
-          .onFalse(intake.runIntakeCommand(0));
-
-      PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test", isLeft);
-      auto2
-          .activePath("Center Rush 2 1002").whileTrue(Commands
-              .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
-                  intake.runIntakeCommand(-8)))
-          .onFalse(intake.runIntakeCommand(0));
-      autoCommand = Commands.sequence(auto1,
-          superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)),
-          superstructure.storeCommand().withTimeout(0.1), auto2, superstructure.oscillateShootCommand());
-    }
-
-    // Dalton auto, sit still and shoot
-    if (autoType.getSelected() == AutoType.Preload) {
-      superstructure.shootCommand();
-    }
-  }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -396,7 +397,7 @@ public class RobotContainer {
      */
 
     public Command getAutonomousCommand() {
-   return autoCommand;
+        return autoCommand;
 
     }
 
