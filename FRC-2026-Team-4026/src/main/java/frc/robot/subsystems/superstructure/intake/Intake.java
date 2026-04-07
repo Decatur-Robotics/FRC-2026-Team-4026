@@ -115,16 +115,21 @@ public class Intake extends SubsystemBase{
 
     }
 
-    public void oscillatingIntake(){
+   public void oscillatingIntake(){
         if (osillatingIntakeGoingUp){
             io.setDeployPosition(IntakeConstants.HALFWAY_INTAKE_POSITION);
             if(getDeployPosition() < IntakeConstants.HALFWAY_INTAKE_POSITION + 1){
                 osillatingIntakeGoingUp = false;
+                oscillatingTimer.restart();
             }
         }
         if (!osillatingIntakeGoingUp){
             io.setDeployPosition(IntakeConstants.DEPLOY_INTAKE_POSITION);     
+            if(oscillatingTimer.get() > IntakeConstants.OSCILLATING_TIMER){
+                osillatingIntakeGoingUp = true;
+            }
         }
+        io.setIntakeVoltage(-0.5);
     }
 
     public Command oscillateIntakeCommand(){

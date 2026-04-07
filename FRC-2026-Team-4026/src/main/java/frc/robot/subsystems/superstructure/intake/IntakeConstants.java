@@ -28,7 +28,7 @@ public class IntakeConstants {
     .withKV(kV)
     .withKA(kA);
 
-    public static final double INTAKE_VOLTAGE = 0;  
+    public static final double INTAKE_VOLTAGE = -8;  
     
     public static final double DEPLOY_MOI = .5;
 
