@@ -29,7 +29,6 @@ public class Superstructure extends SubsystemBase {
     private Shooter shooter;
 
     private frc.robot.subsystems.superstructure.leds.Leds leds;
-    private Drive drive;
 
 
     private boolean isSimulation = Robot.isSimulation();
@@ -41,13 +40,12 @@ public class Superstructure extends SubsystemBase {
     
 
 
-    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Leds leds, Drive drive) {
+    public Superstructure(Intake intake, Indexer indexer, Shooter shooter, Leds leds) {
         this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
 
         this.leds = leds;
-        this.drive = drive;
 
 
         
@@ -67,8 +65,6 @@ public class Superstructure extends SubsystemBase {
 
     @Override
     public void periodic(){
-        drive.isAligned();
-        Logger.recordOutput("Is Aligned", drive.isAligned());
     }
 
     public void toggleDefenseMode(){
@@ -101,7 +97,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command intakeCommand(){
-        return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12), shooter.setVoltageCommand(0), leds.pulsingCommand());
+        return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-8), shooter.setVoltageCommand(0), leds.pulsingCommand());
     }
 
     public Command altIntakeCommand(){
@@ -185,8 +181,8 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(shootCommand(), intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-10));
     }
 
-    public Command shootAndIntakeOnMove(){
-        return Commands.parallel(shootOnMoveCommand(), intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-10));
+    public Command shootAndIntakeOnMove(Drive drive){
+        return Commands.parallel(shootOnMoveCommand(drive), intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-10));
     }
 
 
@@ -206,7 +202,7 @@ public class Superstructure extends SubsystemBase {
     public Command pushShootCommand(Supplier<Double> velocity, Supplier<Double> deployPosition){
         return Commands.parallel(shootCommand(velocity), intake.deployIntakeCommand(-deployPosition.get()*15.3+15.3));
     }
-    public Command shootOnMoveCommand(){
+    public Command shootOnMoveCommand(Drive drive){
         return Commands.parallel(shooter.shootOnMoveCommand(drive),indexer.setVoltageCommand(10),intake.runIntakeCommand(-2));
     }
 
@@ -240,26 +236,7 @@ public class Superstructure extends SubsystemBase {
             
 
 
-    public void shootFuel(){
-
-        RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
-            drive.getPose().getTranslation(),
-            new Translation2d(0,0),
-            drive.getChassisSpeeds(),
-            drive.getRotation(),
-            Meters.of(0.2),
-            MetersPerSecond.of(2),
-            //I repleaced the hod angle with this is incorrect
-            Radians.of(12)
-        );
-
-        fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();
-        SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
-}
-
- public Command shootFuelCommand(){
-        return Commands.runOnce(()->shootFuel());
- }
+    
 
  public Command retractIntakeCommand(){
     return Commands.runOnce(()-> intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
@@ -272,7 +249,7 @@ public class Superstructure extends SubsystemBase {
  public int getNumBallsStored(){
     return intake.getNumBallsIntaked() - shooter.getNumBallsShot();
  }
- public Command alignCommand(){
+ public Command alignCommand(Drive drive){
     // return Commands.parallel(drive.autoAlignToHub(),drive.isAligned()?leds.correctCommand():leds.aligningCommand());
     return Commands.parallel(drive.autoAlignToHub(), Commands.sequence(leds.aligningCommand(), Commands.waitUntil(() -> drive.isAligned()), leds.correctCommand()));
 
