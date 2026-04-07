@@ -345,7 +345,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
     public Command stopWithXCommand() {
-        return Commands.run(() -> stopWithX());
+        return Commands.run(() -> stopWithX(), this);
     }
 
     /**
@@ -504,7 +504,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
     public Command driveToPoseAuto(Supplier<Pose2d> targetPose) {
-        return Commands.run(() -> driveToPose(() -> new ChassisSpeeds(0, 0, 0), targetPose));
+        return Commands.run(() -> driveToPose(() -> new ChassisSpeeds(0, 0, 0), targetPose), this);
     }
 
 
@@ -562,13 +562,11 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
     public Command autoAlignToHub() {
-
-        return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)));
-
+        return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)), this);
     }
 
     public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
-        return Commands.run(() -> driveToPose(targetSpeeds, targetPose)).finallyDo(() -> this.targetPose = null);
+        return Commands.run(() -> driveToPose(targetSpeeds, targetPose), this).finallyDo(() -> this.targetPose = null);
     }
 
     public boolean atTargetPose() {
@@ -593,7 +591,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
                 2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
                         getRotationChange().getRadians()), getRotation()
-        )));
+        )), this);
     }
 
     PathConstraints constraints = new PathConstraints(
