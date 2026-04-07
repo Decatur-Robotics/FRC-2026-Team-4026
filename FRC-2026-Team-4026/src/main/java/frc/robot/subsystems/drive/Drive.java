@@ -223,14 +223,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
     @Override
     public void periodic() {
-        try {
-            if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-                robotAngle = Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
-            } else {
-                robotAngle = Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
-            }
-        } catch (NoSuchElementException e) {
+        if (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) {
             robotAngle = Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+        } else {
+            robotAngle = Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
         }
 
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
@@ -652,7 +648,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
         futurePose = convergentFlightTime();
         double wantedAngle;
-        if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+        if (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) {
             wantedAngle = Math.atan2(futurePose.get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (futurePose.get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
         } else {
             wantedAngle = Math.atan2(futurePose.get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (futurePose
