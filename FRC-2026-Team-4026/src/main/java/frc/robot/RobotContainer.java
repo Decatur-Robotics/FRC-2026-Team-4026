@@ -116,7 +116,7 @@ public class RobotContainer {
     }
   }
 
-  private PathPlannerAuto auto;
+  private Command autoCommand;
   private SendableChooser<AutoSide> autoSide;
   private SendableChooser<AutoType> autoType;
   // public ShotEstimator shotEstimator;
@@ -342,43 +342,49 @@ public class RobotContainer {
   }
 
   public void chooseAuto() {
-    if (autoSide.getSelected() == AutoSide.Left) {
-      if (autoType.getSelected() == AutoType.CenterRush) {
-        auto = new PathPlannerAuto("Center Rush Right", true);
-        auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand())
-            .onFalse(superstructure.storeCommand());
-        auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
-      } else if (autoType.getSelected() == AutoType.Depot) {
-        auto = new PathPlannerAuto("Depot Auto");
-        auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand())
-            .onFalse(superstructure.storeCommand());
-        auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
-      } else if (autoType.getSelected() == AutoType.Preload) {
-        superstructure.shootCommand();
-      } else if (autoType.getSelected() == AutoType.DoubleCenter) {
-        auto = new PathPlannerAuto("Double Center Swipe Auto");
-        auto.activePath("Center Rush").whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
-        auto.activePath("Center rush shoot").onFalse(superstructure.shootCommand());
-        // auto.condition(() -> superstructure.getNumBallsStored() < 5).onTrue();
-      }
-    } else if (autoSide.getSelected() == AutoSide.Center) {
-      auto = new PathPlannerAuto("Center Depot Auto");
-      auto.activePath("Center Depot Intake").whileTrue(superstructure.intakeCommand())
+    boolean isLeft = autoSide.getSelected() == AutoSide.Left;
+    boolean isRight = !isLeft;
+
+    // Columbus Auto
+    if (autoType.getSelected() == AutoType.CenterRush) {
+      PathPlannerAuto auto = new PathPlannerAuto("Columbus Auto", isLeft);
+      auto.activePath("Center Rush Intake Col").whileTrue(superstructure.intakeCommand())
           .onFalse(superstructure.storeCommand());
-      auto.activePath("Center Depot Shoot").onFalse(superstructure.shootCommand());
-    } else if (autoSide.getSelected() == AutoSide.Right) {
-      if (autoType.getSelected() == AutoType.CenterRush) {
-        auto = new PathPlannerAuto("Center Rush Right");
-        auto.activePath("Center Rush Right Intake").whileTrue(superstructure.intakeCommand())
-            .onFalse(superstructure.storeCommand());
-        auto.activePath("Center Rush Right shoot").onFalse(superstructure.oscillateShootCommand());
-      } else if (autoType.getSelected() == AutoType.Depot) {
-        auto = new PathPlannerAuto("HP Auto Right");
-        auto.activePath("Start right to HP").onTrue(superstructure.storeCommand());
-        auto.activePath("HP Shoot").onFalse(superstructure.shootCommand());
-      } else if (autoType.getSelected() == AutoType.Preload) {
-        superstructure.shootCommand();
-      }
+      auto.activePath("Center Rush Right shoot").onFalse(Commands.parallel(superstructure.oscillateShootCommand()));
+      autoCommand = auto;
+    }
+
+    // only do depot on the left - probably can be removed
+    if (autoType.getSelected() == AutoType.Depot && isLeft) {
+      PathPlannerAuto auto = new PathPlannerAuto("Depot Auto");
+      auto.activePath("Depot Intake").whileTrue(superstructure.intakeCommand())
+          .onFalse(superstructure.storeCommand());
+      auto.activePath("Depot to Shoot").onFalse(superstructure.shootCommand());
+      autoCommand = auto;
+    }
+
+    if (autoType.getSelected() == AutoType.DoubleCenter) {
+      PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right", isLeft);
+      auto1
+          .activePath("Center Rush Right Intake").whileTrue(Commands
+              .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
+                  intake.runIntakeCommand(-12)))
+          .onFalse(intake.runIntakeCommand(0));
+
+      PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test", isLeft);
+      auto2
+          .activePath("Center Rush 2 1002").whileTrue(Commands
+              .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
+                  intake.runIntakeCommand(-12)))
+          .onFalse(intake.runIntakeCommand(0));
+      autoCommand = Commands.sequence(auto1,
+          superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)),
+          superstructure.storeCommand().withTimeout(0.1), auto2, superstructure.oscillateShootCommand());
+    }
+
+    // Dalton auto, sit still and shoot
+    if (autoType.getSelected() == AutoType.Preload) {
+      superstructure.shootCommand();
     }
   }
 
@@ -418,7 +424,8 @@ public class RobotContainer {
             .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12)))
         .onFalse(intake.runIntakeCommand(0));
     return Commands.sequence(auto1,
-        superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)), superstructure.storeCommand().withTimeout(0.1), auto2, superstructure.oscillateShootCommand());
+        superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)),
+        superstructure.storeCommand().withTimeout(0.1), auto2, superstructure.oscillateShootCommand());
 
   }
 
