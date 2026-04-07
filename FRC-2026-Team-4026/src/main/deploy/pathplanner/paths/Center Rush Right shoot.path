@@ -55,7 +55,18 @@
     }
   ],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.6,
+        "y": 4.026
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.9032620922384753,
+      "maxWaypointRelativePos": 2.0,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.5,
@@ -67,7 +78,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 48.452
+    "rotation": 48.45241654763537
   },
   "reversed": false,
   "folder": "Center Rush",
