@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.core.Autonomous;
 import frc.robot.core.LogitechControllerButtons;
 import frc.robot.generated.TunerConstants;
@@ -352,7 +353,8 @@ public class RobotContainer {
             auto.activePath("Center Rush Intake Col").whileTrue(superstructure.intakeCommand())
                     .onFalse(superstructure.storeCommand());
             auto.activePath("Center Rush Right shoot")
-                    .onFalse(Commands.sequence(drive.autoAlignToHub().withTimeout(3), Commands.parallel(superstructure.oscillateShootCommand())));
+                    .onFalse(Commands.sequence(drive.autoAlignToHub().withTimeout(3),
+                            Commands.parallel(drive.stopWithXCommand(), superstructure.oscillateShootCommand())));
             autoCommand = auto;
         }
 
