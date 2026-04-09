@@ -555,6 +555,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
         Logger.recordOutput("Target Rotation", targetRotation.get());
         Logger.recordOutput("autoAling Robot", getPose().getRotation());
+        Logger.recordOutput("Angle PID Error", angleController.getPositionError());
+        Logger.recordOutput("Angle PID Error Vel", angleController.getVelocityError());
+
     }
 
     public Command autoAlignToHub() {

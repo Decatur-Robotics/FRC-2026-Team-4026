@@ -31,13 +31,13 @@ public class ShotEstimator extends SubsystemBase{
         // targetVelocities.put(4.21, 54.0);
         // targetVelocities.put(4.97, 57.0);
 
-        targetVelocities.put(2.486, 35.5);
-        targetVelocities.put(2.99, 38.0);
-        targetVelocities.put(3.6, 40.0);
-        targetVelocities.put(4.0, 42.5);
-        targetVelocities.put(4.518, 45.5);
-        targetVelocities.put(5.026, 48.0);
-        targetVelocities.put(5.83, 54.2);
+        targetVelocities.put(2.486, 36.5);
+        targetVelocities.put(2.99, 39.0);
+        targetVelocities.put(3.6, 41.0);
+        targetVelocities.put(4.0, 43.5);
+        targetVelocities.put(4.518, 46.5);
+        targetVelocities.put(5.026, 49.0);
+        targetVelocities.put(5.83, 55.2);
 
 
 
@@ -75,7 +75,7 @@ public class ShotEstimator extends SubsystemBase{
     }
 
     public Supplier<Double> getPassingVelocity(){
-        return () -> targetVelocities.get(passingDistance)+5;
+        return () -> targetVelocities.get(passingDistance)+3;
     }
 
 

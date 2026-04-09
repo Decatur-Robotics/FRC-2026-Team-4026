@@ -216,7 +216,7 @@ public class RobotContainer {
         autoType.setDefaultOption(AutoType.CenterRush.autoName, AutoType.CenterRush);
         autoType.addOption(AutoType.Depot.autoName, AutoType.Depot);
         autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
-        autoType.addOption(AutoType.DoubleCenter.autoName, AutoType.DoubleCenter);
+        autoType.addOption("Center 1.5", AutoType.DoubleCenter);
         autoType.addOption(AutoType.RushDepot.autoName, AutoType.RushDepot);
         ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
         autoTab.add("Side", autoSide);
@@ -319,9 +319,9 @@ public class RobotContainer {
         triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(10)))
                 .onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
 
-        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0))
+        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 40.0))
                 .onFalse(superstructure.storeCommand());
-        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
+        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 40.0, () -> joystick.getY()));
         triggerRight
                 .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive) : superstructure.shootCommand())
                 .onFalse(superstructure.storeCommand());
@@ -371,20 +371,17 @@ public class RobotContainer {
                         PathPlannerAuto auto = new PathPlannerAuto("Columbus Auto", isLeft);
             auto.activePath("Center Rush Intake Col").whileTrue(Commands
                             .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
-                                    intake.runIntakeCommand(-10)))
+                                    intake.runIntakeCommand(-12)))
                     .onFalse(intake.runIntakeCommand(0));
-            auto.activePath("Columbus Shoot")
-                    .onFalse(Commands.sequence(drive.autoAlignToHub().withTimeout(3),
-                            Commands.parallel(drive.stopWithXCommand(), superstructure.oscillateShootCommand())));
 
             PathPlannerAuto auto2 = new PathPlannerAuto("Intake 2", isLeft);
             auto2
                     .activePath("Center Rush 2 1002").whileTrue(Commands
                             .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
-                                    intake.runIntakeCommand(-10)))
+                                    intake.runIntakeCommand(-12)))
                     .onFalse(intake.runIntakeCommand(0));
-            autoCommand = Commands.sequence(auto,
-                    superstructure.oscillateShootCommand().withTimeout(Seconds.of(5)),
+            autoCommand = Commands.sequence(auto, drive.autoAlignToHub().withTimeout(2.5), drive.stopWithXCommand().withTimeout(0.1),
+                    superstructure.oscillateShootCommand().withTimeout(Seconds.of(4)),
                     superstructure.storeCommand().withTimeout(0.1), auto2);
         }
 
