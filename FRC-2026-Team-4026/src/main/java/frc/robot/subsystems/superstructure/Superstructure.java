@@ -95,11 +95,11 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command intakeCommand() {
-        return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-8), shooter.setVoltageCommand(0), leds.pulsingCommand());
+        return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-10), shooter.setVoltageCommand(0), leds.pulsingCommand());
     }
 
     public Command altIntakeCommand() {
-        return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12), shooter.setVoltageCommand(getNumBallsStored()));
+        return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-10), shooter.setVoltageCommand(getNumBallsStored()));
     }
 
     public Command testShootCommand() {
@@ -167,7 +167,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command passIntakeCommand() {
-        return Commands.parallel(passCommand(), intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-12));
+        return Commands.parallel(passCommand(), intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION), intake.runIntakeCommand(-10));
     }
 
     public Command testShootCommands() {
@@ -208,7 +208,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command shootOnMoveCommand(Drive drive) {
-        return Commands.parallel(shooter.shootOnMoveCommand(drive), indexer.setVoltageCommand(10), intake.runIntakeCommand(-2));
+        return Commands.parallel(shooter.shootOnMoveCommand(drive), indexer.setVoltageCommand(10), intake.runIntakeCommand(-0.5));
     }
 
     public Command testingShootCommand() {
