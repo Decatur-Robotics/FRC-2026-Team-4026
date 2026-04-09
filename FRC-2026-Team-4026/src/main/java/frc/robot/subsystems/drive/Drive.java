@@ -237,6 +237,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
         Logger.recordOutput("RobotAngle", robotAngle);
+        Logger.recordOutput("Is Aligned", isAligned());
         odometryLock.lock(); // Prevents odometry updates while reading data
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -587,8 +588,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
     public boolean isAligned() {
-
-        return (Math.abs(robotAngle - (getPose().getRotation().getRadians())) < 3);
+        return Math.abs(robotAngle - (getPose().getRotation().getRadians())) < 0.1;
     }
 
     public Command driveToFuel() {
