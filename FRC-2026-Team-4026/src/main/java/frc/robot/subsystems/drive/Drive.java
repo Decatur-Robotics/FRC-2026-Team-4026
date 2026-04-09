@@ -223,10 +223,16 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
     @Override
     public void periodic() {
-        if (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) {
-            robotAngle = Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+        // if (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) {
+        //     robotAngle = Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+        // } else {
+        //     robotAngle = Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
+        // }
+
+         if (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) {
+            robotAngle = Math.atan2(FieldConstants.Hub.topCenterPoint.getY() - getPose().getY(), (FieldConstants.Hub.topCenterPoint.getX() - getPose().getX()));
         } else {
-            robotAngle = Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
+            robotAngle = Math.atan2(AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()) - getPose().getY(), (AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()) - getPose().getX() ));
         }
 
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
@@ -560,7 +566,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     public Command autoAlignToHub() {
         return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)), this)
                 .beforeStarting(() -> {
-                    angleController.enableContinuousInput(0, Math.PI * 2);
+                    angleController.enableContinuousInput(-Math.PI, Math.PI);
                 });
     }
 
