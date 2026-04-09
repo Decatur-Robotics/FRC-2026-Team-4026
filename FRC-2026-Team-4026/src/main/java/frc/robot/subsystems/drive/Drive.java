@@ -550,7 +550,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     private ProfiledPIDController angleController = new ProfiledPIDController(5, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 4));
 
     public void autoAlign(Supplier<Rotation2d> targetRotation) {
-        angleController.enableContinuousInput(-Math.PI, Math.PI);
+        angleController.enableContinuousInput(0, Math.PI*2);
 
         double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), targetRotation.get().getRadians());
         ChassisSpeeds speeds = new ChassisSpeeds(0, 0, rotationSpeed);
@@ -560,7 +560,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
     public Command autoAlignToHub() {
-        angleController.reset(getRotation().getRadians());
         return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)), this);
     }
 
