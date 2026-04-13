@@ -31,13 +31,13 @@ public class ShotEstimator extends SubsystemBase{
         // targetVelocities.put(4.21, 54.0);
         // targetVelocities.put(4.97, 57.0);
 
-        targetVelocities.put(2.486, 36.5);
-        targetVelocities.put(2.99, 39.0);
-        targetVelocities.put(3.6, 41.0);
-        targetVelocities.put(4.0, 43.5);
-        targetVelocities.put(4.518, 46.5);
-        targetVelocities.put(5.026, 49.0);
-        targetVelocities.put(5.83, 55.2);
+        targetVelocities.put(2.486, 36.0);
+        targetVelocities.put(2.99, 38.5);
+        targetVelocities.put(3.6, 40.5);
+        targetVelocities.put(4.0, 43.0);
+        targetVelocities.put(4.518, 46.0);
+        targetVelocities.put(5.026, 48.5);
+        targetVelocities.put(5.83, 54.7);
 
 
 
@@ -47,10 +47,10 @@ public class ShotEstimator extends SubsystemBase{
     public void periodic(){
         if(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)){
             robotDistance = drive.getPose().getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
-            passingDistance = drive.getPose().getTranslation().getDistance(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX()));
+            passingDistance = drive.getPose().getTranslation().getDistance(new Translation2d(2,drive.getPose().getX()));
         } else{
             robotDistance = drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));
-            passingDistance =  drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply(new Translation2d(FieldConstants.Hub.topCenterPoint.getX(),drive.getPose().getX())));
+            passingDistance =  drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply(new Translation2d(2,drive.getPose().getX())));
         }
 
 
@@ -75,7 +75,7 @@ public class ShotEstimator extends SubsystemBase{
     }
 
     public Supplier<Double> getPassingVelocity(){
-        return () -> targetVelocities.get(passingDistance)+3;
+        return () -> targetVelocities.get(passingDistance);
     }
 
 

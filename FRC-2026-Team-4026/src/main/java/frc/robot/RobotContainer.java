@@ -99,7 +99,7 @@ public class RobotContainer {
 
     private enum AutoType {
         CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"),
-        RushDepot("Center Rush + Depot");
+        RushDepot("Center Rush + Depot"), Nothing("Nothing");
 
         private String autoName;
 
@@ -218,6 +218,7 @@ public class RobotContainer {
         autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
         autoType.addOption("Center 1.5", AutoType.DoubleCenter);
         autoType.addOption(AutoType.RushDepot.autoName, AutoType.RushDepot);
+        autoType.addOption(AutoType.Nothing.autoName, AutoType.Nothing);
         ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
         autoTab.add("Side", autoSide);
         autoTab.add("Type", autoType);
@@ -319,9 +320,9 @@ public class RobotContainer {
         triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(10)))
                 .onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
 
-        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 40.0))
+        triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 42.0))
                 .onFalse(superstructure.storeCommand());
-        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 40.0, () -> joystick.getY()));
+        triggerLeft.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> 42.0, () -> joystick.getY()));
         triggerRight
                 .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive) : superstructure.shootCommand())
                 .onFalse(superstructure.storeCommand());
@@ -356,6 +357,10 @@ public class RobotContainer {
                     .onFalse(Commands.sequence(drive.autoAlignToHub().withTimeout(3),
                             Commands.parallel(drive.stopWithXCommand(), superstructure.oscillateShootCommand())));
             autoCommand = auto;
+        }
+
+        if(autoType.getSelected() == AutoType.Nothing){
+                autoCommand = drive.stopWithXCommand();
         }
 
         // only do depot on the left - probably can be removed
