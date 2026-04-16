@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.Distance;
 
 public class IntakeConstants {
     public static final double STORED_INTAKE_POSITION = 1.0;
-    public static final double DEPLOY_INTAKE_POSITION = 15.3;//15.3
+    public static final double DEPLOY_INTAKE_POSITION = 15.3;
     public static final double NORMAL_INTAKE_POSITION = 14;
 
     public static final double OSCILLATING_TIMER = 0.5;

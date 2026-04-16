@@ -42,14 +42,11 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Current> deployCurrent;
     private StatusSignal<Current> deployFollowCurrent;
     
-    // private TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(0.5, 4);
-    // private TrapezoidProfile.State state = new TrapezoidProfile.State(0,0);
     private final MotionMagicVoltage requestVoltage = new MotionMagicVoltage(1);
  
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
-    .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3))
-    // .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.DEPLOY_CURRENT_LIMIT));
-;
+    .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3));
+
 
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
     .withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT));
@@ -77,8 +74,6 @@ public class IntakeIOTalonFX implements IntakeIO{
         alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
         deployMotor.setPosition(encoder.getPosition().getValueAsDouble()*IntakeConstants.DEPLOY_INTAKE_POSITION/0.325);
         deployFollowMotor.setPosition(encoder.getPosition().getValueAsDouble()*IntakeConstants.DEPLOY_INTAKE_POSITION/0.325);
-        // deployMotor.setPosition(0);
-        // deployFollowMotor.setPosition(0);
         deployMotor.getConfigurator().apply(config);
         deployFollowMotor.getConfigurator().apply(config);
         intakeMotor.getConfigurator().apply(intakeConfig);
