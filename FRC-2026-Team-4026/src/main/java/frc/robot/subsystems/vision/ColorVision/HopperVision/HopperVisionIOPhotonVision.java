@@ -15,30 +15,31 @@ public class HopperVisionIOPhotonVision implements HopperVisionIO {
     private double areaOfHopper;
     private double percentAreaOfHopperFilled;
 
-
-    public HopperVisionIOPhotonVision(String name){
+    public HopperVisionIOPhotonVision(String name) {
         camera = new PhotonCamera(name);
 
     }
+    /**
+     * Updates the area of the biggest clump of fuel detected.
+     */
     @Override
-    public void updateInputs(HopperVisionIOInputs inputs){
+    public void updateInputs(HopperVisionIOInputs inputs) {
         objects = camera.getAllUnreadResults();
-        for (var object : objects){
-            if (object.hasTargets()){
-                //gets the percentage of the screen filled by the bounding box
+        for (var object : objects) {
+            if (object.hasTargets()) {
+                // gets the percentage of the screen filled by the bounding box
                 areaOfHopper = object.getBestTarget().getArea();
-                percentAreaOfHopperFilled = (HopperVisionConstants.AREA_OF_FULL_HOPPER/areaOfHopper);
-                ballsInHopper = percentAreaOfHopperFilled*HopperVisionConstants.MAX_BALLS_IN_HOPPER;
-            }
-            else{
+                percentAreaOfHopperFilled = (HopperVisionConstants.AREA_OF_FULL_HOPPER / areaOfHopper);
+                ballsInHopper = percentAreaOfHopperFilled * HopperVisionConstants.MAX_BALLS_IN_HOPPER;
+            } else {
                 areaOfHopper = 0;
-                ballsInHopper =0;
-                percentAreaOfHopperFilled =0;
+                ballsInHopper = 0;
+                percentAreaOfHopperFilled = 0;
             }
         }
 
-
-        inputs.hopperVisionData = new HopperVisionIO.HopperVisionIOData(camera.isConnected(),ballsInHopper,percentAreaOfHopperFilled);
+        inputs.hopperVisionData = new HopperVisionIO.HopperVisionIOData(camera.isConnected(), ballsInHopper,
+                percentAreaOfHopperFilled);
 
     }
 }
