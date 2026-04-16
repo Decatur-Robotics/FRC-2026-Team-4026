@@ -19,7 +19,9 @@ public class HopperVisionIOPhotonVision implements HopperVisionIO {
         camera = new PhotonCamera(name);
 
     }
-
+    /**
+     * Updates the area of the biggest clump of fuel detected.
+     */
     @Override
     public void updateInputs(HopperVisionIOInputs inputs) {
         objects = camera.getAllUnreadResults();

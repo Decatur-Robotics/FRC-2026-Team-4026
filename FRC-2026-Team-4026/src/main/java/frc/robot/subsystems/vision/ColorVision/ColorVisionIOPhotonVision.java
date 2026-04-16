@@ -18,7 +18,9 @@ public class ColorVisionIOPhotonVision implements ColorVisionIO {
         this.cameraToRobot = cameraToRobot;
 
     }
-
+    /**
+     * gets the yaw from the robot to the biggest clump of fuel
+     */
     @Override
     public void updateInputs(ColorVisionIOInputs inputs) {
         objects = camera.getAllUnreadResults();
