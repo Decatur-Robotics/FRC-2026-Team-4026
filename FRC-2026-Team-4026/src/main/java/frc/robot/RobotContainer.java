@@ -204,8 +204,6 @@ public class RobotContainer {
             autonomous = new Autonomous(superstructure, drive);
         }
 
-        NamedCommands.registerCommand("Shoot",
-                superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
 
         autoSide = new SendableChooser<>();
         autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
