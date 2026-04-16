@@ -7,24 +7,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Rush Right"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Rush Right Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Columbus Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Center Rush Right 2"
           }
         },
