@@ -51,7 +51,7 @@ public class DriveCommands {
 //should this go in the constructor?
 
 
-    private static SlewRateLimiter linearMagnitudeFilter = new SlewRateLimiter(2);
+    private static SlewRateLimiter linearMagnitudeFilter = new SlewRateLimiter(3);
 
     private DriveCommands() {
     }

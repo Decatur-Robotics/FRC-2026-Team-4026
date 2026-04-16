@@ -109,7 +109,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command dumpCommand() {
-        return Commands.parallel(intake.runIntakeCommand(6), indexer.setVoltageCommand(6));
+        return Commands.parallel(intake.runIntakeCommand(10), indexer.setVoltageCommand(-10));
     }
 
     // public Command shootCommand(){
