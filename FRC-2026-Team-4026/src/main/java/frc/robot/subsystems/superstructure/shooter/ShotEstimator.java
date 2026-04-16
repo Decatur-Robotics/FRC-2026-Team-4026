@@ -14,23 +14,16 @@ import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AllianceFlipUtil;
 
-public class ShotEstimator extends SubsystemBase{
+public class ShotEstimator extends SubsystemBase {
     private Drive drive;
     private InterpolatingDoubleTreeMap targetVelocities;
     public double robotDistance;
     public double passingDistance;
     public static ShotEstimator instance;
-    
-    public ShotEstimator(){
+
+    public ShotEstimator() {
         this.drive = RobotContainer.getDrive();
         targetVelocities = new InterpolatingDoubleTreeMap();
-        // targetVelocities.put(2.057, 37.0);
-        // targetVelocities.put(2.62, 39.0);
-        // targetVelocities.put(2.87, 41.0);
-        // targetVelocities.put(3.386, 45.0);
-        // targetVelocities.put(4.21, 54.0);
-        // targetVelocities.put(4.97, 57.0);
-
         targetVelocities.put(2.486, 36.0);
         targetVelocities.put(2.99, 38.5);
         targetVelocities.put(3.6, 40.5);
@@ -39,44 +32,43 @@ public class ShotEstimator extends SubsystemBase{
         targetVelocities.put(5.026, 48.5);
         targetVelocities.put(5.83, 54.7);
 
-
-
     }
 
     @Override
-    public void periodic(){
-        if(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)){
-            robotDistance = drive.getPose().getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
-            passingDistance = drive.getPose().getTranslation().getDistance(new Translation2d(2,drive.getPose().getX()));
-        } else{
-            robotDistance = drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));
-            passingDistance =  drive.getPose().getTranslation().getDistance(AllianceFlipUtil.apply(new Translation2d(2,drive.getPose().getX())));
+    public void periodic() {
+        if (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) {
+            robotDistance = drive.getPose().getTranslation()
+                    .getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+            passingDistance = drive.getPose().getTranslation()
+                    .getDistance(new Translation2d(2, drive.getPose().getX()));
+        } else {
+            robotDistance = drive.getPose().getTranslation()
+                    .getDistance(AllianceFlipUtil.apply((FieldConstants.Hub.topCenterPoint.toTranslation2d())));
+            passingDistance = drive.getPose().getTranslation()
+                    .getDistance(AllianceFlipUtil.apply(new Translation2d(2, drive.getPose().getX())));
         }
-
 
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
         Logger.recordOutput("ShotEstimator/Velocity", getTargetVelocity().get());
     }
 
-     public static ShotEstimator getInstance(){
-         if(instance == null){
+    public static ShotEstimator getInstance() {
+        if (instance == null) {
             instance = new ShotEstimator();
-    }
-     return instance;
-     }
-
-    public Supplier<Double> getTargetVelocity(){
-         return () ->  targetVelocities.get(robotDistance);
-        // return () -> 10.07*robotDistance+18.98;
-    }
-    public Supplier<Double> getTargetVelocity(double distance){
-        return () ->  targetVelocities.get(distance);
-        // return () -> 10.07*robotDistance+18.98;
+        }
+        return instance;
     }
 
-    public Supplier<Double> getPassingVelocity(){
+    public Supplier<Double> getTargetVelocity() {
+        return () -> targetVelocities.get(robotDistance);
+    }
+
+    public Supplier<Double> getTargetVelocity(double distance) {
+        return () -> targetVelocities.get(distance);
+    }
+
+    public Supplier<Double> getPassingVelocity() {
         return () -> targetVelocities.get(passingDistance);
     }
-
 
 }
