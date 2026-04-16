@@ -113,6 +113,7 @@ public class RobotContainer {
                 Left("Left"), Center("Center"), Right("Right");
 
                 private String autoName;
+         
 
                 private AutoSide(String autoName) {
                         this.autoName = autoName;
