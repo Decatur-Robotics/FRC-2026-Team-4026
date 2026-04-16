@@ -130,8 +130,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     private static DriveTrainSimulationConfig mapleSimConfig = null;
 
     public static DriveTrainSimulationConfig getMapleSimConfig() {
-        if (mapleSimConfig != null)
+        if (mapleSimConfig != null){
             return mapleSimConfig;
+        }
 
         return mapleSimConfig = DriveTrainSimulationConfig.Default()
                 .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
