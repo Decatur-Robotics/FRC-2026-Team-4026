@@ -85,8 +85,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer, ColorVision.ColorVisionConsumer {
     // TunerConstants doesn't include these constants, so they are declared locally
-    static final double ODOMETRY_FREQUENCY =
-            new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
+    static final double ODOMETRY_FREQUENCY = new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD()
+            ? 250.0
+            : 100.0;
     public static final double DRIVE_BASE_RADIUS = Math.max(
             Math.max(
                     Math.hypot(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
@@ -129,7 +130,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     private static DriveTrainSimulationConfig mapleSimConfig = null;
 
     public static DriveTrainSimulationConfig getMapleSimConfig() {
-        if (mapleSimConfig != null) return mapleSimConfig;
+        if (mapleSimConfig != null)
+            return mapleSimConfig;
 
         return mapleSimConfig = DriveTrainSimulationConfig.Default()
                 .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
@@ -154,20 +156,20 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
     private final Module[] modules = new Module[4]; // FL, FR, BL, BR
     private final SysIdRoutine sysId;
-    private final Alert gyroDisconnectedAlert =
-            new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
+    private final Alert gyroDisconnectedAlert = new Alert("Disconnected gyro, using kinematics as fallback.",
+            AlertType.kError);
 
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
     private Rotation2d rawGyroRotation = new Rotation2d();
     private final SwerveModulePosition[] lastModulePositions = // For delta tracking
-            new SwerveModulePosition[]{
+            new SwerveModulePosition[] {
                     new SwerveModulePosition(),
                     new SwerveModulePosition(),
                     new SwerveModulePosition(),
                     new SwerveModulePosition()
             };
-    private final SwerveDrivePoseEstimator poseEstimator =
-            new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
+            lastModulePositions, new Pose2d());
     private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
     public Drive(
@@ -224,9 +226,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     @Override
     public void periodic() {
         if (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) {
-            robotAngle = Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(), (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+            robotAngle = Math.atan2(getPose().getY() - FieldConstants.Hub.topCenterPoint.getY(),
+                    (getPose().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
         } else {
-            robotAngle = Math.atan2(getPose().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
+            robotAngle = Math.atan2(
+                    getPose().getY()
+                            - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()),
+                    (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
         }
 
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
@@ -248,8 +254,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
         // Log empty setpoint states when disabled
         if (DriverStation.isDisabled()) {
-            Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[]{});
-            Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[]{});
+            Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
+            Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
         }
 
         // Update odometry
@@ -288,8 +294,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     private final SwerveRequest.ApplyRobotSpeeds driveRequest = new SwerveRequest.ApplyRobotSpeeds();
     SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(
             PP_CONFIG,
-            Units.rotationsToRadians(DriveConstants.MAX_ANGULAR_VELOCITY)
-    );
+            Units.rotationsToRadians(DriveConstants.MAX_ANGULAR_VELOCITY));
 
     /**
      * Runs the drive at the desired velocity.
@@ -332,7 +337,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
     /**
-     * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will return to their
+     * Stops the drive and turns the modules to an X arrangement to resist movement.
+     * The modules will return to their
      * normal orientations the next time a nonzero velocity is requested.
      */
     public void stopWithX() {
@@ -363,7 +369,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
     /**
-     * Returns the module states (turn angles and drive velocities) for all of the modules.
+     * Returns the module states (turn angles and drive velocities) for all of the
+     * modules.
      */
     @AutoLogOutput(key = "SwerveStates/Measured")
     private SwerveModuleState[] getModuleStates() {
@@ -375,7 +382,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
     /**
-     * Returns the module positions (turn angles and drive positions) for all of the modules.
+     * Returns the module positions (turn angles and drive positions) for all of the
+     * modules.
      */
     private SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] states = new SwerveModulePosition[4];
@@ -405,7 +413,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
     /**
-     * Returns the average velocity of the modules in rotations/sec (Phoenix native units).
+     * Returns the average velocity of the modules in rotations/sec (Phoenix native
+     * units).
      */
     public double getFFCharacterizationVelocity() {
         double output = 0.0;
@@ -479,23 +488,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
      * Returns an array of module translations.
      */
     public static Translation2d[] getModuleTranslations() {
-        return new Translation2d[]{
+        return new Translation2d[] {
                 new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
                 new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY),
                 new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
                 new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
         };
-    }
-
-    public void setRotationX() {
-        modules[0].setRotation(new Rotation2d(0.787));
-        modules[1].setRotation(new Rotation2d(2.355));
-        modules[2].setRotation(new Rotation2d(0.787));
-        modules[3].setRotation(new Rotation2d(2.355));
-    }
-
-    public Command setRotationXCommand() {
-        return Commands.runOnce(() -> setRotationX());
     }
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
@@ -508,26 +506,30 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     }
 
 
+
+    /**
+     * Uses PID controllers to drive the robot to a target position
+     * @param targetSpeeds The end speed of the robot
+     * @param targetPose The end target Position of the robot
+     */
     public void driveToPose(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
         this.targetPose = targetPose.get();
         double targetRotation = targetSpeeds.get().omegaRadiansPerSecond;
 
         if (targetSpeeds.get().omegaRadiansPerSecond == 0) {
-            targetRotation = rotationalController.calculate(getPose().getRotation().getRadians(), this.targetPose.getRotation().getRadians());
+            targetRotation = rotationalController.calculate(getPose().getRotation().getRadians(),
+                    this.targetPose.getRotation().getRadians());
         }
 
         boolean isNotDriving = targetSpeeds.get().vxMetersPerSecond == 0 && targetSpeeds.get().vyMetersPerSecond == 0;
         if (isNotDriving) {
-            double targetTranlslationX = translationalController.calculate(0, Math.abs(getPose().getX() - this.targetPose.getX()));
-            double targetTranlslationY = translationalController.calculate(0, Math.abs(getPose().getY() - this.targetPose.getY()));
-            double distance = translationalController.calculate(0, getPose().getTranslation().getDistance(targetPose.get().getTranslation()));
+            double targetTranlslationX = translationalController.calculate(0,
+                    Math.abs(getPose().getX() - this.targetPose.getX()));
+            double targetTranlslationY = translationalController.calculate(0,
+                    Math.abs(getPose().getY() - this.targetPose.getY()));
+            double distance = translationalController.calculate(0,
+                    getPose().getTranslation().getDistance(targetPose.get().getTranslation()));
             Translation2d targetTranlslation = new Translation2d(targetTranlslationX, targetTranlslationY);
-            // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : targetTranlslationX,
-            //      isAligned() ? 0 : targetTranlslationY,
-            //      isAligned() ? 0 : targetRotation);
-            // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
-            //      0,
-            //      isAligned() ? 0 : targetRotation);
 
             ChassisSpeeds speeds = new ChassisSpeeds(0,
                     0,
@@ -537,20 +539,24 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
             System.out.println("travelRotation:" + travelRotation);
             System.out.println("targetPose:" + targetPose);
             this.runVelocity(speeds);
-            // driveRobotRelative(speeds);
-
 
         } else {
-            ChassisSpeeds speeds = new ChassisSpeeds(targetSpeeds.get().vxMetersPerSecond, targetSpeeds.get().vyMetersPerSecond, targetRotation);
+            ChassisSpeeds speeds = new ChassisSpeeds(targetSpeeds.get().vxMetersPerSecond,
+                    targetSpeeds.get().vyMetersPerSecond, targetRotation);
             this.runVelocity(speeds);
-            // driveRobotRelative(speeds);
         }
     }
 
-    private ProfiledPIDController angleController = new ProfiledPIDController(5, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 4));
+    private ProfiledPIDController angleController = new ProfiledPIDController(5, 0.0, 0.0,
+            new TrapezoidProfile.Constraints(3, 4));
 
+            /**
+             * Drives the robot to a target rotation
+             * @param targetRotation the target end rotation the robot is trying to reach
+             */
     public void autoAlign(Supplier<Rotation2d> targetRotation) {
-        double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(), targetRotation.get().getRadians());
+        double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(),
+                targetRotation.get().getRadians());
         ChassisSpeeds speeds = new ChassisSpeeds(0, 0, rotationSpeed);
         runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
         Logger.recordOutput("Target Rotation", targetRotation.get());
@@ -560,6 +566,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
     }
 
+    /**
+     * rotates the robot to be facing the alliance hub
+     * @return the command to rotate the robot to the hub
+     */
     public Command autoAlignToHub() {
         return Commands.run(() -> autoAlign(() -> new Rotation2d(robotAngle)), this)
                 .beforeStarting(() -> {
@@ -567,6 +577,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
                 });
     }
 
+    /**
+     * Uses the drive to pose method to run a command to go to a target position
+     * @param targetSpeeds Target end speeds
+     * @param targetPose Target end Position
+     * @return the command to run the drivetrain to a target position
+     */
     public Command driveToPoseTeleop(Supplier<ChassisSpeeds> targetSpeeds, Supplier<Pose2d> targetPose) {
         return Commands.run(() -> driveToPose(targetSpeeds, targetPose), this).finallyDo(() -> this.targetPose = null);
     }
@@ -575,7 +591,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         if (targetPose == null) {
             return false;
         }
-        //I need to make these constants
+        // I need to make these constants
         double translationTolerance = 0.001;
         double rotationTolerance = 0.1;
         boolean atTranslation = Math.abs(translationalController.getError()) < translationTolerance;
@@ -583,17 +599,25 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         return atTranslation && atRotation;
     }
 
+    /**
+     * gets if the robot angle is within the deadband zone of 0.1 radians
+     * @return boolean if the robot angle is within the deaband zone
+     */
     public boolean isAligned() {
-
-        return (Math.abs(robotAngle - (getPose().getRotation().getRadians())) < 3);
+        return (Math.abs(robotAngle - (getPose().getRotation().getRadians())) < 0.1);
     }
 
+
+    /**
+     * Drives forward and rotates to fuel
+     * @return run velocity command
+     */
     public Command driveToFuel() {
         rotationalController.enableContinuousInput(Math.PI, -Math.PI);
         return Commands.run(() -> runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
                 2.0, 0.0, rotationalController.calculate(getRotation().getRadians(),
-                        getRotationChange().getRadians()), getRotation()
-        )), this);
+                        getRotationChange().getRadians()),
+                getRotation())), this);
     }
 
     PathConstraints constraints = new PathConstraints(
@@ -604,9 +628,14 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         return AutoBuilder.pathfindToPose(pose, constraints);
     }
 
+    /**
+     * Aligns to the hub using pathplanner
+     * @return
+     */
     public Command alignHubPathpl() {
         return driveToPosePathPl(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d(0)));
     }
+
 
     public DoubleSupplier getDistanceToHub(Pose2d pose) {
         return () -> pose.getTranslation().getDistance(FieldConstants.Hub.topCenterPoint.toTranslation2d());
@@ -615,49 +644,78 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
     public Supplier<Pose2d> getFuturePose() {
         ChassisSpeeds currentSpeeds = getChassisSpeeds();
-        ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(getPose()).getAsDouble()));
-        //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
-        //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
-        //travelled in a direction added to the ball from our velocity.
-        return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond, travelledDistance.vyMetersPerSecond))
-                , getPose().getRotation());
+        ChassisSpeeds travelledDistance = currentSpeeds
+                .times(flightTime.get(getDistanceToHub(getPose()).getAsDouble()));
+        // although we are getting meters per second of travelled distance, since we
+        // multiplied our current speed by the time
+        // the ball will be travelling, travelledDistance's vxMetersPerSecond field will
+        // really be the amount of distance
+        // travelled in a direction added to the ball from our velocity.
+        return () -> new Pose2d(
+                getPose().getTranslation().plus(
+                        new Translation2d(travelledDistance.vxMetersPerSecond, travelledDistance.vyMetersPerSecond)),
+                getPose().getRotation());
 
     }
 
     public Supplier<Pose2d> getFuturePose(Supplier<Pose2d> pose) {
         ChassisSpeeds currentSpeeds = getChassisSpeeds();
-        ChassisSpeeds travelledDistance = currentSpeeds.times(flightTime.get(getDistanceToHub(pose.get()).getAsDouble()));
-        //although we are getting meters per second of travelled distance, since we multiplied our current speed by the time
-        //the ball will be travelling, travelledDistance's vxMetersPerSecond field will really be the amount of distance
-        //travelled in a direction added to the ball from our velocity.
-        return () -> new Pose2d(getPose().getTranslation().plus(new Translation2d(travelledDistance.vxMetersPerSecond, travelledDistance.vyMetersPerSecond))
-                , getPose().getRotation());
+        ChassisSpeeds travelledDistance = currentSpeeds
+                .times(flightTime.get(getDistanceToHub(pose.get()).getAsDouble()));
+        // although we are getting meters per second of travelled distance, since we
+        // multiplied our current speed by the time
+        // the ball will be travelling, travelledDistance's vxMetersPerSecond field will
+        // really be the amount of distance
+        // travelled in a direction added to the ball from our velocity.
+        return () -> new Pose2d(
+                getPose().getTranslation().plus(
+                        new Translation2d(travelledDistance.vxMetersPerSecond, travelledDistance.vyMetersPerSecond)),
+                getPose().getRotation());
 
     }
 
+    /**
+     * Returns the position that auto alignment need to estimate at
+     * @return the future pose for estimation
+     */
     public Supplier<Pose2d> convergentFlightTime() {
-
         return getFuturePose(getFuturePose(getFuturePose(getFuturePose())));
     }
-//Since the ball will travel longer in the air or shorter in the air based on y velocity, we may need to recalculate x and y
-//velocities independently of each other.
 
+    // Since the ball will travel longer in the air or shorter in the air based on y
+    // velocity, we may need to recalculate x and y
+    // velocities independently of each other.
+
+    /**
+     * calculates autoAlignment based off of projected future pose
+     * @return the supplied speed for rotational auto alignment
+     */
     public DoubleSupplier autoAlignOnTheMove() {
         shootOnMoveController.enableContinuousInput(-Math.PI, Math.PI);
-
 
         futurePose = convergentFlightTime();
         double wantedAngle;
         if (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) {
-            wantedAngle = Math.atan2(futurePose.get().getY() - FieldConstants.Hub.topCenterPoint.getY(), (futurePose.get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
+            wantedAngle = Math.atan2(futurePose.get().getY() - FieldConstants.Hub.topCenterPoint.getY(),
+                    (futurePose.get().getX() - FieldConstants.Hub.topCenterPoint.getX())) + Math.PI;
         } else {
-            wantedAngle = Math.atan2(futurePose.get().getY() - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()), (futurePose
-                    .get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
+            wantedAngle = Math.atan2(
+                    futurePose.get().getY()
+                            - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()),
+                    (futurePose
+                            .get().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX())))
+                    + Math.PI;
         }
-        double rotationSpeed = shootOnMoveController.calculate(getPose().getRotation().getRadians(), new Rotation2d(wantedAngle).getRadians());
+        double rotationSpeed = shootOnMoveController.calculate(getPose().getRotation().getRadians(),
+                new Rotation2d(wantedAngle).getRadians());
         return () -> rotationSpeed;
     }
 
+    /**
+     * Resets the error on the shootOnMoveController
+     * 
+     * @return command to reset shootOnMoveController
+     */
     public Command resetController() {
         isAligningOnMove = true;
         return Commands.runOnce(() -> shootOnMoveController.reset());
@@ -668,11 +726,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         return Commands.waitSeconds(0);
     }
 
+    /**
+     * Gets if the robot is currently aligning on the move
+     * 
+     * @return if the robot is aligning and moving
+     */
     public boolean getShootOnMoveBoolean() {
         return isAligningOnMove;
     }
-
-// public Rotation2d getTargetRotation(){
-//        return new Rotation2d(robotAngle);
-// }
 }
