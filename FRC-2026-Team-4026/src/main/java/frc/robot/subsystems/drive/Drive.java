@@ -99,10 +99,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     private Pose2d targetPose;
     private SwerveSetpoint previousSetpoint;
     private PIDController translationalController = new PIDController(
-            0.01, 0, 0);
+            100.0, 0, 0);
     // 5.25, 0, 0.3);
     private PIDController rotationalController = new PIDController(
-            0.01, 0, 0);
+            0.0, 0, 0);
     private PIDController shootOnMoveController = new PIDController(10,
             0, 0);
     private InterpolatingDoubleTreeMap flightTime;
@@ -525,13 +525,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
             // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : targetTranlslationX,
             //      isAligned() ? 0 : targetTranlslationY,
             //      isAligned() ? 0 : targetRotation);
-            // ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
-            //      0,
-            //      isAligned() ? 0 : targetRotation);
+            ChassisSpeeds speeds = new ChassisSpeeds(isAligned() ? 0 : distance,
+                 0,
+                 isAligned() ? 0 : targetRotation);
 
-            ChassisSpeeds speeds = new ChassisSpeeds(0,
-                    0,
-                    isAligned() ? 0 : targetRotation * 0.25);
+            // ChassisSpeeds speeds = new ChassisSpeeds(0,
+            //         0,
+            //         isAligned() ? 0 : targetRotation * 0.25);
 
             Rotation2d travelRotation = this.targetPose.getTranslation().minus(getPose().getTranslation()).getAngle();
             System.out.println("travelRotation:" + travelRotation);
@@ -585,7 +585,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
     public boolean isAligned() {
 
-        return (Math.abs(robotAngle - (getPose().getRotation().getRadians())) < 3);
+        return (Math.abs(robotAngle - (getPose().getRotation().getRadians())) < 0.05);
     }
 
     public Command driveToFuel() {

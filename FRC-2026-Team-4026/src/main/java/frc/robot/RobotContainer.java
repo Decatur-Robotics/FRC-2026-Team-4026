@@ -38,6 +38,7 @@ import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVision;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionConstants;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhotonVision;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.Map;
@@ -48,6 +49,8 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -96,6 +99,7 @@ public class RobotContainer {
     private Indexer indexer;
     private Intake intake;
     private Shooter shooter;
+    private Orchestra orchestra;
 
     private enum AutoType {
         CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"),
@@ -165,6 +169,26 @@ public class RobotContainer {
                     new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_LEFT_NAME, VisionConstants.ROBOT_TO_CAMERA_FRONT_LEFT),
                     new VisionIOPhotonVision(VisionConstants.CAMERA_FRONT_RIGHT_NAME,
                             VisionConstants.ROBOT_TO_CAMERA_FRONT_RIGHT));
+
+                        orchestra = new Orchestra("dalton.chrp");
+                        orchestra.addInstrument(new TalonFX(7), 0);
+                        orchestra.addInstrument(new TalonFX(5), 0);
+                        orchestra.addInstrument(new TalonFX(10), 0);
+                        orchestra.addInstrument(new TalonFX(8), 0);
+                        orchestra.addInstrument(new TalonFX(14), 1);
+                        orchestra.addInstrument(new TalonFX(12), 1);
+                        orchestra.addInstrument(new TalonFX(1), 1);
+                        orchestra.addInstrument(new TalonFX(3), 1);
+                        orchestra.addInstrument(new TalonFX(21), 3);
+                        orchestra.addInstrument(new TalonFX(15), 3);
+                        orchestra.addInstrument(new TalonFX(14), 3);
+                        orchestra.addInstrument(new TalonFX(20), 3);
+                        orchestra.addInstrument(new TalonFX(16), 4);
+                        orchestra.addInstrument(new TalonFX(22),4);
+                        orchestra.addInstrument(new TalonFX(23), 4);
+                        orchestra.addInstrument(new TalonFX(17), 4);
+
+
             colorVision = new ColorVision(drive, new ColorVisionIOPhotonVision(ColorVisionConstants.FIELD_CAMERA_NAME,
                     ColorVisionConstants.FIELD_CAMERA_TO_ROBOT));
             superstructure = new Superstructure(intake, indexer, shooter, leds);
@@ -283,7 +307,8 @@ public class RobotContainer {
         bumperRight.whileTrue(superstructure.alignCommand(drive));
         bumperLeft.whileTrue(drive.alignHubPathpl());
         x.whileTrue(drive.stopWithXCommand());
-        b.whileTrue(pathfinderToPose(new Pose2d(15, 7.3, new Rotation2d())));
+        y.onTrue(Commands.run(() -> orchestra.play()));
+        // b.whileTrue(drive.driveToPoseTeleop(, null));
         triggerLeft.whileTrue(DriveCommands.joystickDrive(
                 drive,
                 () -> -joystick.getY() * 0.6,
@@ -291,7 +316,7 @@ public class RobotContainer {
                 () -> -joystick.getTwist() * 0.6,
                 () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove()).getAsBoolean()));
         // b.whileTrue(drive.driveToPoseTeleop(() -> drive.getChassisSpeeds(), () -> new
-        // Pose2d( 2.5, 6, new Rotation2d(0,0))));
+        // Pose2d( 2.5, 6, new Rotation2d(0.6))));
     }
 
     public void configureSecondaryBindings() {
@@ -413,6 +438,10 @@ public class RobotContainer {
 
         Command pathfinderCommand = AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
         return pathfinderCommand;
+    }
+
+    public void isPlaying(){
+        Logger.recordOutput("Is Playing", orchestra.isPlaying());
     }
 
     public void resetSimulationField() {
