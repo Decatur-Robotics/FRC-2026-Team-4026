@@ -38,6 +38,9 @@ import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVision;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionConstants;
 import frc.robot.subsystems.vision.ColorVision.HopperVision.HopperVisionIOPhotonVision;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.Map;
@@ -46,6 +49,8 @@ import frc.robot.util.LoggedTunableNumber;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
+import org.ironmaple.utils.FieldMirroringUtils;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -56,8 +61,11 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
@@ -216,8 +224,8 @@ public class RobotContainer {
                         autonomous = new Autonomous(superstructure, drive);
                 }
 
-                NamedCommands.registerCommand("Shoot",
-                                superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
+                // NamedCommands.registerCommand("Shoot",
+                //                 superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
                 // makes a widget type object for networktables
                 autoSide = new SendableChooser<>();
                 autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
@@ -292,13 +300,14 @@ public class RobotContainer {
                 bumperLeft.whileTrue(drive.alignHubPathpl());
                 x.whileTrue(drive.stopWithXCommand());
                 b.whileTrue(pathfinderToPose(new Pose2d(15, 7.3, new Rotation2d())));
-                triggerLeft.whileTrue(DriveCommands.joystickDrive(
-                                drive,
-                                () -> -joystick.getY() * 0.6,
-                                () -> -joystick.getX() * 0.6,
-                                () -> -joystick.getTwist() * 0.6,
-                                () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove())
-                                                .getAsBoolean()));
+                // triggerLeft.whileTrue(DriveCommands.joystickDrive(
+                //                 drive,
+                //                 () -> -joystick.getY() * 0.6,
+                //                 () -> -joystick.getX() * 0.6,
+                //                 () -> -joystick.getTwist() * 0.6,
+                //                 () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove())
+                //                                 .getAsBoolean()));
+                triggerRight.whileTrue(Commands.parallel(shooter.shootAimCommand(), shootFuelCommand()));
 
         }
 
@@ -432,6 +441,47 @@ public class RobotContainer {
                 driveSimulation.setSimulationWorldPose(new Pose2d(3.55, 6, new Rotation2d()));
                 SimulatedArena.getInstance().resetFieldForAuto();
         }
+            
+        
+                public void shootFuel(){
+
+        RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
+            drive.getPose().getTranslation(),
+            new Translation2d(0.2,0),
+            driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
+            drive.getRotation(),
+            Meters.of(0.2),
+            MetersPerSecond.of(shooter.getVelocity()/5),
+            Radians.of(Math.toRadians(60))
+        );
+
+        fuelOnFly
+        // Set the target center to the Rebbuilt Hub of the current alliance
+        .withTargetPosition(() -> FieldMirroringUtils.toCurrentAllianceTranslation(new Translation3d(0.25, 5.56, 2.3)))
+        // Set the tolerance: x: ±0.5m, y: ±1.2m, z: ±0.3m (this is the size of the speaker's "mouth")
+        .withTargetTolerance(new Translation3d(0.5, 1.2, 0.3))
+        // Set a callback to run when the fuel hits the target
+        .withHitTargetCallBack(() -> System.out.println("Hit hub, +1 point!"));
+
+        fuelOnFly
+        // Configure callbacks to visualize the flight trajectory of the projectile
+        .withProjectileTrajectoryDisplayCallBack(
+        // Callback for when the fuel will eventually hit the target (if configured)
+        (pose3ds) -> Logger.recordOutput("Flywheel/FuelProjectileSuccessfulShot", pose3ds.toArray(Pose3d[]::new)),
+        // Callback for when the fuel will eventually miss the target, or if no target is configured
+        (pose3ds) -> Logger.recordOutput("Flywheel/FuelProjectileUnsuccessfulShot", pose3ds.toArray(Pose3d[]::new))
+        );
+
+
+
+        fuelOnFly.enableBecomesGamePieceOnFieldAfterTouchGround();
+
+        SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
+}
+
+ public Command shootFuelCommand(){
+        return Commands.runOnce(()->shootFuel());
+ }
 
         public void updateSimulation() {
                 if (Constants.currentMode != Constants.Mode.SIM)

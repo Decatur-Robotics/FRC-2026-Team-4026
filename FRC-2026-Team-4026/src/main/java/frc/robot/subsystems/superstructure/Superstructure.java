@@ -2,6 +2,10 @@ package frc.robot.subsystems.superstructure;
 
 import java.util.function.Supplier;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
+
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -220,6 +224,8 @@ public class Superstructure extends SubsystemBase {
     public Command noTestShootCommand() {
         return Commands.parallel(indexer.setVoltageCommand(0), shooter.setVoltageCommand(0));
     }
+
+
 
     /**
      * sets the intake position to its inner position

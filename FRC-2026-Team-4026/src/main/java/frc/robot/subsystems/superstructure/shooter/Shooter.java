@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure.shooter;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 import static edu.wpi.first.units.Units.*;
 
@@ -10,6 +11,7 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -112,6 +114,7 @@ public class Shooter extends SubsystemBase {
     public int getNumBallsShot() {
         return ballsShot;
     }
+    
 
     public Command setVelocityWithSlider() {
         return Commands.runOnce(() -> io.setVelocity(sliderVelocity));

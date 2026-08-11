@@ -181,6 +181,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
             ModuleIO brModuleIO,
             Consumer<Pose2d> resetSimulationPoseCallBack) {
 
+
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         flightTime = new InterpolatingDoubleTreeMap();
@@ -235,6 +236,15 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
                             - AllianceFlipUtil.applyY(FieldConstants.Hub.topCenterPoint.toTranslation2d().getY()),
                     (getPose().getX() - AllianceFlipUtil.applyX(FieldConstants.Hub.topCenterPoint.getX()))) + Math.PI;
         }
+
+         SwerveModuleState[] states = new SwerveModuleState[] {
+  new SwerveModuleState(),
+  new SwerveModuleState(),
+  new SwerveModuleState(),
+  new SwerveModuleState()
+};
+
+        Logger.recordOutput("MyStates", states);
 
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
         Logger.recordOutput("RobotAngle", robotAngle);
