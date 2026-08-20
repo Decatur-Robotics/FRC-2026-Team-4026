@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ColorVisionIO{
     @AutoLog
     public class ColorVisionIOInputs {
-        ColorVisionIOData colorVisionData = new ColorVisionIOData(true,0);
+        ColorVisionIOData colorVisionData = new ColorVisionIOData(false,0);
     }
     public record ColorVisionIOData(
         boolean cameraConnected,

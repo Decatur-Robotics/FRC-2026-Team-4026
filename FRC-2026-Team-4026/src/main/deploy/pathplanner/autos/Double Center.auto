@@ -19,19 +19,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Rush Shoot"
+            "pathName": "Center rush shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2nd center rush"
+            "pathName": "2 center rush"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2nd Center rush shoot"
+            "pathName": "Center Rush Intake 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush 2 Shoot"
           }
         }
       ]

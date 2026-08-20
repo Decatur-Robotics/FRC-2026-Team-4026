@@ -10,6 +10,7 @@ public class Indexer extends SubsystemBase{
     private IndexerIO io;
     private boolean isEStopped = false;
     private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
+    private double desiredVoltage = 10.0;
 
     public Indexer(IndexerIO io) {
         this.io = io;
@@ -18,9 +19,6 @@ public class Indexer extends SubsystemBase{
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Indexer", inputs);
-        Logger.recordOutput("Mecanum current and Voltage:", getMecanumCurrent()+", "+getMecanumVoltage());
-        Logger.recordOutput("Belt Current and Voltage:", getBeltCurrent()+", "+getBeltVoltage());
-        Logger.recordOutput("Kick Current and Voltage:", getKickCurrent()+", "+getKickVoltage());
         if (isEStopped){
             io.stop();
         }

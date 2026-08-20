@@ -21,7 +21,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Leds extends SubsystemBase {
-    
+    // rename to Leds.java
+
     // an led strip
     private AddressableLED led;
     // how many leds on the strip
@@ -31,19 +32,17 @@ public class Leds extends SubsystemBase {
 
 
     private final LEDPattern rainbow = LEDPattern.rainbow(255, 128);
+
     private static final Distance spacing = Meters.of(1 / 120.0);
     private final LEDPattern scrollingRainbow =
         rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(1), spacing);
 
-
-
     private Supplier<Double> loadingBar = ()->5.0;
     LEDPattern loadingBarPattern = LEDPattern.progressMaskLayer(()->loadingBar.get()/ length);
 
-
-
-
+    LEDPattern shooterwindUPattern = rainbow.mask(LEDPattern.progressMaskLayer(()->loadingBar.get()/ length));
     
+
 
 
     Map<Double, Color> maskSteps = Map.of(0.0,Color.kWhite,0.125,Color.kBlack,0.25,Color.kWhite,0.375,Color.kBlack,0.5,Color.kWhite,0.625,Color.kBlack,0.75,Color.kWhite,0.875,Color.kBlack);
@@ -69,7 +68,6 @@ public class Leds extends SubsystemBase {
 
     public void updateData(){
         led.setData(buffer);
-
     }
 
     @Override
@@ -93,6 +91,11 @@ public class Leds extends SubsystemBase {
     }
 
 
+    public Command shooterWindUpCommand(double currentVelocity, double targetVelocity){
+        shooterwindUPattern = rainbow.mask(LEDPattern.progressMaskLayer(()->currentVelocity/targetVelocity));
+        return run(()-> shooterwindUPattern.applyTo(buffer));
+    }
+
  
 
     public Command pulsingCommand(){
@@ -109,11 +112,11 @@ public class Leds extends SubsystemBase {
     }
 
     public Command correctCommand(){
-       return run(()->LEDPattern.solid(Color.kGreen).breathe(Seconds.of(0.25)).applyTo(buffer));
+       return runOnce(()->LEDPattern.solid(Color.kGreen).breathe(Seconds.of(0.25)).applyTo(buffer));
     }
 
     public Command aligningCommand(){
-        return run(()->LEDPattern.solid(Color.kRed).breathe(Seconds.of(1)).applyTo(buffer));
+        return runOnce(()->LEDPattern.solid(Color.kRed).breathe(Seconds.of(1)).applyTo(buffer));
     }
 
     public void changeShiftCommand(){

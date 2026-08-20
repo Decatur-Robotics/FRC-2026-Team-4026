@@ -4,6 +4,7 @@ import frc.robot.subsystems.superstructure.intake.IntakeConstants;
 import frc.robot.util.SuperstructureState;
 
 public class SuperstructureConstants {
+    public static final double SHOOTING_TRENCH = 40.0;
     public static final double HOOD_DEADBAND = 0.0;
     //velocity brownout limit needs to be increased
     public static final double VELOCITY_BROWNOUT_LIMIT = 0.0;
@@ -17,11 +18,11 @@ public class SuperstructureConstants {
 
     public static final SuperstructureState INTAKE_STATE = new SuperstructureState(
         IntakeConstants.DEPLOY_INTAKE_POSITION,    // intakeDeployed
-        -8.0    // intakeVoltage
+        -10.0    // intakeVoltage
     );
 
     public static final SuperstructureState STORING_STATE = new SuperstructureState(
-        IntakeConstants.DEPLOY_INTAKE_POSITION,  // intakeDeployed
+        IntakeConstants.NORMAL_INTAKE_POSITION,  // intakeDeployed
         0.0   // intakeVoltage
     );
 

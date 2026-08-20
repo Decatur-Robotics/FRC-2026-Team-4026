@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center rush shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2 center rush"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Intake 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush 2 Shot Depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Depot Intake"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

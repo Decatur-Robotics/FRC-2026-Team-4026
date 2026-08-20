@@ -26,9 +26,9 @@ public interface IndexerIO {
     }
 
     public record IndexerIOData(
-        Boolean mechanumMotorConnected,
-        Boolean beltMotorConnected,
-        Boolean kickMotorConnected,
+        boolean mechanumMotorConnected,
+        boolean beltMotorConnected,
+        boolean kickMotorConnected,
         double mecanumVoltage,
         double beltVoltage,
         double kickVoltage,

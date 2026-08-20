@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure.intake;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
@@ -42,11 +43,6 @@ public class Intake extends SubsystemBase{
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Intake", inputs);
-        Logger.recordOutput("Deploy Position", getDeployPosition());
-        Logger.recordOutput("Deploy Voltage", getDeployVoltage());
-        Logger.recordOutput("Intake Voltage", getIntakeVoltage());
-        Logger.recordOutput("Deploy Current", getDeployCurrent());
-        Logger.recordOutput("Intake Current", getIntakeCurrent());
 
         if(getIntakeCurrent() > 50){
             if(intakingBalls == false){
@@ -111,7 +107,6 @@ public class Intake extends SubsystemBase{
     public Command runIntakeCommand(double voltage){
 
         return Commands.startEnd(()-> io.setIntakeVoltage(voltage), () -> io.stopIntake());
-        
     }
     public Command zeroCommand(double position){
 
@@ -119,7 +114,7 @@ public class Intake extends SubsystemBase{
 
     }
 
-    public void oscillatingIntake(){
+   public void oscillatingIntake(){
         if (osillatingIntakeGoingUp){
             io.setDeployPosition(IntakeConstants.HALFWAY_INTAKE_POSITION);
             if(getDeployPosition() < IntakeConstants.HALFWAY_INTAKE_POSITION + 1){
@@ -133,6 +128,7 @@ public class Intake extends SubsystemBase{
                 osillatingIntakeGoingUp = true;
             }
         }
+        io.setIntakeVoltage(-0.5);
     }
 
     public Command oscillateIntakeCommand(){
@@ -147,6 +143,12 @@ public class Intake extends SubsystemBase{
 
     public int getNumBallsIntaked(){
         return ballsIntaked;
+    }
+    public Command setSlowPositionCommand(){
+        return Commands.runOnce(() -> io.setSlowPosition());
+    }
+    public Command updatePosition(){
+        return Commands.runOnce(() -> io.updatePosition());
     }
 }
 

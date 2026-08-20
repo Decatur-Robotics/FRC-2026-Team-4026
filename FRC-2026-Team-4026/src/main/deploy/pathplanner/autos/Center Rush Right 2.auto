@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Right 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush 2 1002"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Rush Right 2 Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
