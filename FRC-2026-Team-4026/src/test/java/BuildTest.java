@@ -7,34 +7,32 @@ import frc.robot.subsystems.superstructure.indexer.IndexerIO;
 import frc.robot.subsystems.superstructure.indexer.IndexerIOSim;
 
 class BuildTest {
-    @Test
-    void buildTest() {
-        // This test will fail if the code does not compile
-    }
-    
+    IndexerIO indexerIO;
+    Indexer indexer;
+    RobotContainer container;
     @Test
     void testIndexerIOInstantiation() {
         assertDoesNotThrow(() -> {
-            IndexerIO indexerIO = new IndexerIOSim();
-            assertNotNull(indexerIO);
+            indexerIO = new IndexerIOSim();
         });
+        assertNotNull(indexerIO);
     }
     
+
     @Test
     void testIndexerInstantiation() {
         assertDoesNotThrow(() -> {
-            IndexerIO indexerIO = new IndexerIOSim();
-            Indexer indexer = new Indexer(indexerIO);
-            assertNotNull(indexer);
+            indexer = new Indexer(indexerIO);
         });
+        assertNotNull(indexer);
     }
     
     @Test
     void testRobotContainerInstantiation() {
         // Test that RobotContainer can be instantiated (main entry point)
         assertDoesNotThrow(() -> {
-            RobotContainer container = new RobotContainer();
-            assertNotNull(container);
+            container = new RobotContainer();
         });
+        assertNotNull(container);
     }
 }
