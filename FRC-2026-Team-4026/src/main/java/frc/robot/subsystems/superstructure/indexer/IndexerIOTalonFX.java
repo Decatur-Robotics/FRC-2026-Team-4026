@@ -15,7 +15,8 @@ import frc.robot.util.PhoenixUtil;
 public class IndexerIOTalonFX implements IndexerIO{
     private TalonFX mecanumMotor, beltMotor, kickMotor;
 
-    
+    private Indexer indexer;
+
     private TalonFXConfiguration config = new TalonFXConfiguration()
     .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(IndexerConstants.INDEXER_CURRENT_LIMIT));
 
@@ -23,7 +24,9 @@ public class IndexerIOTalonFX implements IndexerIO{
 
     private VoltageOut voltageRequest;
 
-    public IndexerIOTalonFX(){
+    public IndexerIOTalonFX(Indexer indexer){
+
+        this.indexer = indexer;
 
         mecanumMotor = new TalonFX(Ports.INDEXER_MOTOR_MECANUM);
          beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
@@ -72,7 +75,11 @@ public class IndexerIOTalonFX implements IndexerIO{
             kickMotor.optimizeBusUtilization(40);
             mecanumMotor.getPosition().setUpdateFrequency(40);
         }
-        
+        if(indexer.getMecanumCurrent() > IndexerConstants.INDEXER_CURRENT_LIMIT && indexer.getMecanumVelocity() == 0){
+            setVoltage(-6);
+            Timer.delay(0.7);
+            setVoltage(6);
+        }
     }
 
     @Override
@@ -116,5 +123,7 @@ public class IndexerIOTalonFX implements IndexerIO{
         beltMotor.stopMotor();
         kickMotor.stopMotor();
     }
+
+
 
 }

@@ -51,8 +51,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
     .withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT));
 
-    
-    
+    private Indexer indexer;
 
     public IntakeIOTalonFX(){
     var TalonFXConfigs = new TalonFXConfiguration();
