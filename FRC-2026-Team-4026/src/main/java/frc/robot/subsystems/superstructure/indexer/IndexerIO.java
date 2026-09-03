@@ -50,5 +50,5 @@ public interface IndexerIO {
     default void periodic(){}
 
     default void stop(){}
-    
+
 }        
