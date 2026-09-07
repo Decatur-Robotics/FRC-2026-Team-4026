@@ -307,7 +307,7 @@ public class RobotContainer {
                 //                 () -> -joystick.getTwist() * 0.6,
                 //                 () -> triggerRight.onTrue(drive.resetController()).onFalse(drive.resetShootOnMove())
                 //                                 .getAsBoolean()));
-                triggerRight.whileTrue(Commands.parallel(shooter.shootAimCommand(), shootFuelCommand()));
+                triggerRight.whileTrue(Commands.parallel(superstructure.shootCommand(), shootFuelCommand()));
 
         }
 
@@ -452,7 +452,7 @@ public class RobotContainer {
             drive.getRotation(),
             Meters.of(0.2),
             MetersPerSecond.of(shooter.getVelocity()/5),
-            Radians.of(Math.toRadians(60))
+            Radians.of(Math.toRadians(70))
         );
 
         fuelOnFly
