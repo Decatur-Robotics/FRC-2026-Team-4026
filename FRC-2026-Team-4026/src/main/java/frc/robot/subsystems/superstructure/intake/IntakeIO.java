@@ -40,7 +40,7 @@ public interface IntakeIO {
 
     default void periodic(){}
 
-    default void setAltDeployPosition(double position){}
+    default void setAltDeployPosition(double position, double velocity){}
 
     default void setDeployVoltage(double voltage){}
 
@@ -49,5 +49,7 @@ public interface IntakeIO {
     default void setSlowPosition(){}
     
     default void updatePosition(){}
+
+    default void setIntakeVelocity(double velocity){}
     
 }

@@ -10,6 +10,8 @@ public class IntakeConstants {
     public static final double DEPLOY_INTAKE_POSITION = 15.3;
     public static final double NORMAL_INTAKE_POSITION = 14;
 
+    public static final double DEPLOY_INTAKE_VELOCITY = 3;
+
     public static final double OSCILLATING_TIMER = 0.5;
 
     public static final double kP = 0.08;
@@ -28,7 +30,7 @@ public class IntakeConstants {
     .withKV(kV)
     .withKA(kA);
 
-    public static final double INTAKE_VOLTAGE = -8;  
+    public static final double INTAKE_VOLTAGE = -12;  
     
     public static final double DEPLOY_MOI = .5;
 

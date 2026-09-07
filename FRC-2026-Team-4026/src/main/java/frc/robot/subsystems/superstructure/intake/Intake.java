@@ -3,9 +3,7 @@ package frc.robot.subsystems.superstructure.intake;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -65,22 +63,21 @@ public class Intake extends SubsystemBase{
     }
 
     public double getDeployPosition(){
-
         return inputs.intakeData.deployPosition();
     }
 
     public double getDeployVoltage(){
-
         return inputs.intakeData.deployVoltage();
     }
+
     public double getIntakeVoltage(){
         return inputs.intakeData.intakeVoltage();
     }
+
     public double getDeployCurrent(){
-
         return inputs.intakeData.deployCurrent();
-
     }
+
     public double getIntakeCurrent(){
         return inputs.intakeData.intakeCurrent();
     }
@@ -101,17 +98,16 @@ public class Intake extends SubsystemBase{
         return Commands.runOnce(() -> io.setDeployPosition(position));
     }
 
-    public Command altDeployIntakeCommand(double position){
-        return Commands.runOnce(() -> io.setAltDeployPosition(position));
+    public Command altDeployIntakeCommand(double position, double velocity){
+        return Commands.runOnce(() -> io.setAltDeployPosition(position, velocity));
     }
-    public Command runIntakeCommand(double voltage){
 
+    public Command runIntakeCommand(double voltage){
         return Commands.startEnd(()-> io.setIntakeVoltage(voltage), () -> io.stopIntake());
     }
+
     public Command zeroCommand(double position){
-
         return Commands.runOnce(() -> {io.setIntakeVoltage(0); io.setDeployPosition(position);});
-
     }
 
    public void oscillatingIntake(){
@@ -134,9 +130,11 @@ public class Intake extends SubsystemBase{
     public Command oscillateIntakeCommand(){
         return Commands.run(() -> oscillatingIntake());
     }
+
     public Command sysIdQuasistatic (SysIdRoutine.Direction direction) {
         return sysIdRoutine.quasistatic(direction);
     }
+
     public Command sysIdDynamic (SysIdRoutine.Direction direction) {
         return sysIdRoutine.dynamic(direction);
     }
@@ -144,9 +142,15 @@ public class Intake extends SubsystemBase{
     public int getNumBallsIntaked(){
         return ballsIntaked;
     }
-    public Command setSlowPositionCommand(){
-        return Commands.runOnce(() -> io.setSlowPosition());
+
+    public Command setSlowPositionCommand(double position){
+        return Commands.runOnce(() -> io.setAltDeployPosition(position, IntakeConstants.DEPLOY_INTAKE_VELOCITY));
     }
+
+    public Command setSlowPositionCommand(){
+        return Commands.runOnce(() -> io.setAltDeployPosition(IntakeConstants.STORED_INTAKE_POSITION, IntakeConstants.DEPLOY_INTAKE_VELOCITY));
+    }
+
     public Command updatePosition(){
         return Commands.runOnce(() -> io.updatePosition());
     }

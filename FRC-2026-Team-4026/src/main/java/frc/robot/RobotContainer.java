@@ -216,8 +216,8 @@ public class RobotContainer {
                         autonomous = new Autonomous(superstructure, drive);
                 }
 
-                NamedCommands.registerCommand("Shoot",
-                                superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
+                // NamedCommands.registerCommand("Shoot",
+                //                 superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
                 // makes a widget type object for networktables
                 autoSide = new SendableChooser<>();
                 autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
@@ -340,13 +340,15 @@ public class RobotContainer {
                 triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand())
                                 .onFalse(superstructure.storeCommand());
                 triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
+
                 a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
                 y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
                 b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
                 x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
+
                 right.whileTrue(intake.oscillateIntakeCommand());
                 up.whileTrue(indexer.setVoltageCommand(-10)).onFalse(indexer.setVoltageCommand(0));
-                down.whileTrue(intake.setSlowPositionCommand());
+                down.whileTrue(intake.setSlowPositionCommand(IntakeConstants.STORED_INTAKE_POSITION));
 
                 bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
                 bumperLeft.and(a).whileTrue(superstructure.passIntakeCommand());
