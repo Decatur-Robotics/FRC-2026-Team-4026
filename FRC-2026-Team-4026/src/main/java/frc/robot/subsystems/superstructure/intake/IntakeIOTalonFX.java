@@ -16,19 +16,22 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 public class IntakeIOTalonFX implements IntakeIO{
 
-    public TalonFX intakeMotor, deployMotor,deployFollowMotor;
+    private TalonFX intakeMotor, deployMotor,deployFollowMotor;
 
     private PositionDutyCycle positionRequest;
     private DynamicMotionMagicExpoVoltage alternatePositionRequest;
     private VelocityVoltage velocityRequest;
-    
+
     private VoltageOut voltageRequest;
+
+    private TrapezoidProfile trapezoidProfile;
 
     private CANcoder encoder;
 
@@ -52,6 +55,8 @@ public class IntakeIOTalonFX implements IntakeIO{
         final MotionMagicConfigs motionMagicConfigs = talonFXConfigs.MotionMagic;
         motionMagicConfigs.MotionMagicCruiseVelocity = 5;
         motionMagicConfigs.MotionMagicAcceleration = 10;
+
+        trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(3, 10));
 
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
         deployMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
