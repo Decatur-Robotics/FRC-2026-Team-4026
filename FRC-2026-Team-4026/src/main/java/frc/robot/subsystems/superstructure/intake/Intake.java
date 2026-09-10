@@ -3,10 +3,10 @@ package frc.robot.subsystems.superstructure.intake;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,14 +14,30 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.function.Consumer;
+
 
 
 public class Intake extends SubsystemBase{
 
     private IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> SignalLogger.writeString("state", state.toString())),
-    new SysIdRoutine.Mechanism((volts) -> io.setDeployVoltage(volts.in(Volts)),null, this));
+    private SysIdRoutineLog intakeSysIdLog = new SysIdRoutineLog("Intake SysId Log");
+    //The consumer should be used to modify log file with whatever information needs recording. Basically
+    //The sysId routine does not know what information to log, you need to tell it what information to log
+    //using the consumer.
+    //This can be inline like the voltage consumer but this is soooo messy. 
+    //We should stop doing so much inline stuff.
+    
+    private Consumer<SysIdRoutineLog> intakeSysIdLogConsumer = log -> log.motor("Intake Motor")
+    .voltage(Volts.of(inputs.intakeData.intakeVoltage()));
+    //In all likelyhood the consumer above will probably have a unit mismatch? So might the consumer below
+    //It's asking for voltage units and we're doing some dark magic to convert doubles.
+    //Lets just log with the unit system in the future.
+    //Also, we aren't logging the intake position?? Someone add immediately.
+    //Also, the consumer above is easily modifiable to log more info. :happy:
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> intakeSysIdLog.recordState(state)),
+    new SysIdRoutine.Mechanism((volts) -> io.setDeployVoltage(volts.in(Volts)),intakeSysIdLogConsumer, this));
         private boolean osillatingIntakeGoingUp;
 
     private int ballsIntaked;
