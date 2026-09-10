@@ -22,7 +22,7 @@ public class IndexerIOTalonFX implements IndexerIO{
 
     private VoltageOut voltageRequest;
 
-    public IndexerIOTalonFX(Indexer indexer){
+    public IndexerIOTalonFX(){
         mecanumMotor = new TalonFX(Ports.INDEXER_MOTOR_MECANUM);
          beltMotor = new TalonFX(Ports.INDEXER_MOTOR_BELT); 
         kickMotor = new TalonFX(Ports.INDEXER_MOTOR_KICK);
@@ -103,7 +103,7 @@ public class IndexerIOTalonFX implements IndexerIO{
 
         voltageRequest = new VoltageOut(voltage*-1);
         mecanumMotor.setControl(voltageRequest);
-        if((mecanumMotor.getSupplyCurrent().getValueAsDouble() > 65 && mecanumMotor.getVelocity().getValueAsDouble() <= 0.1) || (kickMotor.getSupplyCurrent().getValueAsDouble() > 65 && kickMotor.getVelocity().getValueAsDouble() <= 0.1)){
+        if((mecanumMotor.getSupplyCurrent().getValueAsDouble() > 65 && mecanumMotor.getVelocity().getValueAsDouble() <= 1) || (kickMotor.getSupplyCurrent().getValueAsDouble() > 65 && kickMotor.getVelocity().getValueAsDouble() <= 1)){
             setVoltage(-6);
             Timer.delay(0.7);
             setVoltage(6);
