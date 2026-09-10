@@ -25,9 +25,6 @@ public interface IntakeIO {
         double deployVelocity,
         double deployAcceleration,
         double encoderPostion
-
- 
-
     ){}
 
     default void updateInputs(IntakeIOInputs inputs){}
@@ -49,6 +46,8 @@ public interface IntakeIO {
     default void setSlowPosition(){}
     
     default void updatePosition(){}
+
+    default void setMotionDeployPosition(double position){}
 
     default void setIntakeVelocity(double velocity){}
     

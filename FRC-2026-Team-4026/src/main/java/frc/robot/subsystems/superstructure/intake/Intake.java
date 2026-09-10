@@ -154,5 +154,9 @@ public class Intake extends SubsystemBase{
     public Command updatePosition(){
         return Commands.runOnce(() -> io.updatePosition());
     }
+
+    public Command setMotionDeployPositionCommand(double position){
+        return Commands.runOnce(() -> io.setMotionDeployPosition(position));
+    }
 }
 

@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure.intake;
 import static edu.wpi.first.units.Units.Inches;
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 import com.ctre.phoenix6.configs.Slot0Configs;
+
 import edu.wpi.first.units.measure.Distance;
 
 public class IntakeConstants {
@@ -14,6 +15,7 @@ public class IntakeConstants {
 
     public static final double OSCILLATING_TIMER = 0.5;
 
+    //TODO: check these
     public static final double kP = 0.08;
     public static final double kI = 0;
     public static final double kD = 0;
