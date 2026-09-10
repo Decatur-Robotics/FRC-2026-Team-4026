@@ -30,13 +30,15 @@ public class Intake extends SubsystemBase{
     //We should stop doing so much inline stuff.
     
     private Consumer<SysIdRoutineLog> intakeSysIdLogConsumer = log -> log.motor("Intake Motor")
-    .voltage(Volts.of(inputs.intakeData.intakeVoltage()));
+    .voltage(Volts.of(inputs.intakeData.deployVoltage())).angularAcceleration(RadiansPerSecondPerSecond.of(inputs.intakeData.deployAcceleration())).angularVelocity(RadiansPerSecond.of(inputs.intakeData.deployVelocity()));
+
+    
     //In all likelyhood the consumer above will probably have a unit mismatch? So might the consumer below
     //It's asking for voltage units and we're doing some dark magic to convert doubles.
     //Lets just log with the unit system in the future.
     //Also, we aren't logging the intake position?? Someone add immediately.
     //Also, the consumer above is easily modifiable to log more info. :happy:
-    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.4).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> intakeSysIdLog.recordState(state)),
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.1).per(Second), Volts.of(1.5),Seconds.of(10), (state) -> intakeSysIdLog.recordState(state)),
     new SysIdRoutine.Mechanism((volts) -> io.setDeployVoltage(volts.in(Volts)),intakeSysIdLogConsumer, this));
         private boolean osillatingIntakeGoingUp;
 

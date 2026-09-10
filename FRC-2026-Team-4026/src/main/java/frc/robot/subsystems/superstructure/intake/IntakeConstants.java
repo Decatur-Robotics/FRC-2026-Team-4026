@@ -12,11 +12,11 @@ public class IntakeConstants {
 
     public static final double OSCILLATING_TIMER = 0.5;
 
-    public static final double kP = 0.08;
+    public static final double kP = 0.02;//0.08
     public static final double kI = 0;
     public static final double kD = 0;
 
-    public static final double kS = 0.25;
+    public static final double kS = 0.4;//0.4
     public static final double kV = 8.0;
     public static final double kA = 6.0;
 
