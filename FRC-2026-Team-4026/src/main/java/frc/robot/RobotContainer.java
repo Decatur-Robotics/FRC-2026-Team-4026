@@ -346,7 +346,7 @@ public class RobotContainer {
                 // up.whileTrue(indexer.setVoltageCommand(-10)).onFalse(indexer.setVoltageCommand(0));
                 // down.whileTrue(intake.setSlowPositionCommand());
 
-                up.whileTrue(intake.deployIntakeCommand(14.0));
+                up.whileTrue(intake.altDeployIntakeCommand(14.0));
                 down.whileTrue(intake.altDeployIntakeCommand(3.0));
                 // down.whileTrue(intake.sysIdDynamic(Direction.kReverse)).onFalse(intake.setDeployVoltageCommand(0));
 

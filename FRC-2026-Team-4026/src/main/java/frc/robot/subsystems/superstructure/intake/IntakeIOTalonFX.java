@@ -42,7 +42,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Current> deployCurrent;
     private StatusSignal<Current> deployFollowCurrent;
     
-    private final MotionMagicVoltage requestVoltage = new MotionMagicVoltage(1).withSlot(1);
+    private MotionMagicVoltage requestVoltage = new MotionMagicVoltage(1).withSlot(1);
  
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withSlot1(IntakeConstants.SLOT1_CONFIGS);
 
@@ -69,7 +69,7 @@ public class IntakeIOTalonFX implements IntakeIO{
 
         deployPosition = deployMotor.getPosition().getValueAsDouble();
 
-        positionRequest = new PositionDutyCycle(deployPosition);
+        positionRequest = new PositionDutyCycle(deployPosition).withSlot(0);
         alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
         deployMotor.setPosition(encoder.getPosition().getValueAsDouble()*IntakeConstants.DEPLOY_INTAKE_POSITION/0.325);
         deployFollowMotor.setPosition(encoder.getPosition().getValueAsDouble()*IntakeConstants.DEPLOY_INTAKE_POSITION/0.325);
