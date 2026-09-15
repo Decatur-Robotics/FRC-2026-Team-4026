@@ -3,6 +3,8 @@ package frc.robot.subsystems.superstructure.intake;
 import static edu.wpi.first.units.Units.Inches;
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
+
 import edu.wpi.first.units.measure.Distance;
 
 public class IntakeConstants {
@@ -12,21 +14,39 @@ public class IntakeConstants {
 
     public static final double OSCILLATING_TIMER = 0.5;
 
-    public static final double kP = 0.02;//0.08
+    public static final double kP = 0.3;//0.08
     public static final double kI = 0;
     public static final double kD = 0;
 
     public static final double kS = 0.4;//0.4
-    public static final double kV = 8.0;
-    public static final double kA = 6.0;
+    public static final double kV = 0.05;
+    public static final double kA = 0.01;
+    public static final double kG = 0.2;
 
-    public static final Slot0Configs SLOT0_CONFIGS = new Slot0Configs()
+        public static final double kP1 = 0.08;//0.08
+    public static final double kI1 = 0;
+    public static final double kD1 = 0;
+
+    public static final double kS1 = 0.4;//0.4
+    public static final double kV1 = 0.5;
+    public static final double kA1 = 6.0;
+
+    public static final Slot1Configs SLOT1_CONFIGS = new Slot1Configs()
     .withKP(kP)
     .withKI(kI)
     .withKD(kD)
     .withKS(kS)
     .withKV(kV)
-    .withKA(kA);
+    .withKA(kA)
+    .withKG(kG);
+
+    public static final Slot0Configs SLOT0_CONFIGS = new Slot0Configs()
+    .withKP(kP1)
+    .withKI(kI1)
+    .withKD(kD1)
+    .withKS(kS1)
+    .withKV(kV1)
+    .withKA(kA1);
 
     public static final double INTAKE_VOLTAGE = -8;  
     
