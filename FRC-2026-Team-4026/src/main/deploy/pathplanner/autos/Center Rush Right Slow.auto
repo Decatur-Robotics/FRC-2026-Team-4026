@@ -19,25 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Columbus Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Rush Right 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Rush 2 1002"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Rush Right 2 Shoot"
+            "pathName": "Center Rush Right shoot"
           }
         }
       ]

@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Rush Right"
+            "pathName": "Center Rush Right Slow"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center Rush Right Intake"
+            "pathName": "Center Rush Right Intake Slow"
           }
         },
         {

@@ -100,7 +100,7 @@ public class RobotContainer {
         // enum to make sure we get our autos right
         private enum AutoType {
                 CenterRush("Center Rush"), Depot("Depot"), Preload("Preload"), DoubleCenter("Double Center"),
-                RushDepot("Center Rush + Depot");
+                RushDepot("Center Rush + Depot"), OneAndHalfCycle("1.5 cycle");
 
                 private String autoName;
 
@@ -230,6 +230,7 @@ public class RobotContainer {
                 autoType.addOption(AutoType.Preload.autoName, AutoType.Preload);
                 autoType.addOption(AutoType.DoubleCenter.autoName, AutoType.DoubleCenter);
                 autoType.addOption(AutoType.RushDepot.autoName, AutoType.RushDepot);
+                autoType.addOption(AutoType.OneAndHalfCycle.autoName, AutoType.OneAndHalfCycle);
                 ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
                 // adds the chooser object to shuffleboard
                 autoTab.add("Side", autoSide);
@@ -384,6 +385,27 @@ public class RobotContainer {
                                         .activePath("Center Rush Right Intake").whileTrue(Commands
                                                         .parallel(intake.deployIntakeCommand(
                                                                         IntakeConstants.DEPLOY_INTAKE_POSITION),
+                                                                        intake.runIntakeCommand(-12)))
+                                        .onFalse(intake.runIntakeCommand(0));
+
+                        PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2", isLeft);
+                        auto2
+                                        .activePath("Center Rush 2 1002").whileTrue(Commands
+                                                        .parallel(intake.deployIntakeCommand(
+                                                                        IntakeConstants.DEPLOY_INTAKE_POSITION),
+                                                                        intake.runIntakeCommand(-12)))
+                                        .onFalse(intake.runIntakeCommand(0));
+                        autoCommand = Commands.sequence(auto1,
+                                        superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)),
+                                        superstructure.storeCommand().withTimeout(0.1), auto2,
+                                        superstructure.oscillateShootCommand());
+                }
+                if(autoType.getSelected() == AutoType.OneAndHalfCycle){
+                         PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right Slow", isLeft);
+                        auto1
+                                        .activePath("Center Rush Right Intake").whileTrue(Commands
+                                                        .parallel(intake.deployIntakeCommand(
+                                                                        IntakeConstants.DEPLOY_INTAKE_POSITION),
                                                                         intake.runIntakeCommand(-8)))
                                         .onFalse(intake.runIntakeCommand(0));
 
@@ -396,8 +418,7 @@ public class RobotContainer {
                                         .onFalse(intake.runIntakeCommand(0));
                         autoCommand = Commands.sequence(auto1,
                                         superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)),
-                                        superstructure.storeCommand().withTimeout(0.1), auto2,
-                                        superstructure.oscillateShootCommand());
+                                        superstructure.storeCommand().withTimeout(0.1), auto2);
                 }
 
                 // Dalton auto, sit still and shoot
