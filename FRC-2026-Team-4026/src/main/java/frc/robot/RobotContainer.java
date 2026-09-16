@@ -216,8 +216,8 @@ public class RobotContainer {
                         autonomous = new Autonomous(superstructure, drive);
                 }
 
-                NamedCommands.registerCommand("Shoot",
-                                superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
+                // NamedCommands.registerCommand("Shoot",
+                //                 superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
                 // makes a widget type object for networktables
                 autoSide = new SendableChooser<>();
                 autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);
