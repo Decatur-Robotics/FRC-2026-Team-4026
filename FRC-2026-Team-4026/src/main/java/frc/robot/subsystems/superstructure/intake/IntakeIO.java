@@ -50,4 +50,5 @@ public interface IntakeIO {
     
     default void updatePosition(){}
     
+    default void setIntakeVelocity(double velocity){}
 }

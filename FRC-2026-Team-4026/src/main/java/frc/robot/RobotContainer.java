@@ -158,6 +158,9 @@ public class RobotContainer {
                         driveSimulation = null;
                         tab.add("Indexer Voltage", indexer.setVoltageCommand(0))
                                         .withWidget(BuiltInWidgets.kNumberSlider);
+                        tab.add("Intake velocity ", intake.runIntakeVelocityCommand(0))
+                        .withWidget(BuiltInWidgets.kNumberSlider);
+
                         this.drive = new Drive(
                                         new GyroIOPigeon2(),
                                         new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
@@ -216,8 +219,7 @@ public class RobotContainer {
                         autonomous = new Autonomous(superstructure, drive);
                 }
 
-                NamedCommands.registerCommand("Shoot",
-                                superstructure.shootCommand().until(() -> superstructure.getNumBallsStored() < 5));
+
                 // makes a widget type object for networktables
                 autoSide = new SendableChooser<>();
                 autoSide.setDefaultOption(AutoSide.Left.autoName, AutoSide.Left);

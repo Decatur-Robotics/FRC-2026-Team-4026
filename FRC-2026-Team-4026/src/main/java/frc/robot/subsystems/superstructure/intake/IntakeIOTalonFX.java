@@ -33,7 +33,7 @@ public class IntakeIOTalonFX implements IntakeIO{
 
     private PositionDutyCycle positionRequest;
     private DynamicMotionMagicExpoVoltage alternatePositionRequest;
-    
+    private MotionMagicVelocityVoltage velocityRequest;
     private VoltageOut voltageRequest;
 
     private CANcoder encoder;
@@ -163,6 +163,13 @@ public class IntakeIOTalonFX implements IntakeIO{
 
         intakeMotor.setControl(voltageRequest);
 
+    }
+    @Override
+    public void setIntakeVelocity(double velocity){
+
+        velocityRequest = new MotionMagicVelocityVoltage(velocity);
+
+        intakeMotor.setControl(velocityRequest);
     }
 
     @Override

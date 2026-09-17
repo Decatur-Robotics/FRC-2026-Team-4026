@@ -108,6 +108,9 @@ public class Intake extends SubsystemBase{
 
         return Commands.startEnd(()-> io.setIntakeVoltage(voltage), () -> io.stopIntake());
     }
+    public Command runIntakeVelocityCommand(double velocity){
+        return Commands.startEnd(()-> io.setIntakeVelocity(velocity), ()-> io.stopIntake());
+    }
     public Command zeroCommand(double position){
 
         return Commands.runOnce(() -> {io.setIntakeVoltage(0); io.setDeployPosition(position);});
