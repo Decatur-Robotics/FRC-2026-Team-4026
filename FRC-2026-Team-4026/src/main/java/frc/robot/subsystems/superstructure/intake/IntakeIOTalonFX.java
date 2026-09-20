@@ -13,16 +13,20 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
@@ -33,7 +37,7 @@ public class IntakeIOTalonFX implements IntakeIO{
 
     private PositionDutyCycle positionRequest;
     private DynamicMotionMagicExpoVoltage alternatePositionRequest;
-    
+    private VelocityVoltage velocityRequest;
     private VoltageOut voltageRequest;
 
     private CANcoder encoder;
@@ -41,7 +45,8 @@ public class IntakeIOTalonFX implements IntakeIO{
     private double deployPosition;
     private StatusSignal<Current> deployCurrent;
     private StatusSignal<Current> deployFollowCurrent;
-    
+    private ShuffleboardTab intakeTab;
+    private GenericEntry intakeVelocity;
     // private TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(0.5, 4);
     // private TrapezoidProfile.State state = new TrapezoidProfile.State(0,0);
     private final MotionMagicVoltage requestVoltage = new MotionMagicVoltage(1);
@@ -58,6 +63,10 @@ public class IntakeIOTalonFX implements IntakeIO{
     
 
     public IntakeIOTalonFX(){
+    intakeTab=Shuffleboard.getTab("intake");
+    intakeVelocity = intakeTab
+   .add("Velocity", 1)
+   .getEntry();
     var TalonFXConfigs = new TalonFXConfiguration();
 
     final var MotionMagicConfigs = TalonFXConfigs.MotionMagic;
@@ -200,6 +209,11 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployMotor.setControl(requestVoltage);
 
     }
-
+    @Override 
+    public void setIntakeVelocity(double velocity){
+        //just a test replace intakeVelocity wiht velocity later
+        velocityRequest = new VelocityVoltage(intakeVelocity.getDouble(velocity));
+        intakeMotor.setControl(velocityRequest);
+    }
 
 }

@@ -111,7 +111,7 @@ public class Intake extends SubsystemBase{
     }
     public Command runIntakeCommandVelocity(double velocity){
 
-        return Commands.startEnd(()-> io.setIntakeVoltage(velocity), () -> io.stopIntake());
+        return Commands.startEnd(()-> io.setIntakeVelocity(velocity), () -> io.stopIntake());
 
     }
     public Command zeroCommand(double position){
@@ -134,7 +134,7 @@ public class Intake extends SubsystemBase{
                 osillatingIntakeGoingUp = true;
             }
         }
-        io.setIntakeVoltage(-0.5);
+        io.setIntakeVoltage(-1);
     }
 
     public Command oscillateIntakeCommand(){

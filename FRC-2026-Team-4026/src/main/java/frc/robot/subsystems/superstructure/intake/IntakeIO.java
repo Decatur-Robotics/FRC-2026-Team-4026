@@ -34,6 +34,8 @@ public interface IntakeIO {
 
     default void setIntakeVoltage(double voltage){}
 
+    default void setIntakeVelocity(double velocity){}
+
     default void setDeployPosition(double position){}
 
     default void stopIntake(){}
