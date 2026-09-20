@@ -118,10 +118,11 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command dumpCommand() {
-        return Commands.parallel(intake.runIntakeCommand(10), indexer.setVoltageCommand(-10));
+        return Commands.parallel(intake.runIntakeCommand(10), intake.deployIntakeCommand(7), indexer.setVoltageCommand(-10));
     }
 
     // public Command shootCommand(){
+
     //     // if(!Robot.isReal()){
 
     //     // }
