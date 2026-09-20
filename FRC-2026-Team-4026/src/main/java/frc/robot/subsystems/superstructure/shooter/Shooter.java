@@ -14,6 +14,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -40,8 +41,6 @@ public Shooter (ShooterIO io) {
       shooterTab=Shuffleboard.getTab("shooter");
     slider = shooterTab
    .add("Speed", 1)
-   .withWidget(BuiltInWidgets.kNumberSlider)
-   .withProperties(Map.of("min", 0, "max", 100)) // specify widget properties here
    .getEntry();
 
     this.io = io;
@@ -63,7 +62,7 @@ public Command setVelocityCommand(double velocity) {
 }
 
 public Command shootAimCommand(){
-    return Commands.runOnce(() -> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity().get()+1));
+    return Commands.runOnce(() -> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity().get()+sliderVelocity));
 }
 public Command shootOnMoveCommand(Drive drive){
     return Commands.run(()-> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity(drive.getDistanceToHub(drive.convergentFlightTime().get()).getAsDouble()).get()));
