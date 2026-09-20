@@ -109,7 +109,11 @@ public class IndexerIOTalonFX implements IndexerIO{
         
     }
 
-
+    @Override
+    public void setBeltVoltage(double voltage){
+        voltageRequest = new VoltageOut(voltage);
+        beltMotor.setControl(voltageRequest);
+    }
     @Override
     public void stop(){
         mecanumMotor.stopMotor(); 
