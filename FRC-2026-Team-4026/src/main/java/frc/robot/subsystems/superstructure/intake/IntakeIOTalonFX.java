@@ -182,7 +182,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     @Override
     public void setDeployPosition(double posRot){
         this.deployPosition = posRot;
-        deployMotor.setControl(positionRequest.withPosition(posRot).withFeedForward(0.1));
+        deployMotor.setControl(positionRequest.withPosition(posRot));
     }
 
     public void setAltDeployPosition(double posRot){
