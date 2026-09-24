@@ -87,9 +87,9 @@ public class IntakeIOSim implements IntakeIO{
         0.0,
         0.0,
         0.0,
-        0.0,
+        deploySim.getVelocityRadPerSec(),
         0.0, 
-        0.0
+        deploySim.getAngleRads()
         );
     }
 

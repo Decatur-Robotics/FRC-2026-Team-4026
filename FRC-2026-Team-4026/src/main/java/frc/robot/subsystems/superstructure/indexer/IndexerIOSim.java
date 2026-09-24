@@ -39,9 +39,9 @@ public class IndexerIOSim implements IndexerIO {
             mechanumMotorSim.getCurrentDrawAmps(),
             beltMotorSim.getCurrentDrawAmps(),
             kickMotorSim.getCurrentDrawAmps(),
-            0.0,
-            0.0,
-            0.0,
+            mechanumMotorSim.getAngularVelocityRadPerSec(),
+            beltMotorSim.getAngularVelocityRadPerSec(),
+            kickMotorSim.getAngularVelocityRadPerSec(),
             0.0,
             0.0,
             0.0
