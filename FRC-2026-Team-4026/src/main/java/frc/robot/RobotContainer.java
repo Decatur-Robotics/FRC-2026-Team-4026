@@ -330,8 +330,7 @@ public class RobotContainer {
                 triggerLeft.and(bumperRight)
                                 .whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
                 triggerRight
-                                .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive)
-                                                : superstructure.shootCommand())
+                                .whileTrue(superstructure.shootCommand(() -> 30.0))
                                 .onFalse(superstructure.storeCommand());
                 triggerRight.and(a)
                                 .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive)
