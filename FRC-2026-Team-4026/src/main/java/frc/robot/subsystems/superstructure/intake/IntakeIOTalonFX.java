@@ -32,7 +32,6 @@ public class IntakeIOTalonFX implements IntakeIO{
     public TalonFX intakeMotor, deployMotor,deployFollowMotor;
 
     private PositionDutyCycle positionRequest;
-    private DynamicMotionMagicExpoVoltage alternatePositionRequest;
     
     private VoltageOut voltageRequest;
 
@@ -42,9 +41,9 @@ public class IntakeIOTalonFX implements IntakeIO{
     private StatusSignal<Current> deployCurrent;
     private StatusSignal<Current> deployFollowCurrent;
     
-    private final MotionMagicVoltage requestVoltage = new MotionMagicVoltage(1);
+    private MotionMagicVoltage motionPositionRequest = new MotionMagicVoltage(0);
  
-    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
+    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withMotionMagic(IntakeConstants.MOTION_MAGIC_CONFIGS)
     .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3));
 
 
@@ -71,7 +70,6 @@ public class IntakeIOTalonFX implements IntakeIO{
         deployPosition = deployMotor.getPosition().getValueAsDouble();
 
         positionRequest = new PositionDutyCycle(deployPosition);
-        alternatePositionRequest = new DynamicMotionMagicExpoVoltage(deployPosition, 0.05, 0.5);
         deployMotor.setPosition(encoder.getPosition().getValueAsDouble()*IntakeConstants.DEPLOY_INTAKE_POSITION/0.325);
         deployFollowMotor.setPosition(encoder.getPosition().getValueAsDouble()*IntakeConstants.DEPLOY_INTAKE_POSITION/0.325);
         deployMotor.getConfigurator().apply(config);
@@ -172,7 +170,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     }
 
     public void setAltDeployPosition(double posRot){
-        deployMotor.setControl(alternatePositionRequest.withPosition(posRot).withVelocity(0.05));
+        deployMotor.setControl(motionPositionRequest.withPosition(posRot));
     }
 
     @Override
@@ -189,11 +187,6 @@ public class IntakeIOTalonFX implements IntakeIO{
     @Override
     public void coast(){
         deployMotor.setControl(new CoastOut());
-    }
-
-    public void setSlowPosition(){
-        deployMotor.setControl(requestVoltage);
-
     }
 
 
