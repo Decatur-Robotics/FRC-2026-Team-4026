@@ -348,6 +348,7 @@ public class RobotContainer {
                 // up.whileTrue(indexer.setVoltageCommand(-10)).onFalse(indexer.setVoltageCommand(0));
                 up.whileTrue(intake.altDeployIntakeCommand(1));
                 down.whileTrue(intake.altDeployIntakeCommand(15));
+                // left.whileTrue(intake.setDeployVoltageCommand(1));
 
                 bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
                 bumperLeft.and(a).whileTrue(superstructure.passIntakeCommand());

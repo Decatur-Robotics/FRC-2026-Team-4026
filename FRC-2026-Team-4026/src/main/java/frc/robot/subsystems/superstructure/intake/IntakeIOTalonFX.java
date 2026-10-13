@@ -43,8 +43,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     
     private MotionMagicVoltage motionPositionRequest = new MotionMagicVoltage(0);
  
-    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withMotionMagic(IntakeConstants.MOTION_MAGIC_CONFIGS)
-    .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3));
+    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withMotionMagic(IntakeConstants.MOTION_MAGIC_CONFIGS);
 
 
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
