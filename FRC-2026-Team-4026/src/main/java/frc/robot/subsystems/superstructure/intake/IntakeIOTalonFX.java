@@ -43,8 +43,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     private final MotionMagicVoltage requestVoltage = new MotionMagicVoltage(0);
  
     //and this
-    public TalonFXConfiguration deplyConfig = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
-    .withVoltage(new VoltageConfigs().withPeakForwardVoltage(3).withPeakReverseVoltage(3));
+    public TalonFXConfiguration deplyConfig = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS);
 
 
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
@@ -57,7 +56,7 @@ public class IntakeIOTalonFX implements IntakeIO{
 
         final MotionMagicConfigs motionMagicConfigs = deplyConfig.MotionMagic;
         motionMagicConfigs.MotionMagicCruiseVelocity = 1;
-        motionMagicConfigs.MotionMagicAcceleration = 10;
+        motionMagicConfigs.MotionMagicAcceleration = 1;
 
         trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(3, 10));
 

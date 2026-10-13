@@ -21,8 +21,8 @@ public class IntakeConstants {
     public static final double kD = 0;
 
     public static final double kS = 0.25;
-    public static final double kV = 8.0;
-    public static final double kA = 6.0;
+    public static final double kV = 0.1;
+    public static final double kA = 0.05;
 
     public static final Slot0Configs SLOT0_CONFIGS = new Slot0Configs()
     .withKP(kP)
