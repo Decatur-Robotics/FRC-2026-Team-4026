@@ -19,8 +19,8 @@ public class IntakeConstants {
     public static final double kD = 0;
 
     public static final double kS = 0.25;
-    public static final double kV = 8.0;
-    public static final double kA = 6.0;
+    public static final double kV = 0.125;
+    public static final double kA = 0.2;
 
     public static final Slot0Configs SLOT0_CONFIGS = new Slot0Configs()
     .withKP(kP)
@@ -31,8 +31,8 @@ public class IntakeConstants {
     .withKA(kA);
 
     public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-    .withMotionMagicAcceleration(1)
-    .withMotionMagicCruiseVelocity(1);
+    .withMotionMagicAcceleration(.1)
+    .withMotionMagicCruiseVelocity(.1);
 
     public static final double INTAKE_VOLTAGE = -8;  
     
