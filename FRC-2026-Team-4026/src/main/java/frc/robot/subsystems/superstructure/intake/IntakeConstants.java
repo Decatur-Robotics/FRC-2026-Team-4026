@@ -3,8 +3,12 @@ package frc.robot.subsystems.superstructure.intake;
 import static edu.wpi.first.units.Units.Inches;
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+
 import edu.wpi.first.units.measure.Distance;
 
 public class IntakeConstants {
@@ -51,6 +55,11 @@ public class IntakeConstants {
     public static final double INTAKE_CURRENT_LIMIT = 70;
     public static final double DEPLOY_CURRENT_LIMIT = 45;
     public static final double HALFWAY_INTAKE_POSITION = 7;
-
+    public static final FeedbackConfigs FEEDBACK_CONFIGS = new FeedbackConfigs()
+    .withFeedbackRemoteSensorID(0)
+    .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+    .withSensorToMechanismRatio(1)
+    .withRotorToSensorRatio(72);//please add real gear ratio pretty please love you
+    TalonFXConfiguration fx_cfg = new TalonFXConfiguration();
 
 }

@@ -36,14 +36,15 @@ public class IntakeIOTalonFX implements IntakeIO{
     private VoltageOut voltageRequest;
 
     private CANcoder encoder;
-
+    private MotionMagicVoltage motionPositionRequest;
     private double deployPosition;
     private StatusSignal<Current> deployCurrent;
     private StatusSignal<Current> deployFollowCurrent;
     
-    private MotionMagicVoltage motionPositionRequest = new MotionMagicVoltage(0);
  
-    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS).withMotionMagic(IntakeConstants.MOTION_MAGIC_CONFIGS);
+    public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
+    .withMotionMagic(IntakeConstants.MOTION_MAGIC_CONFIGS)
+    .withFeedback(IntakeConstants.FEEDBACK_CONFIGS);
 
 
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()
@@ -53,14 +54,9 @@ public class IntakeIOTalonFX implements IntakeIO{
     
 
     public IntakeIOTalonFX(){
-    var TalonFXConfigs = new TalonFXConfiguration();
-
-    final var MotionMagicConfigs = TalonFXConfigs.MotionMagic;
-    MotionMagicConfigs.MotionMagicCruiseVelocity = 5;
-    MotionMagicConfigs.MotionMagicAcceleration = 10;
 
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
-
+        motionPositionRequest = new MotionMagicVoltage(0);
         deployMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
         deployFollowMotor = new TalonFX(Ports.DEPLOY_MOTOR_PORT);
         encoder = new CANcoder(0);
