@@ -36,7 +36,7 @@ public class IntakeConstants {
 
     public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
     .withMotionMagicAcceleration(40)
-    .withMotionMagicCruiseVelocity(15);
+    .withMotionMagicCruiseVelocity(7.5);
 
     public static final double INTAKE_VOLTAGE = -8;  
     
@@ -59,7 +59,7 @@ public class IntakeConstants {
     .withFeedbackRemoteSensorID(0)
     .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
     .withSensorToMechanismRatio(1)
-    .withRotorToSensorRatio(72);//please add real gear ratio pretty please love you
+    .withRotorToSensorRatio(47);//please add real gear ratio pretty please love you
     TalonFXConfiguration fx_cfg = new TalonFXConfiguration();
 
 }

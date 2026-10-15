@@ -382,11 +382,11 @@ public class RobotContainer {
 
                 if (autoType.getSelected() == AutoType.DoubleCenter) {
                         PathPlannerAuto auto1 = new PathPlannerAuto("Center Rush Right", isLeft);
-                        auto1
-                                        .activePath("Center Rush Right Intake").whileTrue(Commands
-                                                        .parallel(intake.deployIntakeCommand(
+                        auto1.activePath("Center Rush Right").whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
+                                        auto1.activePath("Center Rush Right Intake").whileTrue(
+                                                        Commands.parallel(intake.deployIntakeCommand(
                                                                         IntakeConstants.DEPLOY_INTAKE_POSITION),
-                                                                        intake.runIntakeCommand(-8)))
+                                                                        intake.runIntakeCommand(-12)))
                                         .onFalse(intake.runIntakeCommand(0));
 
                         PathPlannerAuto auto2 = new PathPlannerAuto("Center Right 2 Test", isLeft);
@@ -394,12 +394,12 @@ public class RobotContainer {
                                         .activePath("Center Rush 2 1002").whileTrue(Commands
                                                         .parallel(intake.deployIntakeCommand(
                                                                         IntakeConstants.DEPLOY_INTAKE_POSITION),
-                                                                        intake.runIntakeCommand(-8)))
+                                                                        intake.runIntakeCommand(-12)))
                                         .onFalse(intake.runIntakeCommand(0));
                         autoCommand = Commands.sequence(auto1,
-                                        superstructure.oscillateShootCommand().withTimeout(Seconds.of(3)),
+                                        superstructure.pushShootCommand().withTimeout(Seconds.of(3)),
                                         superstructure.storeCommand().withTimeout(0.1), auto2,
-                                        superstructure.oscillateShootCommand());
+                                        superstructure.pushShootCommand());
                 }
 
                 // Dalton auto, sit still and shoot

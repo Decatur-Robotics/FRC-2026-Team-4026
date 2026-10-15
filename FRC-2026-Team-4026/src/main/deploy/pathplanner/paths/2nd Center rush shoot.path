@@ -48,7 +48,7 @@
   "folder": "Center Rush",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 88.8542371612483
+    "rotation": 88.85423716124832
   },
   "useDefaultConstraints": true
 }

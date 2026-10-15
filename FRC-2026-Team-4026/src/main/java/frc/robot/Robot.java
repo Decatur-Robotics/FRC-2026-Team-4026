@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,6 +39,7 @@ public class Robot extends LoggedRobot {
    */
   public Robot() {
     Pathfinding.setPathfinder(new LocalADStarAK());
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.

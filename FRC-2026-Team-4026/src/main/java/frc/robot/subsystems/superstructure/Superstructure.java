@@ -180,6 +180,14 @@ public class Superstructure extends SubsystemBase {
                         intake.oscillateIntakeCommand()));
     }
 
+    public Command pushShootCommand(){
+        return Commands.sequence(Commands.parallel(shooter.shootAimCommand(),
+                        leds.shooterWindUpCommand(shooter.getVelocity(),
+                                ShotEstimator.getInstance().getTargetVelocity().get()))
+                        .until(() -> shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get() - 2),
+                    Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.rainbowCommand(), intake.altDeployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION)));
+    }
+
     /**
      * runs the oscillate shoot command put with a preset velocity
      * @param velocity the target velocity of the shooter
