@@ -411,9 +411,6 @@ public class RobotContainer {
                     .onFalse(intake.runIntakeCommand(0));
 
             PathPlannerAuto auto2 = new PathPlannerAuto("Intake 2", isLeft);
-            auto2.activePath("Center Rush Right 2").whileTrue(Commands
-                            .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
-                                    intake.runIntakeCommand(-12)));
             auto2
                     .activePath("Center Rush 2 1002").whileTrue(Commands
                             .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
