@@ -558,7 +558,18 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
     public void autoAlign(Supplier<Rotation2d> targetRotation) {
         double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(),
                 targetRotation.get().getRadians());
-        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, rotationSpeed);
+        //New Code
+        double error = targetRotation.get().getRadians() -  getPose().getRotation().getRadians();
+        if(error > Math.PI){
+            error -= 2*Math.PI;
+        } else if(error < -Math.PI){
+            error += 2*Math.PI;
+        }
+
+        double velocity = error*5;
+        //
+        //Was originally rotationSpeed, currently velocity
+        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, velocity);
         runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
         Logger.recordOutput("Target Rotation", targetRotation.get());
         Logger.recordOutput("autoAling Robot", getPose().getRotation());
