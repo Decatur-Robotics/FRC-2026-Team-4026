@@ -43,8 +43,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     
  
     public TalonFXConfiguration config = new TalonFXConfiguration().withSlot0(IntakeConstants.SLOT0_CONFIGS)
-    .withMotionMagic(IntakeConstants.MOTION_MAGIC_CONFIGS)
-    .withFeedback(IntakeConstants.FEEDBACK_CONFIGS);
+    .withMotionMagic(IntakeConstants.MOTION_MAGIC_CONFIGS);
 
 
     public TalonFXConfiguration intakeConfig = new TalonFXConfiguration().withCurrentLimits(new CurrentLimitsConfigs()

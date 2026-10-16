@@ -345,9 +345,10 @@ public class RobotContainer {
                 b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
                 x.whileTrue(superstructure.dumpCommand()).onFalse(superstructure.storeCommand());
                 right.whileTrue(intake.oscillateIntakeCommand());
-                // up.whileTrue(indexer.setVoltageCommand(-10)).onFalse(indexer.setVoltageCommand(0));
+                
                 up.whileTrue(intake.altDeployIntakeCommand(1));
-                down.whileTrue(intake.altDeployIntakeCommand(15));
+                // down.whileTrue(intake.altDeployIntakeCommand(15));
+                down.whileTrue(indexer.setVoltageCommand(-10)).onFalse(indexer.setVoltageCommand(0));
                 // left.whileTrue(intake.setDeployVoltageCommand(1));
 
                 bumperLeft.whileTrue(superstructure.passCommand()).onFalse(superstructure.storeCommand());
@@ -401,6 +402,24 @@ public class RobotContainer {
                                         superstructure.storeCommand().withTimeout(0.1), auto2,
                                         superstructure.pushShootCommand());
                 }
+
+        //           if (autoType.getSelected() == AutoType.DoubleCenter) {
+        //                 PathPlannerAuto auto = new PathPlannerAuto("Columbus Auto", isLeft);
+        //     auto.activePath("Center Rush Intake Col").whileTrue(Commands
+        //                     .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
+        //                             intake.runIntakeCommand(-12)))
+        //             .onFalse(intake.runIntakeCommand(0));
+
+        //     PathPlannerAuto auto2 = new PathPlannerAuto("Intake 2", isLeft);
+        //     auto2
+        //             .activePath("Center Rush 2 1002").whileTrue(Commands
+        //                     .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
+        //                             intake.runIntakeCommand(-12)))
+        //             .onFalse(intake.runIntakeCommand(0));
+        //     autoCommand = Commands.sequence(auto, drive.autoAlignToHub().withTimeout(2.5), drive.stopWithXCommand().withTimeout(0.1),
+        //             superstructure.oscillateShootCommand().withTimeout(Seconds.of(4)),
+        //             superstructure.storeCommand().withTimeout(0.1), auto2);
+        // }
 
                 // Dalton auto, sit still and shoot
                 if (autoType.getSelected() == AutoType.Preload) {
