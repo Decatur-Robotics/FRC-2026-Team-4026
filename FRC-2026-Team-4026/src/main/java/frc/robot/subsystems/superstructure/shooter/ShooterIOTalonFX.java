@@ -53,6 +53,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         config = new TalonFXConfiguration().withSlot0(ShooterConstants.SLOT_0_CONFIGS);
 
         motor.getConfigurator().apply(config);
+        followerMotor.getConfigurator().apply(config);
         voltage = motor.getMotorVoltage();
         velocity = motor.getVelocity().getValueAsDouble();
         voltageRequest = new VoltageOut(voltage.getValueAsDouble());
