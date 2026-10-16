@@ -22,11 +22,11 @@ public class Indexer extends SubsystemBase{
         if (isEStopped){
             io.stop();
         }
-        if(getMecanumCurrent() == IndexerConstants.INDEXER_CURRENT_LIMIT && getMecanumVelocity() == 0 || getBeltCurrent() == IndexerConstants.INDEXER_CURRENT_LIMIT && getBeltVelocity() == 0 || getKickCurrent() > IndexerConstants.INDEXER_CURRENT_LIMIT && getKickVelocity() == 0 ){
-            setVoltageCommand(-6);
-            Commands.waitSeconds(0.7);
-            setVoltageCommand(6);
-        }
+        // if(getMecanumCurrent() == IndexerConstants.INDEXER_CURRENT_LIMIT && getMecanumVelocity() == 0 || getBeltCurrent() == IndexerConstants.INDEXER_CURRENT_LIMIT && getBeltVelocity() == 0 || getKickCurrent() > IndexerConstants.INDEXER_CURRENT_LIMIT && getKickVelocity() == 0 ){
+        //     setVoltageCommand(-6);
+        //     Commands.waitSeconds(0.7);
+        //     setVoltageCommand(6);
+        // }
     }
     
     public Command setVoltageCommand(double voltage){

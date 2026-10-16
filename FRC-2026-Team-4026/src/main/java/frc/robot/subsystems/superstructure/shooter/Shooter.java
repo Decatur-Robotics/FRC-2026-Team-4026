@@ -62,7 +62,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command setVelocityCommand(double velocity) {
-        System.out.println(velocity);
+        Logger.recordOutput("Shooter/target velocity", velocity);
         return Commands.runOnce(() -> io.setVelocity(velocity));
     }
 
