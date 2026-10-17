@@ -559,17 +559,17 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         double rotationSpeed = angleController.calculate(getPose().getRotation().getRadians(),
                 targetRotation.get().getRadians());
         //New Code
-        double error = targetRotation.get().getRadians() -  getPose().getRotation().getRadians();
-        if(error > Math.PI){
-            error -= 2*Math.PI;
-        } else if(error < -Math.PI){
-            error += 2*Math.PI;
-        }
+        // double error = targetRotation.get().getRadians() -  getPose().getRotation().getRadians();
+        // if(error > Math.PI){
+        //     error -= 2*Math.PI;
+        // } else if(error < -Math.PI){
+        //     error += 2*Math.PI;
+        // }
 
-        double velocity = error*5;
+        // double velocity = error*5;
         //
         //Was originally rotationSpeed, currently velocity
-        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, velocity);
+        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, rotationSpeed);
         runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
         Logger.recordOutput("Target Rotation", targetRotation.get());
         Logger.recordOutput("autoAling Robot", getPose().getRotation());
