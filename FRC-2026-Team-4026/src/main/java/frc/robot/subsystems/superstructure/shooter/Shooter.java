@@ -67,7 +67,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command shootAimCommand() {
-        return Commands.runOnce(() -> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity().get()));
+        return Commands.runOnce(() -> io.setVelocity(ShotEstimator.getInstance().getTargetVelocity().get()+1));
     }
 
     public Command shootOnMoveCommand(Drive drive) {

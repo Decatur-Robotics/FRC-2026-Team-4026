@@ -89,7 +89,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command intakeCommand() {
         return Commands.parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
-                intake.runIntakeCommand(-10), shooter.setVoltageCommand(0), leds.pulsingCommand());
+                intake.runIntakeCommand(-12), shooter.setVoltageCommand(0), leds.pulsingCommand());
     }
 
     public Command testShootCommand() {
@@ -185,7 +185,7 @@ public class Superstructure extends SubsystemBase {
                         leds.shooterWindUpCommand(shooter.getVelocity(),
                                 ShotEstimator.getInstance().getTargetVelocity().get()))
                         .until(() -> shooter.getVelocity() > ShotEstimator.getInstance().getTargetVelocity().get() - 2),
-                    Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.rainbowCommand(), intake.altDeployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION)));
+                    Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.rainbowCommand(), intake.altDeployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION), intake.runIntakeCommand(-0.5)));
     }
 
     /**

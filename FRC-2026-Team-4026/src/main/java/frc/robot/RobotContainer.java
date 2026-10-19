@@ -322,11 +322,12 @@ public class RobotContainer {
                 JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
                 JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-                triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(10)))
-                                .onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
+                // triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(10)))
+                //                 .onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
 
                 triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0))
                                 .onFalse(superstructure.storeCommand());
+                triggerLeft.whileTrue(superstructure.shootCommand(null))        
                 triggerLeft.and(bumperRight)
                                 .whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
                 triggerRight
@@ -410,15 +411,17 @@ public class RobotContainer {
                                     intake.runIntakeCommand(-12)))
                     .onFalse(intake.runIntakeCommand(0));
 
-            PathPlannerAuto auto2 = new PathPlannerAuto("Intake 2", isLeft);
+            PathPlannerAuto auto2 = new PathPlannerAuto("Alternate Center Rush 2", isLeft);
             auto2
-                    .activePath("Center Rush 2 1002").whileTrue(Commands
+                    .activePath("Auto 2 Combined Path").whileTrue(Commands
                             .parallel(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION),
                                     intake.runIntakeCommand(-12)))
                     .onFalse(intake.runIntakeCommand(0));
-            autoCommand = Commands.sequence(auto, drive.autoAlignToHub().withTimeout(2.0), drive.stopWithXCommand().withTimeout(0.1),
-                    superstructure.pushShootCommand().withTimeout(Seconds.of(3)),
-                    superstructure.storeCommand().withTimeout(0.1), auto2);
+            autoCommand = Commands.sequence(auto, drive.autoAlignToHub().withTimeout(0.5), drive.stopWithXCommand().withTimeout(0.1),
+                    superstructure.pushShootCommand().withTimeout(Seconds.of(2.5)),
+                    superstructure.storeCommand().withTimeout(0.1), auto2,
+                     drive.autoAlignToHub().withTimeout(0.5), drive.stopWithXCommand().withTimeout(0.1),
+                     superstructure.pushShootCommand().withTimeout(2.0));
         }
 
                 // Dalton auto, sit still and shoot
