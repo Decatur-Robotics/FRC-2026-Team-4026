@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,7 +30,8 @@ public class Superstructure extends SubsystemBase {
     // This is for making out robot both harder to defend and makes the chance of
     // robot damage lower
     private boolean defenseMode = false;
-
+    private Timer indexingTimer = new Timer();
+    
     /**
      * Contains all of the command for the main mechanisms
      * @param intake the intake object
@@ -45,6 +47,7 @@ public class Superstructure extends SubsystemBase {
         this.leds = leds;
 
         this.targetState = SuperstructureConstants.STARTING_STATE;
+        indexingTimer.start();
     }
 
     /**
@@ -125,7 +128,15 @@ public class Superstructure extends SubsystemBase {
                 Commands.parallel(shooter.shootAimCommand(), indexer.setVoltageCommand(10), leds.rainbowCommand(),
                         intake.runIntakeCommand(-0.5)));
     }
-
+     
+    public Command slowIndexShootCommand(Supplier<Double> velocity){
+        
+        return Commands.parallel(shooter.setVelocityCommand(velocity.get()),
+            indexingTimer.hasElapsed(1)? indexer.setVoltageCommand(8):indexer.setVoltageCommand(0),
+            indexingTimer.hasElapsed(1.5)?Commands.runOnce(()-> indexingTimer.reset()):Commands.none()
+            );
+        
+    }
     public Command shootCommand(Supplier<Double> velocity) {
         return Commands.sequence(shooter.setVelocityCommand(velocity.get()),
                 Commands.waitUntil(() -> shooter.getVelocity() > (velocity.get() - 0.5)),

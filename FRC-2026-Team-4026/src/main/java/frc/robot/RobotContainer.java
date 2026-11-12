@@ -329,17 +329,19 @@ public class RobotContainer {
                                 .onFalse(superstructure.storeCommand());
                 triggerLeft.and(bumperRight)
                                 .whileTrue(superstructure.pushShootCommand(() -> 44.0, () -> joystick.getY()));
-                triggerRight
-                                .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive)
-                                                : superstructure.shootCommand())
-                                .onFalse(superstructure.storeCommand());
-                triggerRight.and(a)
-                                .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive)
-                                                : superstructure.shootCommand())
-                                .onFalse(superstructure.storeCommand());
-                triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand())
-                                .onFalse(superstructure.storeCommand());
-                triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
+                // triggerRight
+                //                 .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive)
+                //                                 : superstructure.shootCommand())
+                //                 .onFalse(superstructure.storeCommand());
+                // triggerRight.and(a)
+                //                 .whileTrue(drive.getShootOnMoveBoolean() ? superstructure.shootOnMoveCommand(drive)
+                //                                 : superstructure.shootCommand())
+                //                 .onFalse(superstructure.storeCommand());
+                // triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand())
+                //                 .onFalse(superstructure.storeCommand());
+                triggerRight.whileTrue(shooter.setVoltageCommand(8)).onFalse(shooter.setVoltageCommand(0));
+                bumperRight.whileTrue(indexer.setVoltageCommand(8)).onFalse(indexer.setVoltageCommand(0));
+                // triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
                 a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());
                 y.whileTrue(intake.deployIntakeCommand(IntakeConstants.STORED_INTAKE_POSITION));
                 b.whileTrue(intake.deployIntakeCommand(IntakeConstants.DEPLOY_INTAKE_POSITION));
