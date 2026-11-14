@@ -322,8 +322,7 @@ public class RobotContainer {
                 JoystickButton triggerLeft = new JoystickButton(joystick, LogitechControllerButtons.triggerLeft);
                 JoystickButton triggerRight = new JoystickButton(joystick, LogitechControllerButtons.triggerRight);
 
-                triggerLeft.whileTrue(Commands.parallel(shooter.setVelocityWithSlider(), indexer.setVoltageCommand(10)))
-                                .onFalse(Commands.parallel(shooter.setVoltageCommand(0), indexer.setVoltageCommand(0)));
+                triggerLeft.whileTrue(superstructure.pulsedIndexerCommand(45));
 
                 triggerLeft.and(right).whileTrue(superstructure.oscillateShootCommand(() -> 44.0))
                                 .onFalse(superstructure.storeCommand());
@@ -339,7 +338,7 @@ public class RobotContainer {
                 //                 .onFalse(superstructure.storeCommand());
                 // triggerRight.and(right).whileTrue(superstructure.oscillateShootCommand())
                 //                 .onFalse(superstructure.storeCommand());
-                triggerRight.whileTrue(shooter.setVoltageCommand(8)).onFalse(shooter.setVoltageCommand(0));
+                triggerRight.whileTrue(shooter.setVelocityWithSlider()).onFalse(shooter.stop());
                 bumperRight.whileTrue(indexer.setVoltageCommand(8)).onFalse(indexer.setVoltageCommand(0));
                 // triggerRight.and(bumperRight).whileTrue(superstructure.pushShootCommand(() -> joystick.getY()));
                 a.whileTrue(superstructure.intakeCommand()).onFalse(superstructure.storeCommand());

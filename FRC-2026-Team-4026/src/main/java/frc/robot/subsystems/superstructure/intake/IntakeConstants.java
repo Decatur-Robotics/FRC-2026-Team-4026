@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure.intake;
 
 import static edu.wpi.first.units.Units.Inches;
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -29,7 +30,7 @@ public class IntakeConstants {
     .withKS(kS)
     .withKV(kV)
     .withKA(kA);
-
+    
     public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
     .withMotionMagicAcceleration(1)
     .withMotionMagicCruiseVelocity(1);

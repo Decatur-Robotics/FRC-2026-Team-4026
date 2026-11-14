@@ -250,5 +250,9 @@ public class Superstructure extends SubsystemBase {
         return Commands.parallel(drive.autoAlignToHub(), Commands.sequence(leds.aligningCommand(),
                 Commands.waitUntil(() -> drive.isAligned()), leds.correctCommand()));
     }
-
+    public Command pulsedIndexerCommand(double velocity){
+        return Commands.parallel(shooter.setVelocityCommand(velocity),
+         Commands.sequence(indexer.setVoltageCommand(10).withTimeout(1000), 
+         indexer.setVoltageCommand(0).withTimeout(2000)).repeatedly());
+    }
 }

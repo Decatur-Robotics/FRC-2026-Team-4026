@@ -84,6 +84,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer, ColorVision.ColorVisionConsumer {
+    
     // TunerConstants doesn't include these constants, so they are declared locally
     static final double ODOMETRY_FREQUENCY = new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD()
             ? 250.0
@@ -212,6 +213,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
         Pathfinding.setPathfinder(new LocalADStarAK());
         PathPlannerLogging.setLogActivePathCallback((activePath) -> {
             Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+
         });
         PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
             Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
@@ -238,6 +240,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
 
         Logger.recordOutput("ShotEstimator/Distance", robotDistance);
         Logger.recordOutput("RobotAngle", robotAngle);
+        
+        
         odometryLock.lock(); // Prevents odometry updates while reading data
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -245,7 +249,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer, Color
             module.periodic();
         }
         odometryLock.unlock();
-
+  
         // Stop moving when disabled
         if (DriverStation.isDisabled()) {
             for (var module : modules) {

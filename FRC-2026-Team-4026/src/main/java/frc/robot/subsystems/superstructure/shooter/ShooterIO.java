@@ -31,7 +31,8 @@ public interface ShooterIO {
 
     ) {
     }
-
+    default void stop(){
+    }
     default void setVelocity(double velocity) {
     }
 

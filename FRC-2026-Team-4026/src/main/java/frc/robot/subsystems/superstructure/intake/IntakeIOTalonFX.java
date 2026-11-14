@@ -23,6 +23,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.Ports;
 import frc.robot.util.PhoenixUtil;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
@@ -59,7 +60,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     final var MotionMagicConfigs = TalonFXConfigs.MotionMagic;
     MotionMagicConfigs.MotionMagicCruiseVelocity = 5;
     MotionMagicConfigs.MotionMagicAcceleration = 10;
-
+    
         intakeMotor = new TalonFX(Ports.INTAKE_MOTOR_PORT);
 
         deployMotor = new TalonFX(Ports.DEPLOY_FOLLOW_MOTOR_PORT);
@@ -113,7 +114,7 @@ public class IntakeIOTalonFX implements IntakeIO{
     public void updatePosition(){
         deployMotor.getPosition().getValueAsDouble();
         deployFollowMotor.getPosition().getValueAsDouble();
-
+        SmartDashboard.putData(deployFollowMotor);
     }
 
     @Override

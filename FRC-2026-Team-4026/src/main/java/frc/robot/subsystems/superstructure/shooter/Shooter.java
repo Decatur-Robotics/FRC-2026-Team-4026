@@ -116,4 +116,7 @@ public class Shooter extends SubsystemBase {
     public Command setVelocityWithSlider() {
         return Commands.runOnce(() -> io.setVelocity(sliderVelocity));
     }
+    public Command stop(){
+        return Commands.runOnce(()-> io.stop());
+    }
 }

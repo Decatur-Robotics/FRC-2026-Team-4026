@@ -2,7 +2,7 @@
   {
     "name": "/Shuffleboard/shooter/Speed",
     "type": "double",
-    "value": 92.15016348776966,
+    "value": 47.78155955031466,
     "properties": {
       "persistent": true,
       "retained": true
