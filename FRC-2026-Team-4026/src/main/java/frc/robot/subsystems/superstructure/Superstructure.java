@@ -148,6 +148,13 @@ public class Superstructure extends SubsystemBase {
                 intake.runIntakeCommand(-10));
     }
 
+    public Command pulsedIndexerCommand(double velocity){
+        return Commands.parallel(shooter.setVelocityCommand(velocity),
+         Commands.sequence(indexer.setVoltageCommand(10).withTimeout(1000), 
+         indexer.setVoltageCommand(0).withTimeout(2000)).repeatedly());
+    }
+
+
     public Command testShootCommands() {
         return Commands.parallel(shooter.setVelocityCommand(45), indexer.setVoltageCommand(12));
     }
